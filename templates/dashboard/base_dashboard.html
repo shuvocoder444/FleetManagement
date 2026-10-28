@@ -1,0 +1,353 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ request.session.django_language|default:'en' }}" class="h-full bg-slate-50">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dashboard{% endblock %} - {{ site_setting.site_name|default:'Topd' }}</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            200: '#fecaca',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        [x-cloak] { display: none !important; }
+        .sidebar-scroll::-webkit-scrollbar { width: 4px; }
+        .sidebar-scroll::-webkit-scrollbar-thumb { background-color: #e2e8f0; border-radius: 4px; }
+    </style>
+</head>
+<body class="h-full flex overflow-hidden" x-data="{ mobileSidebarOpen: false }">
+
+    <!-- Mobile Sidebar Backdrop -->
+    <div x-show="mobileSidebarOpen" x-cloak @click="mobileSidebarOpen = false"
+         class="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm lg:hidden">
+    </div>
+
+    <!-- 1. LEFT SIDEBAR (Adapts to Role: Super Admin / Admin / Driver) -->
+    <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200/80 flex flex-col transition-transform duration-300 ease-in-out lg:static lg:translate-x-0"
+           :class="mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+        
+        <!-- Sidebar Brand Header -->
+        <div class="h-16 flex items-center justify-between px-6 border-b border-slate-100">
+            <a href="{% url 'landing_page' %}" class="flex items-center space-x-2.5">
+                <div class="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center text-white shadow-md shadow-red-200">
+                    <i class="fa-solid fa-car-side text-base"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-xl font-extrabold tracking-tight text-gray-900">
+                        <span class="text-red-600">{{ site_setting.site_name|default:'Topd' }}</span>
+                    </span>
+                    <span class="text-[9px] uppercase tracking-widest font-bold text-slate-400">
+                        {% if current_dashboard == 'superadmin' %}Super Admin
+                        {% elif current_dashboard == 'admin' %}Fleet Company
+                        {% else %}Driver Portal{% endif %}
+                    </span>
+                </div>
+            </a>
+            <button @click="mobileSidebarOpen = false" class="lg:hidden text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <!-- Sidebar Navigation Menu -->
+        <div class="flex-1 overflow-y-auto sidebar-scroll px-4 py-4 space-y-6">
+            
+            {% if current_dashboard == 'superadmin' %}
+            <!-- ================= SUPER ADMIN SIDEBAR ================= -->
+            <div>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Master Admin</p>
+                <nav class="space-y-1">
+                    <a href="{% url 'dashboard:superadmin' %}" class="flex items-center px-3 py-2.5 text-xs font-semibold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50">
+                        <i class="fa-solid fa-crown w-5 text-red-600 text-sm"></i>
+                        <span class="ml-2.5 flex-1">Admin Dashboard</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Platform Management</p>
+                <nav class="space-y-1">
+                    <a href="/admin/agreements/agreement/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-regular fa-file-lines w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Agreements</span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">4</span>
+                    </a>
+                    <a href="/admin/drivers/driver/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-regular fa-user w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Drivers</span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">6</span>
+                    </a>
+                    <a href="{% url 'dashboard:superadmin' %}#check-driver-engine" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-id-card-clip w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Check Driver</span>
+                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">Live</span>
+                    </a>
+                    <a href="/admin/vehicles/vehicle/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-car w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Vehicles Garage</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Finance & Subscriptions</p>
+                <nav class="space-y-1">
+                    <a href="/admin/billing/manualpayment/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-money-bill-transfer w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Manual Payments</span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600">1</span>
+                    </a>
+                    <a href="/admin/billing/subscription/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-credit-card w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Subscriptions</span>
+                    </a>
+                    <a href="/admin/billing/plan/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-cubes-stacked w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Plans</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">System</p>
+                <nav class="space-y-1">
+                    <a href="/admin/accounts/customuser/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-users-gear w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Users Management</span>
+                    </a>
+                    <a href="/admin/site_settings/websitesetting/1/change/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-sliders w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Website Settings</span>
+                    </a>
+                </nav>
+            </div>
+
+            {% elif current_dashboard == 'admin' %}
+            <!-- ================= RENTAL COMPANY / FLEET ADMIN SIDEBAR ================= -->
+            <div>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Fleet Overview</p>
+                <nav class="space-y-1">
+                    <a href="{% url 'dashboard:admin' %}" class="flex items-center px-3 py-2.5 text-xs font-semibold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50">
+                        <i class="fa-solid fa-chart-pie w-5 text-red-600 text-sm"></i>
+                        <span class="ml-2.5 flex-1">Company Dashboard</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Operations</p>
+                <nav class="space-y-1">
+                    <a href="/admin/vehicles/vehicle/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-car w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">My Vehicles</span>
+                    </a>
+                    <a href="/admin/agreements/agreement/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-regular fa-file-lines w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Rental Agreements</span>
+                    </a>
+                    <a href="/admin/drivers/driver/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-regular fa-user w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Agency Drivers</span>
+                    </a>
+                    <a href="{% url 'dashboard:admin' %}#check-driver-engine" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-id-card-clip w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Check Driver</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">My Account</p>
+                <nav class="space-y-1">
+                    <a href="{% url 'landing_page' %}#pricing" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-credit-card w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">My Subscription</span>
+                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">Active</span>
+                    </a>
+                </nav>
+            </div>
+
+            {% else %}
+            <!-- ================= DRIVER SIDEBAR ================= -->
+            <div>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Driver Portal</p>
+                <nav class="space-y-1">
+                    <a href="{% url 'dashboard:driver' %}" class="flex items-center px-3 py-2.5 text-xs font-semibold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50">
+                        <i class="fa-solid fa-id-badge w-5 text-red-600 text-sm"></i>
+                        <span class="ml-2.5 flex-1">Driver Profile & Stats</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">My Assignments</p>
+                <nav class="space-y-1">
+                    <a href="{% url 'dashboard:driver' %}#active-car" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-car-side w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Current Vehicle</span>
+                    </a>
+                    <a href="{% url 'dashboard:driver' %}#agreements-list" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-regular fa-file-lines w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Trip Contracts</span>
+                    </a>
+                    <a href="{% url 'dashboard:driver' %}#history-records" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                        <i class="fa-solid fa-clock-rotate-left w-5 text-slate-400"></i>
+                        <span class="ml-2.5 flex-1">Incident History</span>
+                    </a>
+                </nav>
+            </div>
+            {% endif %}
+
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="p-3 border-t border-slate-100 bg-slate-50/50">
+            <div class="flex items-center space-x-3 p-2 rounded-xl bg-white border border-slate-200/60">
+                <div class="w-8 h-8 rounded-full bg-red-100 text-red-600 font-bold flex items-center justify-center text-xs">
+                    {{ display_user.first_name|default:'U'|slice:":1" }}
+                </div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold text-gray-900 truncate">{{ display_user.email|default:'user@topd.kg' }}</p>
+                    <p class="text-[10px] text-slate-500 capitalize">{{ current_dashboard }}</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 2. MAIN BODY CONTENT AREA -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        
+        <!-- TOP NAVBAR -->
+        <header class="h-16 bg-white border-b border-slate-200/80 flex items-center justify-between px-4 sm:px-6 z-30">
+            
+            <!-- Left: Toggle & Role Switcher Pills -->
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                <button @click="mobileSidebarOpen = true" class="lg:hidden text-slate-500 hover:text-slate-800 p-1.5 rounded-lg hover:bg-slate-100">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                
+                <!-- 3 DASHBOARD SWITCHER TABS (Live One-Click Switcher) -->
+                <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
+                    <a href="{% url 'dashboard:superadmin' %}" 
+                       class="px-2.5 py-1.5 rounded-lg transition flex items-center space-x-1.5 {% if current_dashboard == 'superadmin' %}bg-white text-red-600 shadow-xs font-bold{% else %}text-slate-600 hover:text-slate-900{% endif %}">
+                        <i class="fa-solid fa-crown text-[10px]"></i>
+                        <span class="hidden sm:inline">1. Super Admin</span>
+                        <span class="sm:hidden">Super</span>
+                    </a>
+                    <a href="{% url 'dashboard:admin' %}" 
+                       class="px-2.5 py-1.5 rounded-lg transition flex items-center space-x-1.5 {% if current_dashboard == 'admin' %}bg-white text-red-600 shadow-xs font-bold{% else %}text-slate-600 hover:text-slate-900{% endif %}">
+                        <i class="fa-solid fa-building text-[10px]"></i>
+                        <span class="hidden sm:inline">2. Fleet Admin</span>
+                        <span class="sm:hidden">Admin</span>
+                    </a>
+                    <a href="{% url 'dashboard:driver' %}" 
+                       class="px-2.5 py-1.5 rounded-lg transition flex items-center space-x-1.5 {% if current_dashboard == 'driver' %}bg-white text-red-600 shadow-xs font-bold{% else %}text-slate-600 hover:text-slate-900{% endif %}">
+                        <i class="fa-solid fa-id-badge text-[10px]"></i>
+                        <span class="hidden sm:inline">3. Driver</span>
+                        <span class="sm:hidden">Driver</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Right Controls: Currency, Language, Notifications, Profile -->
+            <div class="flex items-center space-x-2 sm:space-x-3">
+                
+                <!-- Currency Selector -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" @click.away="open = false" 
+                            class="flex items-center space-x-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+                        <span>{{ current_currency|default:'KGS' }}</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                    </button>
+                    <div x-show="open" x-cloak class="absolute right-0 mt-1.5 w-32 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-50 text-xs">
+                        <a href="{% url 'switch_currency' 'KGS' %}" class="flex items-center justify-between px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium">
+                            <span>🇰🇬 KGS (Som)</span>
+                            {% if current_currency == 'KGS' %}<i class="fa-solid fa-check text-red-600 text-xs"></i>{% endif %}
+                        </a>
+                        <a href="{% url 'switch_currency' 'USD' %}" class="flex items-center justify-between px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium">
+                            <span>🇺🇸 USD ($)</span>
+                            {% if current_currency == 'USD' %}<i class="fa-solid fa-check text-red-600 text-xs"></i>{% endif %}
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Language Selector -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" @click.away="open = false" 
+                            class="flex items-center space-x-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
+                        <span>{% if request.session.django_language == 'ru' %}🇷🇺 RU{% else %}🇬🇧 EN{% endif %}</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                    </button>
+                    <div x-show="open" x-cloak class="absolute right-0 mt-1.5 w-32 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-50 text-xs">
+                        <a href="{% url 'switch_language' 'en' %}" class="flex items-center px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium">🇬🇧 English</a>
+                        <a href="{% url 'switch_language' 'ru' %}" class="flex items-center px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium">🇷🇺 Русский</a>
+                    </div>
+                </div>
+
+                <!-- User Profile Dropdown -->
+                <div class="relative" x-data="{ open: false }">
+                    <button @click="open = !open" @click.away="open = false" 
+                            class="flex items-center space-x-2 pl-2 pr-1 py-1 rounded-xl hover:bg-slate-100 transition">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-red-600 to-red-400 text-white font-bold text-xs flex items-center justify-center">
+                            {{ display_user.first_name|default:'A'|slice:":1" }}
+                        </div>
+                        <span class="hidden sm:inline-block text-xs font-semibold text-slate-800">
+                            {{ display_user.first_name|default:'shuvo' }}
+                        </span>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                    </button>
+                    <div x-show="open" x-cloak class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-50 divide-y divide-slate-100">
+                        <div class="px-4 py-3">
+                            <p class="text-xs font-bold text-slate-900">{{ display_user.get_full_name|default:'User' }}</p>
+                            <p class="text-[11px] text-slate-400 truncate">{{ display_user.email }}</p>
+                        </div>
+                        <div class="py-1 text-xs">
+                            <a href="/admin/" class="flex items-center px-4 py-2 text-slate-600 hover:bg-slate-50">Django Admin</a>
+                            <a href="/admin/logout/" class="flex items-center px-4 py-2 text-rose-600 hover:bg-rose-50">Logout</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </header>
+
+        <!-- MAIN SCROLLABLE CONTENT -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            {% block content %}{% endblock %}
+        </main>
+        
+    </div>
+</body>
+</html>

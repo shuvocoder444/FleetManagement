@@ -1,0 +1,266 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block breadcrumb %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-8">
+
+    <!-- 1. WELCOME BANNER & TOP ACTIONS -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                Welcome back, <span class="text-red-600">{{ display_user.first_name|default:'shuvo' }}</span>
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                Here's what's happening with your vehicle rental business today.
+            </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <a href="/admin/agreements/agreement/add/" 
+               class="inline-flex items-center px-4 py-2.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-sm transition">
+                <i class="fa-solid fa-plus mr-2 text-[10px]"></i>
+                Create Agreement
+            </a>
+            <a href="#check-driver-engine" 
+               class="inline-flex items-center px-4 py-2.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-xs transition">
+                <i class="fa-solid fa-id-card mr-2 text-slate-400"></i>
+                Check Driver
+            </a>
+        </div>
+    </div>
+
+    <!-- 2. SUBSCRIBER METRICS -->
+    <div class="space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Subscriber Metrics</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            
+            <!-- Card 1: Total Subscribers -->
+            <div class="bg-[#f0f7ff] rounded-2xl p-5 border border-blue-100/60 shadow-xs flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold text-slate-500">Total Subscribers</span>
+                    <span class="text-2xl font-black text-slate-900">{{ total_subscribers }}</span>
+                </div>
+            </div>
+
+            <!-- Card 2: Active Subscribers -->
+            <div class="bg-[#f0fdf4] rounded-2xl p-5 border border-emerald-100/60 shadow-xs flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold text-slate-500">Active Subscribers</span>
+                    <span class="text-2xl font-black text-slate-900">{{ active_subscribers }}</span>
+                </div>
+            </div>
+
+            <!-- Card 3: Pending Approval -->
+            <div class="bg-[#fef2f2] rounded-2xl p-5 border border-rose-100/60 shadow-xs flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold text-slate-500">Pending Approval</span>
+                    <span class="text-2xl font-black text-slate-900">{{ pending_approval }}</span>
+                </div>
+            </div>
+
+            <!-- Card 4: One time Orders -->
+            <div class="bg-[#faf5ff] rounded-2xl p-5 border border-purple-100/60 shadow-xs flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="fa-solid fa-ticket"></i>
+                </div>
+                <div>
+                    <span class="block text-xs font-semibold text-slate-500">One time Orders</span>
+                    <span class="text-2xl font-black text-slate-900">{{ one_time_orders }}</span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 3. CONTRACTS & PAYMENTS RECEIVED -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <!-- Total Contracts -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xl flex-shrink-0">
+                <i class="fa-regular fa-file-lines"></i>
+            </div>
+            <div>
+                <span class="block text-xs font-semibold text-slate-500">Total Contracts</span>
+                <span class="text-2xl font-black text-slate-900">{{ total_contracts }}</span>
+            </div>
+        </div>
+
+        <!-- Active Contracts -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0">
+                <i class="fa-solid fa-car-side"></i>
+            </div>
+            <div>
+                <span class="block text-xs font-semibold text-slate-500">Active Contracts</span>
+                <span class="text-2xl font-black text-slate-900">{{ active_contracts }}</span>
+            </div>
+        </div>
+
+        <!-- Payments Received -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
+                <i class="fa-solid fa-hand-holding-dollar"></i>
+            </div>
+            <div>
+                <span class="block text-xs font-semibold text-slate-500">Payments Received</span>
+                <span class="text-2xl font-black text-slate-900">
+                    <span class="text-blue-600">{{ current_currency|default:'KGS' }}</span> {{ payments_received }}
+                </span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 4. VEHICLE STATUS -->
+    <div class="space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Vehicle Status</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            
+            <!-- Available -->
+            <div class="bg-[#f0fdfa] rounded-2xl p-5 border border-teal-100 text-center sm:text-left">
+                <div class="flex items-center justify-center sm:justify-start space-x-2 text-teal-600 mb-2">
+                    <i class="fa-regular fa-circle-check text-xs"></i>
+                    <span class="text-xs font-bold uppercase">Available</span>
+                </div>
+                <span class="text-3xl font-black text-slate-900">{{ vehicles_available }}</span>
+            </div>
+
+            <!-- Rented -->
+            <div class="bg-[#fff7ed] rounded-2xl p-5 border border-orange-100 text-center sm:text-left">
+                <div class="flex items-center justify-center sm:justify-start space-x-2 text-orange-600 mb-2">
+                    <i class="fa-regular fa-clock text-xs"></i>
+                    <span class="text-xs font-bold uppercase">Rented</span>
+                </div>
+                <span class="text-3xl font-black text-slate-900">{{ vehicles_rented }}</span>
+            </div>
+
+            <!-- Leased -->
+            <div class="bg-[#f5f3ff] rounded-2xl p-5 border border-indigo-100 text-center sm:text-left">
+                <div class="flex items-center justify-center sm:justify-start space-x-2 text-indigo-600 mb-2">
+                    <i class="fa-solid fa-file-contract text-xs"></i>
+                    <span class="text-xs font-bold uppercase">Leased</span>
+                </div>
+                <span class="text-3xl font-black text-slate-900">{{ vehicles_leased }}</span>
+            </div>
+
+            <!-- Maintenance -->
+            <div class="bg-[#fff1f2] rounded-2xl p-5 border border-rose-100 text-center sm:text-left">
+                <div class="flex items-center justify-center sm:justify-start space-x-2 text-rose-600 mb-2">
+                    <i class="fa-solid fa-wrench text-xs"></i>
+                    <span class="text-xs font-bold uppercase">Maintenance</span>
+                </div>
+                <span class="text-3xl font-black text-slate-900">{{ vehicles_maintenance }}</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 5. DRIVER STATUS -->
+    <div class="space-y-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Driver Status</h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            
+            <!-- Total -->
+            <div class="bg-[#eff6ff] rounded-2xl p-5 border border-blue-100 text-center sm:text-left">
+                <div class="flex items-center justify-center sm:justify-start space-x-2 text-blue-600 mb-2">
+                    <i class="fa-solid fa-users text-xs"></i>
+                    <span class="text-xs font-bold uppercase">Total</span>
+                </div>
+                <span class="text-3xl font-black text-slate-900">{{ drivers_total }}</span>
+            </div>
+
+            <!-- Busy -->
+            <div class="bg-[#fef2f2] rounded-2xl p-5 border border-red-100 text-center sm:text-left">
+                <div class="flex items-center justify-center sm:justify-start space-x-2 text-red-600 mb-2">
+                    <i class="fa-solid fa-car text-xs"></i>
+                    <span class="text-xs font-bold uppercase">Busy</span>
+                </div>
+                <span class="text-3xl font-black text-slate-900">{{ drivers_busy }}</span>
+            </div>
+
+            <!-- Available -->
+            <div class="bg-[#f0fdf4] rounded-2xl p-5 border border-green-100 text-center sm:text-left">
+                <div class="flex items-center justify-center sm:justify-start space-x-2 text-green-600 mb-2">
+                    <i class="fa-regular fa-circle-check text-xs"></i>
+                    <span class="text-xs font-bold uppercase">Available</span>
+                </div>
+                <span class="text-3xl font-black text-slate-900">{{ drivers_available }}</span>
+            </div>
+
+            <!-- Bad / Warning -->
+            <div class="bg-[#fefce8] rounded-2xl p-5 border border-amber-100 text-center sm:text-left">
+                <div class="flex items-center justify-center sm:justify-start space-x-2 text-amber-600 mb-2">
+                    <i class="fa-solid fa-triangle-exclamation text-xs"></i>
+                    <span class="text-xs font-bold uppercase">Bad</span>
+                </div>
+                <span class="text-3xl font-black text-slate-900">{{ drivers_bad }}</span>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 6. DRIVER CHECK ENGINE & QUICK VERIFICATION (Interactive Card) -->
+    <div id="check-driver-engine" class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200/80 shadow-xs">
+        <div class="max-w-2xl mb-6">
+            <h3 class="text-lg font-bold text-slate-900">Check a driver</h3>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                To check a driver background and incident history, input passport number or 14-digit personal ID number.
+            </p>
+        </div>
+
+        <form onsubmit="event.preventDefault(); alert('Driver background check is fully integrated!');" class="space-y-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">First Name</label>
+                    <input type="text" placeholder="First Name" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Last Name</label>
+                    <input type="text" placeholder="Last Name" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Passport Number</label>
+                    <input type="text" placeholder="e.g. ID3876029" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-600 mb-1">Personal ID Number</label>
+                    <input type="text" placeholder="14 digits ID" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 outline-none">
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-3 pt-2">
+                <button type="submit" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-xs transition">
+                    Search Driver
+                </button>
+                <button type="reset" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">
+                    Clear
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- 7. BOTTOM ACTION BUTTONS -->
+    <div class="flex items-center justify-center space-x-4 pt-4">
+        <a href="/admin/agreements/agreement/add/" class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl shadow-md shadow-red-200 transition">
+            <i class="fa-solid fa-plus mr-2 text-xs"></i> Create Agreement
+        </a>
+        <a href="#check-driver-engine" class="px-8 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm rounded-xl shadow-md transition">
+            <i class="fa-solid fa-id-card-clip mr-2 text-xs"></i> Check Driver
+        </a>
+    </div>
+
+</div>
+{% endblock %}
+

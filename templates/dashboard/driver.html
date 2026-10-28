@@ -1,0 +1,236 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Driver Dashboard & Profile{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-8">
+
+    <!-- Top Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-blue-100 text-blue-700">Driver Portal</span>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    Driver Profile & Performance
+                </h1>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                Here is your operational details, license validity, active trip assignments and performance metrics.
+            </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <span class="inline-flex items-center px-3 py-1.5 rounded-xl text-xs font-bold {% if driver.status == 'Busy' %}bg-rose-50 text-rose-600 border border-rose-200{% else %}bg-emerald-50 text-emerald-600 border border-emerald-200{% endif %}">
+                <span class="w-2 h-2 rounded-full mr-2 {% if driver.status == 'Busy' %}bg-rose-500{% else %}bg-emerald-500{% endif %}"></span>
+                Status: {{ driver.status|default:'Available' }}
+            </span>
+        </div>
+    </div>
+
+    <!-- MAIN PROFILE & STATS GRID (Matching car.smartbanglait.com/my-drivers/7) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left Column: Driver Card Info -->
+        <div class="lg:col-span-4 bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-6 text-center">
+            
+            <!-- Avatar -->
+            <div class="relative inline-block mx-auto">
+                <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 text-white flex items-center justify-center text-4xl shadow-md mx-auto">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                <span class="absolute bottom-1 right-1 w-5 h-5 rounded-full border-2 border-white bg-emerald-500"></span>
+            </div>
+
+            <div>
+                <h2 class="text-xl font-extrabold text-slate-900">{{ driver.full_name|default:'Altynai Tashmatova' }}</h2>
+                
+                <!-- Star Rating Badge -->
+                <div class="flex items-center justify-center space-x-1 mt-1 text-amber-400 text-sm">
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star"></i>
+                    <i class="fa-solid fa-star-half-stroke"></i>
+                    <span class="text-xs font-bold text-slate-700 ml-1.5">{{ average_rating }} / 5.0</span>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">Admin Rating & Verification Confirmed</p>
+            </div>
+
+            <!-- Contacts Details -->
+            <div class="pt-4 border-t border-slate-100 text-left space-y-3 text-xs">
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-400">Phone Number</span>
+                    <span class="font-bold text-slate-800">{{ driver.phone|default:'+996990963030' }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-400">Email</span>
+                    <span class="font-semibold text-slate-800">{{ driver.email|default:'driver@topd.kg' }}</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-slate-400">Personal ID (14 digits)</span>
+                    <span class="font-mono font-bold text-slate-900">{{ driver.personal_id|default:'43333333566342' }}</span>
+                </div>
+            </div>
+
+            <!-- Working Relations -->
+            <div class="pt-4 border-t border-slate-100 text-left space-y-2 text-xs">
+                <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-100 flex items-center space-x-2.5">
+                    <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                    <div>
+                        <span class="block text-[10px] text-slate-400">Associated Agency</span>
+                        <span class="font-bold text-slate-800">Team JBDIT Rental Ltd</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Right Column: Documents, 6 KPI Metric Cards & Incident History -->
+        <div class="lg:col-span-8 space-y-6">
+            
+            <!-- License & Passport Credentials Bar -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                    
+                    <div class="p-3.5 rounded-xl bg-slate-50/80 border border-slate-100">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Driver License</span>
+                        <div class="flex items-baseline justify-between">
+                            <span class="font-mono font-bold text-slate-900 text-sm">{{ driver.license_number|default:'DL0440211' }}</span>
+                            <span class="text-slate-500 text-[11px]">Exp: {{ driver.license_expiry|default:'Oct 22, 2028' }}</span>
+                        </div>
+                    </div>
+
+                    <div class="p-3.5 rounded-xl bg-slate-50/80 border border-slate-100">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Passport Number</span>
+                        <div class="flex items-baseline justify-between">
+                            <span class="font-mono font-bold text-slate-900 text-sm">{{ driver.passport_number|default:'ID3876029' }}</span>
+                            <span class="text-slate-500 text-[11px]">Exp: {{ driver.passport_expiry|default:'Oct 8, 2034' }}</span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 6 KPI METRICS CARDS (Exact match to screenshot /my-drivers/7) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                
+                <!-- Total Agreements -->
+                <div class="bg-[#eff6ff] rounded-2xl p-4 border border-blue-100">
+                    <span class="block text-slate-500 font-semibold mb-1">Total Agreements</span>
+                    <span class="text-2xl font-black text-slate-900">{{ total_agreements }}</span>
+                </div>
+
+                <!-- Active -->
+                <div class="bg-[#f0fdf4] rounded-2xl p-4 border border-emerald-100">
+                    <span class="block text-slate-500 font-semibold mb-1">Active</span>
+                    <span class="text-2xl font-black text-emerald-600">{{ active_agreements }}</span>
+                </div>
+
+                <!-- Completed -->
+                <div class="bg-[#f0f7ff] rounded-2xl p-4 border border-blue-100">
+                    <span class="block text-slate-500 font-semibold mb-1">Completed</span>
+                    <span class="text-2xl font-black text-slate-900">{{ completed_agreements }}</span>
+                </div>
+
+                <!-- Problems -->
+                <div class="bg-[#fff1f2] rounded-2xl p-4 border border-rose-100">
+                    <span class="block text-slate-500 font-semibold mb-1">Problems</span>
+                    <span class="text-2xl font-black text-rose-600">{{ problem_agreements }}</span>
+                </div>
+
+                <!-- Total Issues -->
+                <div class="bg-[#fefce8] rounded-2xl p-4 border border-amber-100">
+                    <span class="block text-slate-500 font-semibold mb-1">Total Issues</span>
+                    <span class="text-2xl font-black text-amber-600">{{ total_issues }}</span>
+                </div>
+
+                <!-- Completion Rate -->
+                <div class="bg-[#ecfdf5] rounded-2xl p-4 border border-emerald-100">
+                    <span class="block text-slate-500 font-semibold mb-1">Completion Rate</span>
+                    <span class="text-2xl font-black text-emerald-600">{{ completion_rate }}%</span>
+                </div>
+
+                <!-- Total Reviews -->
+                <div class="bg-[#faf5ff] rounded-2xl p-4 border border-purple-100 sm:col-span-2">
+                    <span class="block text-slate-500 font-semibold mb-1">Total Reviews</span>
+                    <span class="text-2xl font-black text-purple-600">{{ total_reviews }}</span>
+                </div>
+
+            </div>
+
+            <!-- CURRENT ACTIVE ASSIGNED CAR -->
+            {% if active_agreement %}
+            <div id="active-car" class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <h3 class="text-sm font-bold text-slate-900">Current Assigned Vehicle</h3>
+                    </div>
+                    <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-100 font-bold text-slate-700">
+                        {{ active_agreement.contract_number }}
+                    </span>
+                </div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100 gap-4 text-xs">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-xl flex-shrink-0">
+                            <i class="fa-solid fa-car"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-slate-900 text-sm">{{ active_agreement.vehicle.title }}</h4>
+                            <p class="text-slate-500">{{ active_agreement.vehicle.brand }} {{ active_agreement.vehicle.model }} ({{ active_agreement.vehicle.year }}) - {{ active_agreement.vehicle.color }}</p>
+                            <span class="font-mono font-bold text-red-600">{{ active_agreement.vehicle.registration_number }}</span>
+                        </div>
+                    </div>
+
+                    <div class="text-left sm:text-right space-y-1">
+                        <span class="block text-[10px] text-slate-400 uppercase font-semibold">Client Name</span>
+                        <span class="font-bold text-slate-800">{{ active_agreement.client_name }}</span>
+                        <p class="text-[11px] text-slate-500">To: {{ active_agreement.end_date|date:"M d, Y" }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- DRIVER INCIDENT HISTORY RECORDS (Exact match from screenshot /drivers/7/history) -->
+            <div id="history-records" class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-sm font-bold text-slate-900">Incident & History Log</h3>
+                    <span class="text-[11px] text-slate-400">{{ history_entries|length }} Records Logged</span>
+                </div>
+
+                <div class="space-y-3">
+                    {% for item in history_entries %}
+                    <div class="p-3.5 rounded-xl border border-rose-100 bg-rose-50/30 flex items-start space-x-3 text-xs">
+                        <div class="w-6 h-6 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class="fa-solid fa-triangle-exclamation text-[10px]"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-rose-700">{{ item.history_type }}</span>
+                                <span class="text-[11px] text-slate-400">{{ item.incident_date }}</span>
+                            </div>
+                            <p class="text-slate-600 mt-1">{{ item.description }}</p>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="p-4 rounded-xl bg-emerald-50 text-emerald-700 text-xs text-center font-medium">
+                        <i class="fa-solid fa-shield-check mr-1.5"></i> No adverse incident records found. Clean record!
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- ADMIN COMMENTS -->
+            <div class="bg-[#fefce8]/60 rounded-2xl p-5 border border-amber-200/80 shadow-xs text-xs space-y-1.5">
+                <span class="font-bold text-amber-800 block text-[11px] uppercase tracking-wide">Admin Comments</span>
+                <p class="text-slate-700">{{ driver.admin_comments|default:'Verified and approved driver by management.' }}</p>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
