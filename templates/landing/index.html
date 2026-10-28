@@ -1,10 +1,10 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="{{ request.session.django_language|default:'en' }}" class="scroll-smooth">
+<html lang="{{ current_lang|default:'en' }}" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ site_setting.site_name|default:'Topd' }} - Kyrgyzstan's First Unified Vehicle Rental Platform</title>
+    <title>{{ site_setting.site_name|default:'Topd' }} - {{ t.hero_title }}</title>
     
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -28,7 +28,7 @@
         }
     </script>
 
-    <!-- Font Awesome for crisp icons -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     
     <!-- Google Fonts: Inter -->
@@ -37,9 +37,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; }
         .hero-bg {
             background: linear-gradient(rgba(10, 15, 29, 0.75), rgba(10, 15, 29, 0.85)), url('{% static "images/hero-bg.jpg" %}');
             background-size: cover;
@@ -83,46 +81,48 @@
 
             <!-- Navigation Links -->
             <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
-                <a href="#home" class="text-red-600 font-semibold hover:text-red-700 transition">Home</a>
-                <a href="#how-it-works" class="hover:text-red-600 transition">About</a>
-                <a href="#benefits" class="hover:text-red-600 transition">Features</a>
-                <a href="#pricing" class="hover:text-red-600 transition">Pricing</a>
-                <a href="#contact" class="hover:text-red-600 transition">Contact</a>
+                <a href="#home" class="text-red-600 font-semibold hover:text-red-700 transition">{{ t.home }}</a>
+                <a href="#how-it-works" class="hover:text-red-600 transition">{{ t.about }}</a>
+                <a href="#benefits" class="hover:text-red-600 transition">{{ t.features }}</a>
+                <a href="#pricing" class="hover:text-red-600 transition">{{ t.pricing }}</a>
+                <a href="#contact" class="hover:text-red-600 transition">{{ t.contact }}</a>
             </nav>
 
             <!-- Action Buttons & Tools -->
             <div class="flex items-center space-x-3 sm:space-x-4">
-                <!-- Dashboard / Login CTA -->
-                <a href="{% url 'dashboard:index' %}" class="flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-gray-700 hover:text-red-600 transition px-2 py-1.5">
+                <!-- Dashboard CTA -->
+                <a href="{% url 'dashboard:superadmin' %}" class="flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-gray-700 hover:text-red-600 transition px-2 py-1.5">
                     <i class="fa-solid fa-gauge-high text-gray-400"></i>
-                    <span>Dashboard</span>
+                    <span>{{ t.dashboard }}</span>
                 </a>
 
-                <!-- Check Driver / Sign In -->
-                <a href="{% url 'dashboard:index' %}#check-driver-engine" class="hidden sm:inline-flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-gray-700 hover:text-red-600 transition px-2 py-1.5">
-                    <i class="fa-solid fa-id-card text-gray-400"></i>
-                    <span>Check Driver</span>
+                <!-- Check Driver -->
+                <a href="{% url 'drivers:check' %}" class="hidden sm:inline-flex items-center space-x-1.5 text-xs sm:text-sm font-semibold text-gray-700 hover:text-red-600 transition px-2 py-1.5">
+                    <i class="fa-solid fa-id-card-clip text-gray-400"></i>
+                    <span>{{ t.check_driver }}</span>
                 </a>
 
-                <!-- Language Selector -->
+                <!-- Language Selector Dropdown -->
                 <div class="relative group">
                     <button class="flex items-center space-x-1 text-xs sm:text-sm font-medium text-gray-700 hover:text-red-600 bg-gray-100 hover:bg-gray-200 px-2.5 py-1.5 rounded-lg transition">
-                        <span>🇬🇧 EN</span>
+                        <span>{% if current_lang == 'ru' %}🇷🇺 RU{% else %}🇬🇧 EN{% endif %}</span>
                         <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
                     </button>
-                    <div class="absolute right-0 mt-1 w-32 bg-white border border-gray-100 rounded-xl shadow-xl py-1 hidden group-hover:block transition-all z-50">
-                        <a href="{% url 'switch_language' 'en' %}" class="flex items-center px-4 py-2 text-xs text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium">
-                            🇬🇧 English
+                    <div class="absolute right-0 mt-1 w-36 bg-white border border-gray-100 rounded-xl shadow-xl py-1 hidden group-hover:block transition-all z-50">
+                        <a href="{% url 'switch_language' 'en' %}" class="flex items-center justify-between px-4 py-2 text-xs text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium">
+                            <span>🇬🇧 English</span>
+                            {% if current_lang == 'en' %}<i class="fa-solid fa-check text-red-600 text-[10px]"></i>{% endif %}
                         </a>
-                        <a href="{% url 'switch_language' 'ru' %}" class="flex items-center px-4 py-2 text-xs text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium">
-                            🇷🇺 Русский
+                        <a href="{% url 'switch_language' 'ru' %}" class="flex items-center justify-between px-4 py-2 text-xs text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium">
+                            <span>🇷🇺 Русский</span>
+                            {% if current_lang == 'ru' %}<i class="fa-solid fa-check text-red-600 text-[10px]"></i>{% endif %}
                         </a>
                     </div>
                 </div>
 
                 <!-- Primary Red Button -->
                 <a href="#pricing" class="inline-flex items-center justify-center px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-red-600 rounded-lg shadow-sm hover:bg-red-700 transition">
-                    Get Started
+                    {{ t.get_started }}
                 </a>
             </div>
         </div>
@@ -132,17 +132,17 @@
     <section id="home" class="relative hero-bg text-white py-28 sm:py-36 lg:py-44 flex items-center justify-center min-h-[580px]">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
             <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight sm:leading-tight mb-6">
-                Kyrgyzstan's First Unified Vehicle Rental Platform
+                {{ t.hero_title }}
             </h1>
             <p class="text-base sm:text-lg lg:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed mb-10 font-normal">
-                Streamline your vehicle rental, leasing, and installment operations with our comprehensive platform. Connect with customers, manage contracts, and grow your business efficiently.
+                {{ t.hero_subtitle }}
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="#pricing" class="w-full sm:w-auto px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-lg shadow-lg shadow-red-900/50 transition">
-                    Get Started
+                    {{ t.get_started }}
                 </a>
-                <a href="#benefits" class="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold text-sm rounded-lg backdrop-blur-sm transition">
-                    Check Data
+                <a href="{% url 'drivers:check' %}" class="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold text-sm rounded-lg backdrop-blur-sm transition">
+                    {{ t.check_data }}
                 </a>
             </div>
         </div>
@@ -153,45 +153,39 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto mb-16">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
-                    How It Works
+                    {{ t.how_it_works }}
                 </h2>
                 <p class="text-sm sm:text-base text-gray-500">
-                    Simple and efficient process to get you started in minutes
+                    {{ t.how_it_works_sub }}
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Step 1: Register -->
+                <!-- Step 1 -->
                 <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-xl shadow-gray-100/70 hover:shadow-2xl transition-all duration-300 text-center flex flex-col items-center group">
                     <div class="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-2xl mb-6 group-hover:bg-red-600 group-hover:text-white transition-colors duration-300 shadow-sm">
                         <i class="fa-regular fa-user"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Register</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed">
-                        Create your account and complete your business profile to get started
-                    </p>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ t.step_1_title }}</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">{{ t.step_1_desc }}</p>
                 </div>
 
-                <!-- Step 2: Create Contract -->
+                <!-- Step 2 -->
                 <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-xl shadow-gray-100/70 hover:shadow-2xl transition-all duration-300 text-center flex flex-col items-center group">
                     <div class="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-2xl mb-6 group-hover:bg-red-600 group-hover:text-white transition-colors duration-300 shadow-sm">
                         <i class="fa-regular fa-file-lines"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Create Contract</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed">
-                        Generate and customize rental, leasing, or installment contracts
-                    </p>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ t.step_2_title }}</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">{{ t.step_2_desc }}</p>
                 </div>
 
-                <!-- Step 3: Track & Earn -->
+                <!-- Step 3 -->
                 <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-xl shadow-gray-100/70 hover:shadow-2xl transition-all duration-300 text-center flex flex-col items-center group">
                     <div class="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-2xl mb-6 group-hover:bg-red-600 group-hover:text-white transition-colors duration-300 shadow-sm">
                         <i class="fa-solid fa-chart-line"></i>
                     </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Track & Earn</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed">
-                        Monitor your operations and track your earnings in real-time
-                    </p>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ t.step_3_title }}</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">{{ t.step_3_desc }}</p>
                 </div>
             </div>
         </div>
@@ -202,45 +196,39 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto mb-16">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
-                    Who It's For
+                    {{ t.who_its_for }}
                 </h2>
                 <p class="text-sm sm:text-base text-gray-500">
-                    Our platform serves various stakeholders in the vehicle industry
+                    {{ t.who_its_for_sub }}
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Persona 1: Rental Companies -->
+                <!-- Persona 1 -->
                 <div class="bg-[#fef2f2] rounded-2xl p-8 border border-red-100/70 text-center flex flex-col items-center hover:scale-[1.02] transition-transform">
                     <div class="w-12 h-12 rounded-xl bg-white text-red-600 flex items-center justify-center text-xl mb-5 shadow-sm">
                         <i class="fa-solid fa-mobile-screen"></i>
                     </div>
-                    <h3 class="text-base font-bold text-gray-900 mb-2">Rental Companies</h3>
-                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                        Manage your fleet, bookings, and customer relationships effortlessly
-                    </p>
+                    <h3 class="text-base font-bold text-gray-900 mb-2">{{ t.target_1_title }}</h3>
+                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">{{ t.target_1_desc }}</p>
                 </div>
 
-                <!-- Persona 2: Leasing Providers -->
+                <!-- Persona 2 -->
                 <div class="bg-[#fef2f2] rounded-2xl p-8 border border-red-100/70 text-center flex flex-col items-center hover:scale-[1.02] transition-transform">
                     <div class="w-12 h-12 rounded-xl bg-white text-red-600 flex items-center justify-center text-xl mb-5 shadow-sm">
                         <i class="fa-solid fa-hand-holding-heart"></i>
                     </div>
-                    <h3 class="text-base font-bold text-gray-900 mb-2">Leasing Providers</h3>
-                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                        Streamline your leasing processes and payment tracking
-                    </p>
+                    <h3 class="text-base font-bold text-gray-900 mb-2">{{ t.target_2_title }}</h3>
+                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">{{ t.target_2_desc }}</p>
                 </div>
 
-                <!-- Persona 3: Private Owner -->
+                <!-- Persona 3 -->
                 <div class="bg-[#fef2f2] rounded-2xl p-8 border border-red-100/70 text-center flex flex-col items-center hover:scale-[1.02] transition-transform">
                     <div class="w-12 h-12 rounded-xl bg-white text-red-600 flex items-center justify-center text-xl mb-5 shadow-sm">
                         <i class="fa-regular fa-user"></i>
                     </div>
-                    <h3 class="text-base font-bold text-gray-900 mb-2">Private Owner</h3>
-                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
-                        Find the best vehicle rental and leasing options to fit your needs
-                    </p>
+                    <h3 class="text-base font-bold text-gray-900 mb-2">{{ t.target_3_title }}</h3>
+                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">{{ t.target_3_desc }}</p>
                 </div>
             </div>
         </div>
@@ -251,10 +239,10 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto mb-16">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
-                    Key Benefits
+                    {{ t.key_benefits }}
                 </h2>
                 <p class="text-sm sm:text-base text-gray-500">
-                    Why choose Topd for your vehicle management needs
+                    {{ t.key_benefits_sub }}
                 </p>
             </div>
 
@@ -265,8 +253,8 @@
                         <i class="fa-solid fa-star"></i>
                     </div>
                     <div>
-                        <h4 class="text-base font-bold text-gray-900 mb-1">Driver Ratings</h4>
-                        <p class="text-xs sm:text-sm text-gray-500">Track driver performance and reliability</p>
+                        <h4 class="text-base font-bold text-gray-900 mb-1">{{ t.benefit_1_title }}</h4>
+                        <p class="text-xs sm:text-sm text-gray-500">{{ t.benefit_1_desc }}</p>
                     </div>
                 </div>
 
@@ -276,8 +264,8 @@
                         <i class="fa-solid fa-clock-rotate-left"></i>
                     </div>
                     <div>
-                        <h4 class="text-base font-bold text-gray-900 mb-1">Daily Payment Logs</h4>
-                        <p class="text-xs sm:text-sm text-gray-500">Automated payment tracking and reporting</p>
+                        <h4 class="text-base font-bold text-gray-900 mb-1">{{ t.benefit_2_title }}</h4>
+                        <p class="text-xs sm:text-sm text-gray-500">{{ t.benefit_2_desc }}</p>
                     </div>
                 </div>
 
@@ -287,8 +275,8 @@
                         <i class="fa-regular fa-file-lines"></i>
                     </div>
                     <div>
-                        <h4 class="text-base font-bold text-gray-900 mb-1">Streamlined Contracts</h4>
-                        <p class="text-xs sm:text-sm text-gray-500">Manage all contracts in one place</p>
+                        <h4 class="text-base font-bold text-gray-900 mb-1">{{ t.benefit_3_title }}</h4>
+                        <p class="text-xs sm:text-sm text-gray-500">{{ t.benefit_3_desc }}</p>
                     </div>
                 </div>
 
@@ -298,8 +286,8 @@
                         <i class="fa-solid fa-chart-pie"></i>
                     </div>
                     <div>
-                        <h4 class="text-base font-bold text-gray-900 mb-1">Analytics Dashboard</h4>
-                        <p class="text-xs sm:text-sm text-gray-500">Real-time insights and performance metrics</p>
+                        <h4 class="text-base font-bold text-gray-900 mb-1">{{ t.benefit_4_title }}</h4>
+                        <p class="text-xs sm:text-sm text-gray-500">{{ t.benefit_4_desc }}</p>
                     </div>
                 </div>
 
@@ -309,8 +297,8 @@
                         <i class="fa-solid fa-mobile-screen-button"></i>
                     </div>
                     <div>
-                        <h4 class="text-base font-bold text-gray-900 mb-1">Mobile Friendly</h4>
-                        <p class="text-xs sm:text-sm text-gray-500">Manage on the go with our responsive platform</p>
+                        <h4 class="text-base font-bold text-gray-900 mb-1">{{ t.benefit_5_title }}</h4>
+                        <p class="text-xs sm:text-sm text-gray-500">{{ t.benefit_5_desc }}</p>
                     </div>
                 </div>
 
@@ -320,8 +308,8 @@
                         <i class="fa-solid fa-shield-halved"></i>
                     </div>
                     <div>
-                        <h4 class="text-base font-bold text-gray-900 mb-1">Secure Platform</h4>
-                        <p class="text-xs sm:text-sm text-gray-500">Bank-level security for your data</p>
+                        <h4 class="text-base font-bold text-gray-900 mb-1">{{ t.benefit_6_title }}</h4>
+                        <p class="text-xs sm:text-sm text-gray-500">{{ t.benefit_6_desc }}</p>
                     </div>
                 </div>
             </div>
@@ -333,107 +321,71 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto mb-16">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
-                    Our Pricing Models
+                    {{ t.pricing_title }}
                 </h2>
                 <p class="text-sm sm:text-base text-gray-500">
-                    Choose the model that works best for your business needs
+                    {{ t.pricing_sub }}
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-                <!-- Plan 1: Pay-per-Check -->
+                <!-- Plan 1 -->
                 <div class="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-lg flex flex-col">
-                    <!-- Red Header -->
                     <div class="bg-red-600 text-white p-6 text-center">
-                        <h3 class="text-xl font-bold tracking-tight mb-1">Pay-per-Check</h3>
-                        <p class="text-xs text-red-100">Perfect for occasional users</p>
+                        <h3 class="text-xl font-bold tracking-tight mb-1">{{ t.plan_1_name }}</h3>
+                        <p class="text-xs text-red-100">{{ t.plan_1_sub }}</p>
                     </div>
 
-                    <!-- Price Body -->
                     <div class="p-8 flex-1 flex flex-col justify-between">
                         <div>
                             <div class="flex items-baseline justify-center mb-8">
-                                <span class="text-4xl font-extrabold text-gray-900">$2</span>
-                                <span class="text-gray-500 text-sm ml-1.5 font-medium">/ check</span>
+                                <span class="text-4xl font-extrabold text-gray-900">{{ t.plan_1_price }}</span>
+                                <span class="text-gray-500 text-sm ml-1.5 font-medium">{{ t.plan_1_unit }}</span>
                             </div>
 
-                            <!-- Features List -->
                             <ul class="space-y-4 text-sm text-gray-600 mb-8">
-                                <li class="flex items-center space-x-3">
-                                    <i class="fa-solid fa-check text-green-500 text-sm"></i>
-                                    <span>Single access to driver records</span>
-                                </li>
-                                <li class="flex items-center space-x-3">
-                                    <i class="fa-solid fa-check text-green-500 text-sm"></i>
-                                    <span>No monthly commitment</span>
-                                </li>
-                                <li class="flex items-center space-x-3">
-                                    <i class="fa-solid fa-check text-green-500 text-sm"></i>
-                                    <span>Perfect for one-time checks</span>
-                                </li>
-                                <li class="flex items-center space-x-3">
-                                    <i class="fa-solid fa-check text-green-500 text-sm"></i>
-                                    <span>Quick and easy verification</span>
-                                </li>
+                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_1_f1 }}</span></li>
+                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_1_f2 }}</span></li>
+                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_1_f3 }}</span></li>
+                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_1_f4 }}</span></li>
                             </ul>
                         </div>
 
-                        <!-- CTA Button -->
-                        <a href="/admin/" class="w-full py-3.5 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl text-center shadow-md transition">
-                            Pay-per-Check
+                        <a href="{% url 'dashboard:index' %}" class="w-full py-3.5 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl text-center shadow-md transition">
+                            {{ t.plan_1_btn }}
                         </a>
                     </div>
                 </div>
 
-                <!-- Plan 2: Premium Subscription (Best Value) -->
+                <!-- Plan 2 -->
                 <div class="bg-white rounded-2xl overflow-hidden border-2 border-red-500 shadow-xl flex flex-col relative">
-                    <!-- Best Value Ribbon -->
                     <div class="absolute top-3 right-3 bg-red-100 text-red-700 text-[10px] uppercase tracking-wider font-extrabold px-3 py-1 rounded-full border border-red-200">
-                        BEST VALUE
+                        {{ t.plan_2_badge }}
                     </div>
 
-                    <!-- Red Header -->
                     <div class="bg-red-600 text-white p-6 text-center">
-                        <h3 class="text-xl font-bold tracking-tight mb-1">Premium Subscription</h3>
-                        <p class="text-xs text-red-100">Complete solution for established businesses</p>
+                        <h3 class="text-xl font-bold tracking-tight mb-1">{{ t.plan_2_name }}</h3>
+                        <p class="text-xs text-red-100">{{ t.plan_2_sub }}</p>
                     </div>
 
-                    <!-- Price Body -->
                     <div class="p-8 flex-1 flex flex-col justify-between">
                         <div>
                             <div class="flex items-baseline justify-center mb-8">
-                                <span class="text-4xl font-extrabold text-gray-900">$10</span>
-                                <span class="text-gray-500 text-sm ml-1.5 font-medium">/ month</span>
+                                <span class="text-4xl font-extrabold text-gray-900">{{ t.plan_2_price }}</span>
+                                <span class="text-gray-500 text-sm ml-1.5 font-medium">{{ t.plan_2_unit }}</span>
                             </div>
 
-                            <!-- Features List -->
                             <ul class="space-y-4 text-sm text-gray-600 mb-8">
-                                <li class="flex items-center space-x-3">
-                                    <i class="fa-solid fa-check text-green-500 text-sm"></i>
-                                    <span>Access to driver rating reviews</span>
-                                </li>
-                                <li class="flex items-center space-x-3">
-                                    <i class="fa-solid fa-check text-green-500 text-sm"></i>
-                                    <span>Contract tracking dashboard</span>
-                                </li>
-                                <li class="flex items-center space-x-3">
-                                    <i class="fa-solid fa-check text-green-500 text-sm"></i>
-                                    <span>Create and manage contracts</span>
-                                </li>
-                                <li class="flex items-center space-x-3">
-                                    <i class="fa-solid fa-check text-green-500 text-sm"></i>
-                                    <span>Advanced reporting tools</span>
-                                </li>
-                                <li class="flex items-center space-x-3">
-                                    <i class="fa-solid fa-check text-green-500 text-sm"></i>
-                                    <span>Priority customer support</span>
-                                </li>
+                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_2_f1 }}</span></li>
+                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_2_f2 }}</span></li>
+                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_2_f3 }}</span></li>
+                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_2_f4 }}</span></li>
+                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_2_f5 }}</span></li>
                             </ul>
                         </div>
 
-                        <!-- CTA Button -->
-                        <a href="/admin/" class="w-full py-3.5 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl text-center shadow-md transition">
-                            Choose Member
+                        <a href="{% url 'dashboard:index' %}" class="w-full py-3.5 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl text-center shadow-md transition">
+                            {{ t.plan_2_btn }}
                         </a>
                     </div>
                 </div>
@@ -441,21 +393,21 @@
         </div>
     </section>
 
-    <!-- 7. Call To Action Red Banner -->
+    <!-- 7. CTA Banner -->
     <section class="bg-red-600 text-white py-16">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
             <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-4">
-                Ready to Transform Your Vehicle Business?
+                {{ t.cta_title }}
             </h2>
             <p class="text-sm sm:text-base text-red-100 max-w-xl mx-auto mb-8 font-normal">
-                Join thousands of businesses and individuals using Topd to streamline their operations
+                {{ t.cta_sub }}
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <a href="#pricing" class="w-full sm:w-auto px-8 py-3 bg-white text-red-600 hover:bg-gray-100 font-bold text-sm rounded-lg shadow-md transition">
-                    Get Started
+                    {{ t.get_started }}
                 </a>
                 <a href="#contact" class="w-full sm:w-auto px-8 py-3 bg-red-700/60 hover:bg-red-700 border border-white/40 text-white font-semibold text-sm rounded-lg transition">
-                    Learn More
+                    {{ t.learn_more }}
                 </a>
             </div>
         </div>
@@ -466,96 +418,88 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center max-w-2xl mx-auto mb-16">
                 <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
-                    Contact Us
+                    {{ t.contact_us }}
                 </h2>
                 <p class="text-sm sm:text-base text-gray-500">
-                    Have questions or need assistance? Get in touch with our team.
+                    {{ t.contact_sub }}
                 </p>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-6xl mx-auto">
-                <!-- Left: Contact Details -->
+                <!-- Left Details -->
                 <div class="lg:col-span-5 space-y-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-6">Get In Touch</h3>
+                    <h3 class="text-lg font-bold text-gray-900 mb-6">{{ t.get_in_touch }}</h3>
 
-                    <!-- Address -->
                     <div class="flex items-start space-x-4">
                         <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-base flex-shrink-0">
                             <i class="fa-solid fa-location-dot"></i>
                         </div>
                         <div>
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">Address</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">{{ t.address_label }}</span>
                             <span class="text-sm font-medium text-gray-800">{{ site_setting.address|default:'Bishkek, Kyrgyzstan' }}</span>
                         </div>
                     </div>
 
-                    <!-- Phone -->
                     <div class="flex items-start space-x-4">
                         <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-base flex-shrink-0">
                             <i class="fa-solid fa-phone"></i>
                         </div>
                         <div>
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">Phone</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">{{ t.phone_label }}</span>
                             <span class="text-sm font-medium text-gray-800">{{ site_setting.contact_phone|default:'+996 999 083 366' }}</span>
                         </div>
                     </div>
 
-                    <!-- Email -->
                     <div class="flex items-start space-x-4">
                         <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-base flex-shrink-0">
                             <i class="fa-solid fa-envelope"></i>
                         </div>
                         <div>
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">Email</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">{{ t.email_label }}</span>
                             <span class="text-sm font-medium text-gray-800">{{ site_setting.contact_email|default:'info@topd.kg' }}</span>
                         </div>
                     </div>
 
-                    <!-- Working Hours -->
                     <div class="flex items-start space-x-4">
                         <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-base flex-shrink-0">
                             <i class="fa-solid fa-clock"></i>
                         </div>
                         <div>
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">Working Hours</span>
+                            <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">{{ t.hours_label }}</span>
                             <span class="text-sm font-medium text-gray-800">{{ site_setting.working_hours|default:'Monday - Friday: 9:00 AM - 6:00 PM' }}</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right: Interactive Contact Form -->
+                <!-- Right Form -->
                 <div class="lg:col-span-7 bg-white p-8 rounded-2xl border border-gray-100 shadow-xl shadow-gray-100">
                     <form method="POST" action="{% url 'landing_page' %}#contact" class="space-y-4">
                         {% csrf_token %}
                         <input type="hidden" name="contact_submit" value="1">
 
-                        <!-- Full Name -->
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Full Name *</label>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">{{ t.full_name_label }}</label>
                             <input type="text" name="name" required placeholder="Maximum 50 characters" maxlength="50" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition">
                         </div>
 
-                        <!-- Email & Phone -->
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Email Address *</label>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">{{ t.email_address_label }}</label>
                                 <input type="email" name="email" required placeholder="name@email.com" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Phone Number</label>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">{{ t.phone_number_label }}</label>
                                 <input type="text" name="phone" placeholder="+996 ..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition">
                             </div>
                         </div>
 
-                        <!-- Message -->
                         <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">Message *</label>
+                            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">{{ t.message_label }}</label>
                             <textarea name="message" rows="4" required placeholder="Maximum 500 characters" maxlength="500" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition"></textarea>
                         </div>
 
-                        <!-- Submit Button -->
                         <button type="submit" class="w-full py-3.5 px-6 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl shadow-md transition">
-                            Send Message
+                            {{ t.send_message }}
                         </button>
                     </form>
                 </div>
@@ -567,7 +511,6 @@
     <footer class="bg-[#0b1325] text-gray-300 pt-16 pb-12 border-t border-gray-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-gray-800">
-                <!-- Column 1: Brand & Social -->
                 <div class="space-y-4">
                     <div class="flex items-center space-x-2">
                         <div class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white">
@@ -576,7 +519,11 @@
                         <span class="text-xl font-bold tracking-tight text-white">{{ site_setting.site_name|default:'Topd' }}</span>
                     </div>
                     <p class="text-xs text-gray-400 leading-relaxed">
+                        {% if current_lang == 'ru' %}
+                        Ведущая платформа Кыргызстана по аренде, лизингу и выкупу автомобилей.
+                        {% else %}
                         Kyrgyzstan's leading platform for vehicle rental, leasing, and installment services.
+                        {% endif %}
                     </p>
                     <div class="flex space-x-4 pt-2">
                         <a href="{{ site_setting.facebook_url }}" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-facebook-f text-sm"></i></a>
@@ -586,30 +533,27 @@
                     </div>
                 </div>
 
-                <!-- Column 2: Quick Links -->
                 <div>
-                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">Quick Links</h4>
+                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">{{ t.features }}</h4>
                     <ul class="space-y-2.5 text-xs text-gray-400">
-                        <li><a href="#how-it-works" class="hover:text-white transition">About</a></li>
-                        <li><a href="#benefits" class="hover:text-white transition">Features</a></li>
-                        <li><a href="#pricing" class="hover:text-white transition">Pricing</a></li>
-                        <li><a href="#contact" class="hover:text-white transition">Contact</a></li>
+                        <li><a href="#how-it-works" class="hover:text-white transition">{{ t.about }}</a></li>
+                        <li><a href="#benefits" class="hover:text-white transition">{{ t.features }}</a></li>
+                        <li><a href="#pricing" class="hover:text-white transition">{{ t.pricing }}</a></li>
+                        <li><a href="#contact" class="hover:text-white transition">{{ t.contact }}</a></li>
                     </ul>
                 </div>
 
-                <!-- Column 3: Legal -->
                 <div>
-                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">Quick Links</h4>
+                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">Legal</h4>
                     <ul class="space-y-2.5 text-xs text-gray-400">
-                        <li><a href="#" class="hover:text-white transition">Terms and Conditions</a></li>
-                        <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-white transition">Return Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition">{% if current_lang == 'ru' %}Условия использования{% else %}Terms and Conditions{% endif %}</a></li>
+                        <li><a href="#" class="hover:text-white transition">{% if current_lang == 'ru' %}Политика конфиденциальности{% else %}Privacy Policy{% endif %}</a></li>
+                        <li><a href="#" class="hover:text-white transition">{% if current_lang == 'ru' %}Правила возврата{% else %}Return Policy{% endif %}</a></li>
                     </ul>
                 </div>
 
-                <!-- Column 4: Contact Info -->
                 <div>
-                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">Contact Us</h4>
+                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">{{ t.contact_us }}</h4>
                     <ul class="space-y-2.5 text-xs text-gray-400">
                         <li class="flex items-center space-x-2">
                             <i class="fa-solid fa-location-dot text-red-500 text-[10px]"></i>
@@ -627,13 +571,11 @@
                 </div>
             </div>
 
-            <!-- Copyright -->
             <div class="pt-8 text-center text-xs text-gray-500">
-                &copy; 2026 {{ site_setting.site_name|default:'Topd' }}. All Rights Reserved. | Developed for Smart Bangla IT
+                &copy; 2026 {{ site_setting.site_name|default:'Topd' }}. All Rights Reserved. | webkoders
             </div>
         </div>
     </footer>
 
 </body>
 </html>
-

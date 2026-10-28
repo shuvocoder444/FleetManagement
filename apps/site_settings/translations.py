@@ -1,11 +1,12 @@
 """
-Bilingual Dictionary (English & Russian) for Topd Platform.
-Works directly on Windows/Linux without requiring external GNU gettext/msgfmt binaries.
+Comprehensive Bilingual Dictionary (English & Russian) for Topd Platform.
+100% Covers Landing Page, Header, Footer, Sidebar, Super Admin, Fleet Admin & Driver Dashboards.
 """
 
 TRANSLATIONS = {
     'en': {
-        # Nav
+        # Brand & Nav
+        'brand_subtitle': 'Fleet & Rental',
         'home': 'Home',
         'about': 'About',
         'features': 'Features',
@@ -19,6 +20,44 @@ TRANSLATIONS = {
         'logout': 'Logout',
         'profile': 'Profile',
         'settings': 'Settings',
+
+        # Sidebar Sections
+        'section_main': 'Main',
+        'section_operations': 'Operations',
+        'section_finance': 'Finance & Billing',
+        'section_admin': 'Administration',
+        'section_fleet_overview': 'Fleet Overview',
+        'section_my_account': 'My Account',
+        'section_driver_portal': 'Driver Portal',
+        'section_my_assignments': 'My Assignments',
+
+        # Sidebar Menu Items
+        'menu_admin_dashboard': 'Admin Dashboard',
+        'menu_company_dashboard': 'Company Dashboard',
+        'menu_driver_portal': 'Driver Profile & Stats',
+        'menu_agreements': 'Agreements',
+        'menu_rental_agreements': 'Rental Agreements',
+        'menu_trip_contracts': 'Trip Contracts',
+        'menu_drivers': 'Drivers',
+        'menu_agency_drivers': 'Agency Drivers',
+        'menu_check_driver': 'Check Driver',
+        'menu_vehicles_garage': 'Vehicles Garage',
+        'menu_my_vehicles': 'My Vehicles',
+        'menu_current_vehicle': 'Current Vehicle',
+        'menu_manual_payments': 'Manual Payments',
+        'menu_subscriptions': 'Subscriptions',
+        'menu_my_subscription': 'My Subscription',
+        'menu_plans': 'Plans',
+        'menu_users_management': 'Users Management',
+        'menu_website_settings': 'Website Settings',
+        'menu_incident_history': 'Incident History',
+        'badge_live': 'Live',
+        'badge_active': 'Active',
+
+        # Top Switcher Tabs
+        'tab_superadmin': '1. Super Admin',
+        'tab_fleetadmin': '2. Fleet Admin',
+        'tab_driver': '3. Driver',
 
         # Hero
         'hero_title': "Kyrgyzstan's First Unified Vehicle Rental Platform",
@@ -104,7 +143,10 @@ TRANSLATIONS = {
         'message_label': 'Message *',
         'send_message': 'Send Message',
 
-        # Dashboard General
+        # Dashboard Super Admin
+        'superadmin_badge': 'Platform Master',
+        'superadmin_title': 'Super Admin Dashboard',
+        'superadmin_sub': 'Global platform overview, revenue metrics, subscriptions & system fleet management.',
         'welcome_back': 'Welcome back',
         'dashboard_sub': "Here's what's happening with your vehicle rental business today.",
         'create_agreement': 'Create Agreement',
@@ -117,17 +159,43 @@ TRANSLATIONS = {
         'active_contracts': 'Active Contracts',
         'payments_received': 'Payments Received',
         
-        # Statuses
-        'vehicle_status': 'Vehicle Status',
+        # Vehicle & Driver Statuses
+        'vehicle_status': 'Platform Fleet Status',
+        'agency_fleet_status': 'Agency Fleet & Contracts',
         'available': 'Available',
         'rented': 'Rented',
         'leased': 'Leased',
         'maintenance': 'Maintenance',
 
-        'driver_status': 'Driver Status',
+        'driver_status': 'Driver Verification Status',
         'total': 'Total',
+        'total_drivers': 'Total Drivers',
         'busy': 'Busy',
         'bad': 'Bad / Warning',
+
+        # Fleet Admin Dashboard
+        'fleet_badge': 'Fleet Company',
+        'sub_status_label': 'Subscription Status',
+        'sub_active_plan': 'Premium Plan (Monthly)',
+        'sub_headline': 'Full Access to Fleet Management & Driver Anti-Fraud Verification',
+        'sub_validity': 'Valid until: Nov 28, 2026. Enjoy unlimited contract generation and priority support.',
+        'manage_plan': 'Manage Plan',
+        'total_garage': 'Total Garage Vehicles',
+        'available_for_rent': 'Available For Rent',
+        'active_rentals': 'Active Rentals',
+        'agency_drivers_count': 'Agency Drivers',
+        'my_fleet_garage': 'My Fleet Garage',
+        'my_fleet_sub': 'Cars registered under your company',
+        'add_vehicle': 'Add Vehicle',
+        'plate_no': 'Plate No.',
+        'vehicle_label': 'Vehicle',
+        'type_label': 'Type',
+        'year_label': 'Year',
+        'color_label': 'Color',
+        'status_label': 'Status',
+        'actions_label': 'Actions',
+        'verify_before_handover': 'Verify Driver Before Handover',
+        'verify_sub': 'Input driver passport or 14-digit ID number to check adverse incident records (Non-payment, Fines, Damages).',
 
         # Driver Check Form
         'check_driver_heading': 'Check a driver',
@@ -139,23 +207,102 @@ TRANSLATIONS = {
         'search_driver': 'Search Driver',
         'clear': 'Clear',
 
+        # Additional Menu & General Actions
+        'add_driver': 'Add Driver',
+        'driver_list': 'Drivers List',
+        'driver_details': 'Driver Details',
+        'create_driver_title': 'Register New Driver',
+        'create_driver_sub': 'Enter driver personal identification and license credentials.',
+        'all_drivers': 'All Drivers',
+        'filter_status': 'Filter Status',
+        'all_statuses': 'All Statuses',
+        'phone_number': 'Phone Number',
+        'email_address': 'Email Address',
+        'driver_profile': 'Driver Profile',
+        'view_profile': 'View Profile',
+        'save_driver': 'Save Driver',
+        'cancel': 'Cancel',
+
+        # Vehicles Garage
+        'add_vehicle_btn': 'Add Vehicle',
+        'vehicle_garage_title': 'Vehicle Fleet & Garage',
+        'vehicle_garage_sub': 'Manage company car inventory, operational status and registrations.',
+        'brand': 'Brand',
+        'model': 'Model',
+        'reg_number': 'Reg. Number',
+        'create_vehicle_title': 'Add New Vehicle',
+        'create_vehicle_sub': 'Register a new automobile in the fleet garage.',
+        'vehicle_title_label': 'Vehicle Title / Name',
+        'save_vehicle': 'Save Vehicle',
+
+        # Billing & Payments
+        'manual_payments_title': 'Manual Payments',
+        'manual_payments_sub': 'Review and verify pending offline bank transfers and cash receipts.',
+        'subscriptions_title': 'Subscriptions & Memberships',
+        'subscriptions_sub': 'Manage agency billing tiers and active platform memberships.',
+        'plans_title': 'Pricing Plans & Packages',
+        'plans_sub': 'Configure SaaS tiers, pay-per-check rates and subscription packages.',
+        'payment_id': 'Payment ID',
+        'user_label': 'User / Agency',
+        'amount_label': 'Amount',
+        'method_label': 'Method',
+        'date_label': 'Date',
+        'approve_btn': 'Approve',
+        'reject_btn': 'Reject',
+        'plan_name': 'Plan Name',
+        'start_date': 'Start Date',
+        'end_date': 'End Date',
+        'price_interval': 'Price / Cycle',
+
+        # User Management
+        'users_management_title': 'Users & Role Management',
+        'users_management_sub': 'Overview of platform accounts, access roles and activity status.',
+        'user_name': 'Name / Email',
+        'role_label': 'Role',
+        'status_active': 'Active',
+        'date_joined': 'Joined Date',
+        'all_roles': 'All Roles',
+
+        # Settings
+        'settings_title': 'System & Website Settings',
+        'settings_sub': 'Configure platform identity, contact credentials and localized defaults.',
+        'site_name': 'Site Name',
+        'site_tagline': 'Site Tagline',
+        'support_email': 'Support Email',
+        'support_phone': 'Support Phone',
+        'office_address': 'Office Address',
+        'working_hours': 'Working Hours',
+        'save_settings': 'Save Changes',
+        'settings_saved_success': 'Settings successfully updated!',
+
         # Driver Portal
-        'driver_portal': 'Driver Portal',
+        'driver_badge': 'Driver Portal',
         'driver_profile_title': 'Driver Profile & Performance',
+        'driver_profile_sub': 'Here is your operational details, license validity, active trip assignments and performance metrics.',
+        'admin_rating_confirmed': 'Admin Rating & Verification Confirmed',
+        'personal_id_label': 'Personal ID (14 digits)',
+        'associated_agency': 'Associated Agency',
+        'driver_license': 'Driver License',
+        'exp_label': 'Exp',
         'total_agreements': 'Total Agreements',
+        'active_label': 'Active',
         'completed': 'Completed',
         'problems': 'Problems',
         'total_issues': 'Total Issues',
         'completion_rate': 'Completion Rate',
         'total_reviews': 'Total Reviews',
         'current_assigned_vehicle': 'Current Assigned Vehicle',
+        'client_name_label': 'Client Name',
         'incident_history_log': 'Incident & History Log',
+        'records_logged': 'Records Logged',
+        'no_incident_records': 'No adverse incident records found. Clean record!',
         'admin_comments': 'Admin Comments',
         'license_expiry': 'License Expiry',
         'passport_expiry': 'Passport Expiry',
     },
     'ru': {
-        # Nav
+        # Brand & Nav
+        'brand_subtitle': 'Автопарк и Прокат',
         'home': 'Главная',
         'about': 'О нас',
         'features': 'Возможности',
@@ -169,6 +316,44 @@ TRANSLATIONS = {
         'logout': 'Выйти',
         'profile': 'Профиль',
         'settings': 'Настройки',
+
+        # Sidebar Sections
+        'section_main': 'Основное',
+        'section_operations': 'Операции и Прокат',
+        'section_finance': 'Финансы и Подписки',
+        'section_admin': 'Администрирование',
+        'section_fleet_overview': 'Обзор автопарка',
+        'section_my_account': 'Мой аккаунт',
+        'section_driver_portal': 'Портал водителя',
+        'section_my_assignments': 'Мои рейсы и авто',
+
+        # Sidebar Menu Items
+        'menu_admin_dashboard': 'Панель Администратора',
+        'menu_company_dashboard': 'Панель Компании',
+        'menu_driver_portal': 'Профиль и Статистика',
+        'menu_agreements': 'Договоры аренды',
+        'menu_rental_agreements': 'Договоры автопарка',
+        'menu_trip_contracts': 'Контракты поездок',
+        'menu_drivers': 'База водителей',
+        'menu_agency_drivers': 'Водители компании',
+        'menu_check_driver': 'Проверить водителя',
+        'menu_vehicles_garage': 'Гараж автопарка',
+        'menu_my_vehicles': 'Мои автомобили',
+        'menu_current_vehicle': 'Закрепленный авто',
+        'menu_manual_payments': 'Ручные платежи',
+        'menu_subscriptions': 'Управление подписками',
+        'menu_my_subscription': 'Моя подписка',
+        'menu_plans': 'Тарифные планы',
+        'menu_users_management': 'Управление пользователями',
+        'menu_website_settings': 'Настройки сайта',
+        'menu_incident_history': 'История нарушений',
+        'badge_live': 'Онлайн',
+        'badge_active': 'Активно',
+
+        # Top Switcher Tabs
+        'tab_superadmin': '1. Главный Админ',
+        'tab_fleetadmin': '2. Компания / Флот',
+        'tab_driver': '3. Водитель',
 
         # Hero
         'hero_title': 'Первая единая платформа аренды автомобилей в Кыргызстане',
@@ -254,7 +439,10 @@ TRANSLATIONS = {
         'message_label': 'Сообщение *',
         'send_message': 'Отправить сообщение',
 
-        # Dashboard General
+        # Dashboard Super Admin
+        'superadmin_badge': 'Главный Администратор',
+        'superadmin_title': 'Панель Главного Администратора',
+        'superadmin_sub': 'Глобальный обзор платформы, метрики выручки, подписки и управление автопарком.',
         'welcome_back': 'С возвращением',
         'dashboard_sub': 'Вот сводка по вашему автопрокатному бизнесу на сегодня.',
         'create_agreement': 'Создать договор',
@@ -267,17 +455,43 @@ TRANSLATIONS = {
         'active_contracts': 'Активные договоры',
         'payments_received': 'Полученные платежи',
         
-        # Statuses
-        'vehicle_status': 'Статус автомобилей',
+        # Vehicle & Driver Statuses
+        'vehicle_status': 'Статус автопарка системы',
+        'agency_fleet_status': 'Автопарк и договоры компании',
         'available': 'Доступно',
         'rented': 'В аренде',
         'leased': 'В лизинге',
         'maintenance': 'Техобслуживание',
 
-        'driver_status': 'Статус водителей',
+        'driver_status': 'Статус проверки водителей',
         'total': 'Всего',
+        'total_drivers': 'Всего водителей',
         'busy': 'Занят',
         'bad': 'Проблемный / Предупреждение',
+
+        # Fleet Admin Dashboard
+        'fleet_badge': 'Автопрокатная Компания',
+        'sub_status_label': 'Статус подписки',
+        'sub_active_plan': 'Премиум тариф (Ежемесячный)',
+        'sub_headline': 'Полный доступ к управлению автопарком и проверке надежности водителей',
+        'sub_validity': 'Действует до: 28 ноября 2026 г. Неограниченное создание договоров и поддержка.',
+        'manage_plan': 'Управление тарифом',
+        'total_garage': 'Всего машин в гараже',
+        'available_for_rent': 'Свободно для аренды',
+        'active_rentals': 'Текущие активные аренды',
+        'agency_drivers_count': 'Водители компании',
+        'my_fleet_garage': 'Гараж автопарка компании',
+        'my_fleet_sub': 'Автомобили, зарегистрированные за вашей компанией',
+        'add_vehicle': 'Добавить авто',
+        'plate_no': 'Госномер',
+        'vehicle_label': 'Автомобиль',
+        'type_label': 'Тип',
+        'year_label': 'Год',
+        'color_label': 'Цвет',
+        'status_label': 'Статус',
+        'actions_label': 'Действия',
+        'verify_before_handover': 'Проверьте водителя перед выдачей авто',
+        'verify_sub': 'Введите номер паспорта или 14-значный ПИН для проверки нарушений (неуплаты, штрафы, ущерб).',
 
         # Driver Check Form
         'check_driver_heading': 'Проверить водителя',
@@ -289,19 +503,97 @@ TRANSLATIONS = {
         'search_driver': 'Найти водителя',
         'clear': 'Очистить',
 
+        # Additional Menu & General Actions
+        'add_driver': 'Добавить водителя',
+        'driver_list': 'Список водителей',
+        'driver_details': 'Детали водителя',
+        'create_driver_title': 'Регистрация нового водителя',
+        'create_driver_sub': 'Введите паспортные данные и информацию о водительском удостоверении.',
+        'all_drivers': 'Все водители',
+        'filter_status': 'Фильтр по статусу',
+        'all_statuses': 'Все статусы',
+        'phone_number': 'Номер телефона',
+        'email_address': 'Эл. почта',
+        'driver_profile': 'Профиль водителя',
+        'view_profile': 'Просмотр профиля',
+        'save_driver': 'Сохранить водителя',
+        'cancel': 'Отмена',
+
+        # Vehicles Garage
+        'add_vehicle_btn': 'Добавить автомобиль',
+        'vehicle_garage_title': 'Автопарк и гараж автомобилей',
+        'vehicle_garage_sub': 'Управление автомобилями компании, статусами и госномерами.',
+        'brand': 'Марка',
+        'model': 'Модель',
+        'reg_number': 'Госномер',
+        'create_vehicle_title': 'Добавить автомобиль в автопарк',
+        'create_vehicle_sub': 'Регистрация новой машины в системе.',
+        'vehicle_title_label': 'Название автомобиля',
+        'save_vehicle': 'Сохранить автомобиль',
+
+        # Billing & Payments
+        'manual_payments_title': 'Ручные платежи',
+        'manual_payments_sub': 'Проверка и подтверждение банковских переводов и наличных оплат.',
+        'subscriptions_title': 'Подписки и тарифы',
+        'subscriptions_sub': 'Управление тарифами компаний и активными подписками.',
+        'plans_title': 'Тарифные планы',
+        'plans_sub': 'Настройка пакетов услуг, разовых проверок и подписок.',
+        'payment_id': 'Номер платежа',
+        'user_label': 'Пользователь / Компания',
+        'amount_label': 'Сумма',
+        'method_label': 'Способ',
+        'date_label': 'Дата',
+        'approve_btn': 'Подтвердить',
+        'reject_btn': 'Отклонить',
+        'plan_name': 'Тарифный план',
+        'start_date': 'Дата начала',
+        'end_date': 'Дата окончания',
+        'price_interval': 'Стоимость / Период',
+
+        # User Management
+        'users_management_title': 'Управление пользователями',
+        'users_management_sub': 'Список аккаунтов платформы, ролей доступа и статусов активности.',
+        'user_name': 'Имя / Email',
+        'role_label': 'Роль',
+        'status_active': 'Активен',
+        'date_joined': 'Дата регистрации',
+        'all_roles': 'Все роли',
+
+        # Settings
+        'settings_title': 'Настройки платформы и сайта',
+        'settings_sub': 'Настройка контактов, названия системы и параметров локализации.',
+        'site_name': 'Название сайта',
+        'site_tagline': 'Слоган сайта',
+        'support_email': 'Эл. почта поддержки',
+        'support_phone': 'Телефон поддержки',
+        'office_address': 'Адрес офиса',
+        'working_hours': 'Часы работы',
+        'save_settings': 'Сохранить изменения',
+        'settings_saved_success': 'Настройки успешно сохранены!',
+
         # Driver Portal
-        'driver_portal': 'Портал водителя',
+        'driver_badge': 'Портал Водителя',
         'driver_profile_title': 'Профиль и показатели водителя',
+        'driver_profile_sub': 'Здесь отображаются ваши личные данные, статус прав, текущие рейсы и статистика надежности.',
+        'admin_rating_confirmed': 'Рейтинг администрации подтвержден',
+        'personal_id_label': 'Персональный номер ИНН (14 знаков)',
+        'associated_agency': 'Закрепленная компания',
+        'driver_license': 'Водительское удостоверение',
+        'exp_label': 'Действ. до',
         'total_agreements': 'Всего договоров',
+        'active_label': 'В работе',
         'completed': 'Завершено',
         'problems': 'Проблемы',
         'total_issues': 'Всего инцидентов',
         'completion_rate': 'Процент успешности',
         'total_reviews': 'Всего отзывов',
         'current_assigned_vehicle': 'Текущий закрепленный автомобиль',
+        'client_name_label': 'Имя клиента / Арендатора',
         'incident_history_log': 'История инцидентов и штрафов',
+        'records_logged': 'Записей в базе',
+        'no_incident_records': 'Нарушений не зафиксировано. Чистая репутация!',
         'admin_comments': 'Комментарии администрации',
-        'license_expiry': 'Срок водительского удостоверения',
+        'license_expiry': 'Срок водительских прав',
         'passport_expiry': 'Срок действия паспорта',
     }
 }

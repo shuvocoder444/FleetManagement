@@ -1,6 +1,5 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.utils.translation import activate
 from .models import WebsiteSetting, Currency, ContactMessage
 from apps.billing.models import Plan
 
@@ -46,7 +45,37 @@ def switch_currency(request, code):
 
 def switch_language(request, lang_code):
     if lang_code in ['en', 'ru']:
-        activate(lang_code)
+        request.session['_language'] = lang_code
         request.session['django_language'] = lang_code
     next_url = request.META.get('HTTP_REFERER', '/')
-    return redirect(next_url)
+    response = redirect(next_url)
+    response.set_cookie('django_language', lang_code, max_age=365*24*3600, path='/')
+    return response
+
+
+def settings_view(request):
+    setting = WebsiteSetting.load()
+
+    if request.method == 'POST':
+        setting.site_name = request.POST.get('site_name', 'Topd').strip()
+        setting.contact_email = request.POST.get('contact_email', '').strip()
+        setting.contact_phone = request.POST.get('contact_phone', '').strip()
+        setting.address = request.POST.get('address', '').strip()
+        setting.working_hours = request.POST.get('working_hours', '').strip()
+        setting.facebook_url = request.POST.get('facebook_url', '').strip()
+        setting.twitter_url = request.POST.get('twitter_url', '').strip()
+        setting.instagram_url = request.POST.get('instagram_url', '').strip()
+        setting.linkedin_url = request.POST.get('linkedin_url', '').strip()
+
+        if request.FILES.get('logo'):
+            setting.logo = request.FILES.get('logo')
+
+        setting.save()
+        messages.success(request, 'Website settings saved successfully!')
+        return redirect('site_settings:settings')
+
+    context = {
+        'setting': setting,
+        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+    }
+    return render(request, 'settings/general.html', context)

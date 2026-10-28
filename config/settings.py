@@ -40,6 +40,7 @@ AUTH_USER_MODEL = 'accounts.CustomUser'
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'apps.site_settings.middleware.PersistentLanguageMiddleware',  # 100% Persistent EN/RU Middleware
     'django.middleware.locale.LocaleMiddleware',  # Multi-language support (EN, RU)
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

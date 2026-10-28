@@ -18,12 +18,12 @@
         </div>
 
         <div class="flex items-center space-x-3">
-            <a href="/admin/agreements/agreement/add/" 
+            <a href="{% url 'agreements:create' %}" 
                class="inline-flex items-center px-4 py-2.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-sm transition">
                 <i class="fa-solid fa-plus mr-2 text-[10px]"></i>
                 Create Agreement
             </a>
-            <a href="#check-driver-engine" 
+            <a href="{% url 'drivers:check' %}" 
                class="inline-flex items-center px-4 py-2.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-xs transition">
                 <i class="fa-solid fa-id-card mr-2 text-slate-400"></i>
                 Check Driver
@@ -253,10 +253,10 @@
 
     <!-- 7. BOTTOM ACTION BUTTONS -->
     <div class="flex items-center justify-center space-x-4 pt-4">
-        <a href="/admin/agreements/agreement/add/" class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl shadow-md shadow-red-200 transition">
+        <a href="{% url 'agreements:create' %}" class="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl shadow-md shadow-red-200 transition">
             <i class="fa-solid fa-plus mr-2 text-xs"></i> Create Agreement
         </a>
-        <a href="#check-driver-engine" class="px-8 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm rounded-xl shadow-md transition">
+        <a href="{% url 'drivers:check' %}" class="px-8 py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold text-sm rounded-xl shadow-md transition">
             <i class="fa-solid fa-id-card-clip mr-2 text-xs"></i> Check Driver
         </a>
     </div>

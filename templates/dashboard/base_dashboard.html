@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="{{ request.session.django_language|default:'en' }}" class="h-full bg-slate-50">
+<html lang="{{ current_lang|default:'en' }}" class="h-full bg-slate-50">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -55,7 +55,7 @@
          class="fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm lg:hidden">
     </div>
 
-    <!-- 1. LEFT SIDEBAR (Adapts to Role: Super Admin / Admin / Driver) -->
+    <!-- 1. LEFT SIDEBAR (Adapts to Role & Fully Translated) -->
     <aside class="fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200/80 flex flex-col transition-transform duration-300 ease-in-out lg:static lg:translate-x-0"
            :class="mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
         
@@ -70,9 +70,9 @@
                         <span class="text-red-600">{{ site_setting.site_name|default:'Topd' }}</span>
                     </span>
                     <span class="text-[9px] uppercase tracking-widest font-bold text-slate-400">
-                        {% if current_dashboard == 'superadmin' %}Super Admin
-                        {% elif current_dashboard == 'admin' %}Fleet Company
-                        {% else %}Driver Portal{% endif %}
+                        {% if current_dashboard == 'superadmin' %}{{ t.superadmin_badge }}
+                        {% elif current_dashboard == 'admin' %}{{ t.fleet_badge }}
+                        {% else %}{{ t.driver_badge }}{% endif %}
                     </span>
                 </div>
             </a>
@@ -87,114 +87,114 @@
             {% if current_dashboard == 'superadmin' %}
             <!-- ================= SUPER ADMIN SIDEBAR ================= -->
             <div>
-                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Master Admin</p>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_main }}</p>
                 <nav class="space-y-1">
                     <a href="{% url 'dashboard:superadmin' %}" class="flex items-center px-3 py-2.5 text-xs font-semibold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50">
                         <i class="fa-solid fa-crown w-5 text-red-600 text-sm"></i>
-                        <span class="ml-2.5 flex-1">Admin Dashboard</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_admin_dashboard }}</span>
                     </a>
                 </nav>
             </div>
 
             <div>
-                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Platform Management</p>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_operations }}</p>
                 <nav class="space-y-1">
-                    <a href="/admin/agreements/agreement/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'agreements:list' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-regular fa-file-lines w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Agreements</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_agreements }}</span>
                         <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">4</span>
                     </a>
-                    <a href="/admin/drivers/driver/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'drivers:list' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-regular fa-user w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Drivers</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_drivers }}</span>
                         <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">6</span>
                     </a>
-                    <a href="{% url 'dashboard:superadmin' %}#check-driver-engine" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'drivers:check' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-solid fa-id-card-clip w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Check Driver</span>
-                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">Live</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_check_driver }}</span>
+                        <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">{{ t.badge_live }}</span>
                     </a>
-                    <a href="/admin/vehicles/vehicle/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'vehicles:list' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-solid fa-car w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Vehicles Garage</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_vehicles_garage }}</span>
                     </a>
                 </nav>
             </div>
 
             <div>
-                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Finance & Subscriptions</p>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_finance }}</p>
                 <nav class="space-y-1">
-                    <a href="/admin/billing/manualpayment/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'billing:manual_payments' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-solid fa-money-bill-transfer w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Manual Payments</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_manual_payments }}</span>
                         <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600">1</span>
                     </a>
-                    <a href="/admin/billing/subscription/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'billing:subscriptions' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-solid fa-credit-card w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Subscriptions</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_subscriptions }}</span>
                     </a>
-                    <a href="/admin/billing/plan/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'billing:plans' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-solid fa-cubes-stacked w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Plans</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_plans }}</span>
                     </a>
                 </nav>
             </div>
 
             <div>
-                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">System</p>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_admin }}</p>
                 <nav class="space-y-1">
-                    <a href="/admin/accounts/customuser/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'accounts:users' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-solid fa-users-gear w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Users Management</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_users_management }}</span>
                     </a>
-                    <a href="/admin/site_settings/websitesetting/1/change/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'settings' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-solid fa-sliders w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Website Settings</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_website_settings }}</span>
                     </a>
                 </nav>
             </div>
 
             {% elif current_dashboard == 'admin' %}
-            <!-- ================= RENTAL COMPANY / FLEET ADMIN SIDEBAR ================= -->
+            <!-- ================= FLEET COMPANY ADMIN SIDEBAR ================= -->
             <div>
-                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Fleet Overview</p>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_fleet_overview }}</p>
                 <nav class="space-y-1">
                     <a href="{% url 'dashboard:admin' %}" class="flex items-center px-3 py-2.5 text-xs font-semibold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50">
                         <i class="fa-solid fa-chart-pie w-5 text-red-600 text-sm"></i>
-                        <span class="ml-2.5 flex-1">Company Dashboard</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_company_dashboard }}</span>
                     </a>
                 </nav>
             </div>
 
             <div>
-                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Operations</p>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_operations }}</p>
                 <nav class="space-y-1">
-                    <a href="/admin/vehicles/vehicle/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'vehicles:list' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-solid fa-car w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">My Vehicles</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_my_vehicles }}</span>
                     </a>
-                    <a href="/admin/agreements/agreement/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'agreements:list' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-regular fa-file-lines w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Rental Agreements</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_rental_agreements }}</span>
                     </a>
-                    <a href="/admin/drivers/driver/" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'drivers:list' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-regular fa-user w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Agency Drivers</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_agency_drivers }}</span>
                     </a>
-                    <a href="{% url 'dashboard:admin' %}#check-driver-engine" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'drivers:check' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-solid fa-id-card-clip w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Check Driver</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_check_driver }}</span>
                     </a>
                 </nav>
             </div>
 
             <div>
-                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">My Account</p>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_my_account }}</p>
                 <nav class="space-y-1">
-                    <a href="{% url 'landing_page' %}#pricing" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
+                    <a href="{% url 'billing:subscriptions' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-solid fa-credit-card w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">My Subscription</span>
-                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">Active</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_my_subscription }}</span>
+                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">{{ t.badge_active }}</span>
                     </a>
                 </nav>
             </div>
@@ -202,29 +202,29 @@
             {% else %}
             <!-- ================= DRIVER SIDEBAR ================= -->
             <div>
-                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Driver Portal</p>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_driver_portal }}</p>
                 <nav class="space-y-1">
                     <a href="{% url 'dashboard:driver' %}" class="flex items-center px-3 py-2.5 text-xs font-semibold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50">
                         <i class="fa-solid fa-id-badge w-5 text-red-600 text-sm"></i>
-                        <span class="ml-2.5 flex-1">Driver Profile & Stats</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_driver_portal }}</span>
                     </a>
                 </nav>
             </div>
 
             <div>
-                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">My Assignments</p>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_my_assignments }}</p>
                 <nav class="space-y-1">
                     <a href="{% url 'dashboard:driver' %}#active-car" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-solid fa-car-side w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Current Vehicle</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_current_vehicle }}</span>
                     </a>
                     <a href="{% url 'dashboard:driver' %}#agreements-list" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-regular fa-file-lines w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Trip Contracts</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_trip_contracts }}</span>
                     </a>
                     <a href="{% url 'dashboard:driver' %}#history-records" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
                         <i class="fa-solid fa-clock-rotate-left w-5 text-slate-400"></i>
-                        <span class="ml-2.5 flex-1">Incident History</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_incident_history }}</span>
                     </a>
                 </nav>
             </div>
@@ -240,7 +240,11 @@
                 </div>
                 <div class="flex-1 min-w-0">
                     <p class="text-xs font-bold text-gray-900 truncate">{{ display_user.email|default:'user@topd.kg' }}</p>
-                    <p class="text-[10px] text-slate-500 capitalize">{{ current_dashboard }}</p>
+                    <p class="text-[10px] text-slate-500 capitalize">
+                        {% if current_dashboard == 'superadmin' %}{{ t.superadmin_badge }}
+                        {% elif current_dashboard == 'admin' %}{{ t.fleet_badge }}
+                        {% else %}{{ t.driver_badge }}{% endif %}
+                    </p>
                 </div>
             </div>
         </div>
@@ -263,20 +267,17 @@
                     <a href="{% url 'dashboard:superadmin' %}" 
                        class="px-2.5 py-1.5 rounded-lg transition flex items-center space-x-1.5 {% if current_dashboard == 'superadmin' %}bg-white text-red-600 shadow-xs font-bold{% else %}text-slate-600 hover:text-slate-900{% endif %}">
                         <i class="fa-solid fa-crown text-[10px]"></i>
-                        <span class="hidden sm:inline">1. Super Admin</span>
-                        <span class="sm:hidden">Super</span>
+                        <span>{{ t.tab_superadmin }}</span>
                     </a>
                     <a href="{% url 'dashboard:admin' %}" 
                        class="px-2.5 py-1.5 rounded-lg transition flex items-center space-x-1.5 {% if current_dashboard == 'admin' %}bg-white text-red-600 shadow-xs font-bold{% else %}text-slate-600 hover:text-slate-900{% endif %}">
                         <i class="fa-solid fa-building text-[10px]"></i>
-                        <span class="hidden sm:inline">2. Fleet Admin</span>
-                        <span class="sm:hidden">Admin</span>
+                        <span>{{ t.tab_fleetadmin }}</span>
                     </a>
                     <a href="{% url 'dashboard:driver' %}" 
                        class="px-2.5 py-1.5 rounded-lg transition flex items-center space-x-1.5 {% if current_dashboard == 'driver' %}bg-white text-red-600 shadow-xs font-bold{% else %}text-slate-600 hover:text-slate-900{% endif %}">
                         <i class="fa-solid fa-id-badge text-[10px]"></i>
-                        <span class="hidden sm:inline">3. Driver</span>
-                        <span class="sm:hidden">Driver</span>
+                        <span>{{ t.tab_driver }}</span>
                     </a>
                 </div>
             </div>
@@ -303,16 +304,22 @@
                     </div>
                 </div>
 
-                <!-- Language Selector -->
+                <!-- Language Selector Dropdown -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" @click.away="open = false" 
                             class="flex items-center space-x-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
-                        <span>{% if request.session.django_language == 'ru' %}🇷🇺 RU{% else %}🇬🇧 EN{% endif %}</span>
+                        <span>{% if current_lang == 'ru' %}🇷🇺 RU{% else %}🇬🇧 EN{% endif %}</span>
                         <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
                     </button>
-                    <div x-show="open" x-cloak class="absolute right-0 mt-1.5 w-32 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-50 text-xs">
-                        <a href="{% url 'switch_language' 'en' %}" class="flex items-center px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium">🇬🇧 English</a>
-                        <a href="{% url 'switch_language' 'ru' %}" class="flex items-center px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium">🇷🇺 Русский</a>
+                    <div x-show="open" x-cloak class="absolute right-0 mt-1.5 w-36 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-50 text-xs">
+                        <a href="{% url 'switch_language' 'en' %}" class="flex items-center justify-between px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium">
+                            <span>🇬🇧 English</span>
+                            {% if current_lang == 'en' %}<i class="fa-solid fa-check text-red-600 text-xs"></i>{% endif %}
+                        </a>
+                        <a href="{% url 'switch_language' 'ru' %}" class="flex items-center justify-between px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium">
+                            <span>🇷🇺 Русский</span>
+                            {% if current_lang == 'ru' %}<i class="fa-solid fa-check text-red-600 text-xs"></i>{% endif %}
+                        </a>
                     </div>
                 </div>
 
@@ -334,8 +341,8 @@
                             <p class="text-[11px] text-slate-400 truncate">{{ display_user.email }}</p>
                         </div>
                         <div class="py-1 text-xs">
-                            <a href="/admin/" class="flex items-center px-4 py-2 text-slate-600 hover:bg-slate-50">Django Admin</a>
-                            <a href="/admin/logout/" class="flex items-center px-4 py-2 text-rose-600 hover:bg-rose-50">Logout</a>
+                            <a href="{% url 'dashboard:superadmin' %}" class="flex items-center px-4 py-2 text-slate-600 hover:bg-slate-50">{{ t.dashboard }}</a>
+                            <a href="{% url 'landing_page' %}" class="flex items-center px-4 py-2 text-rose-600 hover:bg-rose-50">{{ t.logout }}</a>
                         </div>
                     </div>
                 </div>

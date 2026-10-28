@@ -1,4 +1,8 @@
 from django.urls import path
-app_name = 'accounts'
-urlpatterns = []
+from . import views
 
+app_name = 'accounts'
+
+urlpatterns = [
+    path('users/', views.users_list, name='users'),
+]

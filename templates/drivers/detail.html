@@ -1,0 +1,167 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}{{ driver.full_name }} - {{ t.driver_details }}{% endblock %}
+{% block breadcrumb %}{{ driver.full_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- Header Actions -->
+    <div class="flex items-center justify-between">
+        <a href="{% url 'drivers:list' %}" class="inline-flex items-center text-xs font-semibold text-slate-500 hover:text-slate-800">
+            <i class="fa-solid fa-arrow-left mr-2"></i> {{ t.driver_list }}
+        </a>
+        <div class="flex items-center space-x-3">
+            <a href="{% url 'drivers:check' %}?q={{ driver.passport_number }}" class="px-4 py-2 text-xs font-bold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition">
+                <i class="fa-solid fa-shield-halved mr-1.5 text-red-600"></i> {{ t.menu_check_driver }}
+            </a>
+            <a href="{% url 'agreements:create' %}?driver_id={{ driver.id }}" class="px-4 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-sm transition">
+                <i class="fa-solid fa-plus mr-1.5"></i> {{ t.create_agreement }}
+            </a>
+        </div>
+    </div>
+
+    <!-- Profile Header Card -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 md:p-8">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+            <div class="flex items-center space-x-5">
+                <div class="w-20 h-20 rounded-2xl bg-slate-100 border-2 border-slate-200 flex items-center justify-center text-2xl font-bold text-slate-700">
+                    {{ driver.first_name|first }}{{ driver.last_name|first }}
+                </div>
+                <div>
+                    <div class="flex items-center space-x-3">
+                        <h1 class="text-2xl font-extrabold text-slate-900">{{ driver.full_name }}</h1>
+                        {% if driver.status == 'Available' %}
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            {{ t.available }}
+                        </span>
+                        {% elif driver.status == 'Busy' %}
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                            {{ t.busy }}
+                        </span>
+                        {% else %}
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                            {{ t.bad }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">
+                        Registered on {{ driver.created_at|date:"M d, Y" }}
+                    </p>
+                </div>
+            </div>
+
+            <!-- Rating badge -->
+            <div class="bg-amber-50/80 border border-amber-200/60 rounded-2xl p-4 flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-xl bg-amber-400 text-white flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-star"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-amber-700">Platform Rating</p>
+                    <p class="text-2xl font-extrabold text-amber-900">{{ driver.average_rating }} <span class="text-xs font-medium text-amber-600">/ 5.0</span></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Details Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 pt-6">
+            <div>
+                <p class="text-[10px] font-bold uppercase text-slate-400">{{ t.phone_number }}</p>
+                <p class="text-xs font-semibold text-slate-900 mt-1">{{ driver.phone }}</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold uppercase text-slate-400">{{ t.email_address }}</p>
+                <p class="text-xs font-semibold text-slate-900 mt-1">{{ driver.email|default:"Not specified" }}</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold uppercase text-slate-400">{{ t.passport_number }}</p>
+                <p class="text-xs font-mono font-bold text-slate-900 mt-1">{{ driver.passport_number }}</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold uppercase text-slate-400">{{ t.personal_id }}</p>
+                <p class="text-xs font-mono font-bold text-slate-900 mt-1">{{ driver.personal_id }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI Stats -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+            <p class="text-[11px] font-semibold text-slate-500 uppercase">{{ t.total_agreements }}</p>
+            <p class="text-2xl font-extrabold text-slate-900 mt-1">{{ driver.total_agreements_count }}</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+            <p class="text-[11px] font-semibold text-slate-500 uppercase">{{ t.active_label }}</p>
+            <p class="text-2xl font-extrabold text-emerald-600 mt-1">{{ driver.active_agreements_count }}</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+            <p class="text-[11px] font-semibold text-slate-500 uppercase">{{ t.completion_rate }}</p>
+            <p class="text-2xl font-extrabold text-blue-600 mt-1">{{ driver.completion_rate }}%</p>
+        </div>
+        <div class="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs">
+            <p class="text-[11px] font-semibold text-slate-500 uppercase">{{ t.total_issues }}</p>
+            <p class="text-2xl font-extrabold {% if driver.issues_count > 0 %}text-rose-600{% else %}text-slate-900{% endif %} mt-1">
+                {{ driver.issues_count }}
+            </p>
+        </div>
+    </div>
+
+    <!-- Incident History & Agreement History Tabs -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Incident History -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6">
+            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center justify-between">
+                <span>{{ t.incident_history_log }}</span>
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{{ history_entries.count }}</span>
+            </h3>
+            {% if history_entries %}
+            <div class="space-y-3">
+                {% for entry in history_entries %}
+                <div class="p-3.5 rounded-xl border border-rose-100 bg-rose-50/40 text-xs">
+                    <div class="flex items-center justify-between font-bold text-rose-800">
+                        <span>{{ entry.history_type }}</span>
+                        <span class="text-[10px] text-slate-400 font-normal">{{ entry.incident_date }}</span>
+                    </div>
+                    <p class="text-slate-600 mt-1 text-[11px]">{{ entry.description }}</p>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="p-8 text-center text-slate-400 text-xs">
+                <i class="fa-solid fa-shield-check text-3xl text-emerald-400 mb-2"></i>
+                <p class="font-bold text-slate-700">{{ t.no_incident_records }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Agreements History -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6">
+            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 flex items-center justify-between">
+                <span>{{ t.menu_rental_agreements }}</span>
+                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{{ agreements.count }}</span>
+            </h3>
+            {% if agreements %}
+            <div class="space-y-3">
+                {% for agr in agreements %}
+                <div class="p-3.5 rounded-xl border border-slate-100 bg-slate-50/60 flex items-center justify-between text-xs">
+                    <div>
+                        <p class="font-bold text-slate-900">#{{ agr.contract_number }} - {{ agr.vehicle.title }}</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">{{ agr.start_date }} → {{ agr.end_date }}</p>
+                    </div>
+                    <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-white border border-slate-200 text-slate-700">
+                        {{ agr.status }}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="p-8 text-center text-slate-400 text-xs">
+                <i class="fa-regular fa-folder-open text-3xl text-slate-300 mb-2"></i>
+                <p>No agreement history recorded yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

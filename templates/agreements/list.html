@@ -1,0 +1,140 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Agreements List{% endblock %}
+{% block breadcrumb %}{{ t.menu_agreements }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Header & Action -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">
+                {{ t.menu_agreements }} List
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">
+                Manage all your vehicle rental, leasing, and installment agreements.
+            </p>
+        </div>
+
+        <a href="{% url 'agreements:create' %}" class="inline-flex items-center px-4 py-2.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-sm transition">
+            <i class="fa-solid fa-plus mr-2 text-[10px]"></i> {{ t.create_agreement }}
+        </a>
+    </div>
+
+    <!-- Status Tabs (All, Active, Completed, Problem, Cancelled) -->
+    <div class="flex items-center space-x-2 border-b border-slate-200 text-xs font-semibold overflow-x-auto pb-px">
+        <a href="?status=all" class="px-4 py-2.5 transition flex items-center space-x-1.5 {% if current_status == 'all' %}text-red-600 border-b-2 border-red-600 font-bold{% else %}text-slate-500 hover:text-slate-800{% endif %}">
+            <span>All</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600">({{ counts.all }})</span>
+        </a>
+        <a href="?status=active" class="px-4 py-2.5 transition flex items-center space-x-1.5 {% if current_status == 'active' %}text-red-600 border-b-2 border-red-600 font-bold{% else %}text-slate-500 hover:text-slate-800{% endif %}">
+            <span>{{ t.badge_active }}</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-50 text-emerald-600">({{ counts.active }})</span>
+        </a>
+        <a href="?status=completed" class="px-4 py-2.5 transition flex items-center space-x-1.5 {% if current_status == 'completed' %}text-red-600 border-b-2 border-red-600 font-bold{% else %}text-slate-500 hover:text-slate-800{% endif %}">
+            <span>{{ t.completed }}</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600">({{ counts.completed }})</span>
+        </a>
+        <a href="?status=problem" class="px-4 py-2.5 transition flex items-center space-x-1.5 {% if current_status == 'problem' %}text-red-600 border-b-2 border-red-600 font-bold{% else %}text-slate-500 hover:text-slate-800{% endif %}">
+            <span>{{ t.problems }}</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-rose-50 text-rose-600">({{ counts.problem }})</span>
+        </a>
+        <a href="?status=cancelled" class="px-4 py-2.5 transition flex items-center space-x-1.5 {% if current_status == 'cancelled' %}text-red-600 border-b-2 border-red-600 font-bold{% else %}text-slate-500 hover:text-slate-800{% endif %}">
+            <span>Cancelled</span>
+            <span class="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600">({{ counts.cancelled }})</span>
+        </a>
+    </div>
+
+    <!-- Filters: Search & Type dropdown -->
+    <form method="GET" class="flex flex-col sm:flex-row gap-3">
+        <input type="hidden" name="status" value="{{ current_status }}">
+        <div class="relative flex-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+            <input type="text" name="search" value="{{ search_query }}" placeholder="Search agreements by contract #, client, company..." class="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 outline-none">
+        </div>
+        <select name="type" onchange="this.form.submit()" class="px-3 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 outline-none text-slate-700 bg-white">
+            <option value="">All Types</option>
+            {% for code, label in contract_types %}
+            <option value="{{ code }}" {% if current_type == code %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="px-4 py-2 text-xs font-semibold bg-slate-800 hover:bg-slate-900 text-white rounded-xl transition">
+            Filter
+        </button>
+    </form>
+
+    <!-- Table matching screenshot -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-100">
+                    <tr>
+                        <th class="py-3.5 px-5">CONTRACT #</th>
+                        <th class="py-3.5 px-5">CLIENT</th>
+                        <th class="py-3.5 px-5">TYPE</th>
+                        <th class="py-3.5 px-5">VEHICLE</th>
+                        <th class="py-3.5 px-5">DATES</th>
+                        <th class="py-3.5 px-5">STATUS</th>
+                        <th class="py-3.5 px-5 text-right">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    {% for item in agreements %}
+                    <tr class="hover:bg-slate-50/60 transition">
+                        <!-- Contract # & Creator -->
+                        <td class="py-3.5 px-5">
+                            <span class="font-mono font-bold text-red-600 block">{{ item.contract_number }}</span>
+                            <span class="text-[10px] text-slate-400">by {{ item.created_by.first_name|default:item.created_by.email }}</span>
+                        </td>
+                        <!-- Client & Company -->
+                        <td class="py-3.5 px-5">
+                            <span class="font-bold text-slate-900 block">{{ item.client_name }}</span>
+                            <span class="text-[10px] text-slate-500">{{ item.company_name }}</span>
+                        </td>
+                        <!-- Type -->
+                        <td class="py-3.5 px-5 text-slate-600">
+                            {{ item.contract_type }}
+                        </td>
+                        <!-- Vehicle -->
+                        <td class="py-3.5 px-5 font-semibold text-slate-800">
+                            {{ item.vehicle.brand }} {{ item.vehicle.model }} ({{ item.vehicle.year }})
+                        </td>
+                        <!-- Dates -->
+                        <td class="py-3.5 px-5 text-[11px] text-slate-600">
+                            <span class="block">From: {{ item.start_date|date:"m/d/Y" }}</span>
+                            <span class="block text-slate-400">To: {{ item.end_date|date:"m/d/Y" }}</span>
+                        </td>
+                        <!-- Status Badge -->
+                        <td class="py-3.5 px-5">
+                            {% if item.status == 'Active' %}
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">{{ t.badge_active }}</span>
+                            {% elif item.status == 'Completed' %}
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100">{{ t.completed }}</span>
+                            {% elif item.status == 'Problem' %}
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-100">{{ t.problems }}</span>
+                            {% else %}
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600">{{ item.status }}</span>
+                            {% endif %}
+                        </td>
+                        <!-- Actions -->
+                        <td class="py-3.5 px-5 text-right space-x-2">
+                            <button onclick="alert('Viewing Agreement: {{ item.contract_number }}')" class="text-slate-400 hover:text-red-600 transition"><i class="fa-regular fa-eye"></i></button>
+                            <button onclick="alert('Edit Agreement: {{ item.contract_number }}')" class="text-slate-400 hover:text-blue-600 transition"><i class="fa-regular fa-pen-to-square"></i></button>
+                            <button onclick="alert('Delete option')" class="text-slate-400 hover:text-rose-600 transition"><i class="fa-regular fa-trash-can"></i></button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="py-8 text-center text-slate-400">
+                            No agreements found for this filter. Click New Agreement to create one.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

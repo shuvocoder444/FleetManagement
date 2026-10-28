@@ -1,4 +1,10 @@
 from django.urls import path
-app_name = 'vehicles'
-urlpatterns = []
+from . import views
 
+app_name = 'vehicles'
+
+urlpatterns = [
+    path('', views.vehicle_list, name='list'),
+    path('create/', views.vehicle_create, name='create'),
+    path('<int:pk>/', views.vehicle_detail, name='detail'),
+]
