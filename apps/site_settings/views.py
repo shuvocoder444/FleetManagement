@@ -1,16 +1,54 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
-from .models import WebsiteSetting, Currency, ContactMessage
+from .models import WebsiteSetting, Currency, ContactMessage, FrontendPage
 from apps.billing.models import Plan
 
 
 def landing_page(request):
     setting = WebsiteSetting.load()
+    page = FrontendPage.objects.filter(slug='home').first()
     plans = Plan.objects.filter(status=Plan.Status.ACTIVE).order_by('price')
     currencies = Currency.objects.filter(is_active=True)
     
-    # Handle Contact Form submission
-    if request.method == 'POST' and 'contact_submit' in request.POST:
+    context = {
+        'setting': setting,
+        'page': page,
+        'plans': plans,
+        'currencies': currencies,
+    }
+    return render(request, 'landing/index.html', context)
+
+
+def about_page(request):
+    setting = WebsiteSetting.load()
+    page = FrontendPage.objects.filter(slug='about').first()
+    return render(request, 'landing/about.html', {'setting': setting, 'page': page})
+
+
+def features_page(request):
+    setting = WebsiteSetting.load()
+    page = FrontendPage.objects.filter(slug='features').first()
+    return render(request, 'landing/features.html', {'setting': setting, 'page': page})
+
+
+def pricing_page(request):
+    setting = WebsiteSetting.load()
+    page = FrontendPage.objects.filter(slug='pricing').first()
+    plans = Plan.objects.filter(status=Plan.Status.ACTIVE).order_by('price')
+    currencies = Currency.objects.filter(is_active=True)
+    return render(request, 'landing/pricing.html', {
+        'setting': setting,
+        'page': page,
+        'plans': plans,
+        'currencies': currencies,
+    })
+
+
+def contact_page(request):
+    setting = WebsiteSetting.load()
+    page = FrontendPage.objects.filter(slug='contact').first()
+    
+    if request.method == 'POST':
         name = request.POST.get('name', '').strip()
         email = request.POST.get('email', '').strip()
         phone = request.POST.get('phone', '').strip()
@@ -23,17 +61,24 @@ def landing_page(request):
                 phone=phone,
                 message=message_text
             )
-            messages.success(request, 'Your message has been sent successfully! Our team will contact you soon.')
-            return redirect('landing_page')
+            messages.success(request, 'Thank you! Your message has been sent successfully. Our team will contact you soon.')
+            return redirect('contact')
         else:
             messages.error(request, 'Please fill in all required fields.')
 
-    context = {
-        'setting': setting,
-        'plans': plans,
-        'currencies': currencies,
-    }
-    return render(request, 'landing/index.html', context)
+    return render(request, 'landing/contact.html', {'setting': setting, 'page': page})
+
+
+def terms_page(request):
+    setting = WebsiteSetting.load()
+    page = FrontendPage.objects.filter(slug='terms').first()
+    return render(request, 'landing/terms.html', {'setting': setting, 'page': page})
+
+
+def privacy_page(request):
+    setting = WebsiteSetting.load()
+    page = FrontendPage.objects.filter(slug='privacy').first()
+    return render(request, 'landing/privacy.html', {'setting': setting, 'page': page})
 
 
 def switch_currency(request, code):
@@ -54,6 +99,10 @@ def switch_language(request, lang_code):
 
 
 def settings_view(request):
+    if not request.user.is_authenticated or not (request.user.is_superuser or getattr(request.user, 'role', '') in ['superadmin', 'admin']):
+        messages.error(request, 'Access restricted to administrators.')
+        return redirect('accounts:login')
+
     setting = WebsiteSetting.load()
 
     if request.method == 'POST':
@@ -72,10 +121,66 @@ def settings_view(request):
 
         setting.save()
         messages.success(request, 'Website settings saved successfully!')
-        return redirect('site_settings:settings')
+        return redirect('settings')
 
     context = {
         'setting': setting,
         'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
     }
     return render(request, 'settings/general.html', context)
+
+
+# ========================================================
+# FRONTEND PAGE MANAGEMENT (CMS)
+# ========================================================
+
+def pages_list_view(request):
+    if not request.user.is_authenticated or not (request.user.is_superuser or getattr(request.user, 'role', '') in ['superadmin', 'admin']):
+        messages.error(request, 'Access restricted to administrators.')
+        return redirect('accounts:login')
+
+    pages = FrontendPage.objects.all().order_by('slug')
+    setting = WebsiteSetting.load()
+    context = {
+        'pages': pages,
+        'setting': setting,
+        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+    }
+    return render(request, 'settings/pages_list.html', context)
+
+
+def page_edit_view(request, slug):
+    if not request.user.is_authenticated or not (request.user.is_superuser or getattr(request.user, 'role', '') in ['superadmin', 'admin']):
+        messages.error(request, 'Access restricted to administrators.')
+        return redirect('accounts:login')
+
+    page = get_object_or_404(FrontendPage, slug=slug)
+    setting = WebsiteSetting.load()
+
+    if request.method == 'POST':
+        page.title = request.POST.get('title', '').strip() or page.title
+        page.badge = request.POST.get('badge', '').strip()
+        page.subtitle = request.POST.get('subtitle', '').strip()
+        page.section_title = request.POST.get('section_title', '').strip()
+        page.section_content = request.POST.get('section_content', '').strip()
+        page.content = request.POST.get('content', '').strip()
+        page.meta_title = request.POST.get('meta_title', '').strip()
+        page.meta_description = request.POST.get('meta_description', '').strip()
+        page.is_active = (request.POST.get('is_active') == 'on')
+
+        if request.FILES.get('image'):
+            page.image = request.FILES.get('image')
+
+        page.save()
+        messages.success(request, f"Page '{page.title}' updated successfully!")
+        
+        if 'save_and_continue' in request.POST:
+            return redirect('page_edit', slug=page.slug)
+        return redirect('pages_list')
+
+    context = {
+        'page': page,
+        'setting': setting,
+        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+    }
+    return render(request, 'settings/page_edit.html', context)

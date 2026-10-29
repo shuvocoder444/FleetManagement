@@ -1,0 +1,257 @@
+{% extends 'landing/base_frontend.html' %}
+
+{% block title %}{{ page.meta_title|default:page.title|default:'Platform Features' }} - {{ site_setting.site_name|default:'Topd' }}{% endblock %}
+
+{% block content %}
+<!-- Admin Quick Edit Floating Bar -->
+{% if request.user.is_authenticated and request.user.is_superuser or request.user.role == 'superadmin' or request.user.role == 'admin' %}
+<div class="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-bold flex items-center justify-between border-b border-amber-600 shadow-xs">
+    <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-pen-to-square"></i>
+        <span>Admin Mode: You are viewing an editable CMS page (<strong>{{ page.title|default:'Platform Features' }}</strong>)</span>
+    </div>
+    <a href="{% url 'page_edit' slug='features' %}" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+        <i class="fa-solid fa-pencil text-[10px]"></i>
+        <span>Edit This Page</span>
+    </a>
+</div>
+{% endif %}
+
+<!-- Page Header Banner -->
+<section class="page-header-bg text-white py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="px-3.5 py-1 text-xs font-bold uppercase tracking-wider bg-red-600/30 border border-red-500/40 text-red-300 rounded-full">
+            {{ page.badge|default:'All-In-One SaaS Suite' }}
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mt-4 mb-3">
+            {{ page.title|default:t.features|default:'Platform Features' }}
+        </h1>
+        <p class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
+            {{ page.subtitle|default:'Discover all the built-in tools that make Topd the leading fleet and anti-fraud verification engine in Kyrgyzstan.' }}
+        </p>
+    </div>
+</section>
+
+
+<!-- Detailed Feature Sections -->
+<div class="py-16 space-y-24 bg-white">
+
+    <!-- Feature 1: Anti-Fraud Driver Check -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-5">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-100">
+                    🛡️ Anti-Fraud Verification
+                </span>
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                    Check Driver Background Before Handing Over Keys
+                </h2>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    Protect your expensive vehicles against dishonest renters. Our unified Anti-Fraud Verification Engine queries a shared regional database of driver histories.
+                </p>
+
+                <div class="space-y-3 pt-2">
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs sm:text-sm font-bold text-slate-900">Search by Passport or PIN</p>
+                            <p class="text-xs text-slate-500">Query using passport numbers or official 14-digit national identification numbers.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs sm:text-sm font-bold text-slate-900">7 Critical Incident Classifications</p>
+                            <p class="text-xs text-slate-500">Flags non-payment, vehicle disappearance, unpaid police fines, contract violations, accidents, and suspicious fraud behavior.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-xs flex-shrink-0 mt-0.5">
+                            <i class="fa-solid fa-check"></i>
+                        </div>
+                        <div>
+                            <p class="text-xs sm:text-sm font-bold text-slate-900">5-Star Agency Reputation Rating</p>
+                            <p class="text-xs text-slate-500">Check aggregate community ratings and private internal agency comments.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <a href="{% url 'drivers:check' %}" class="inline-flex items-center space-x-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl shadow-md shadow-red-200 transition">
+                        <i class="fa-solid fa-id-card-clip text-xs"></i>
+                        <span>Try Driver Check Tool</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Visual Preview Card -->
+            <div class="bg-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-slate-800 space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center font-bold">AT</div>
+                        <div>
+                            <p class="text-sm font-bold">Altynai Tashmatova</p>
+                            <p class="text-[11px] text-slate-400 font-mono">Passport: ID3876029</p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        VERIFIED
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 text-xs">
+                    <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/50">
+                        <span class="text-slate-400 text-[10px] uppercase">Safety Score</span>
+                        <p class="text-lg font-black text-emerald-400 mt-0.5">5.0 / 5.0</p>
+                    </div>
+                    <div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/50">
+                        <span class="text-slate-400 text-[10px] uppercase">Fraud Incidents</span>
+                        <p class="text-lg font-black text-white mt-0.5">0 Records</p>
+                    </div>
+                </div>
+
+                <div class="p-3 bg-emerald-950/40 rounded-xl border border-emerald-800/50 text-[11px] text-emerald-300 flex items-center space-x-2">
+                    <i class="fa-solid fa-shield-check text-base"></i>
+                    <span>Clean Record — Driver is approved for all vehicle classes.</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature 2: 3-Step Interactive Agreement Wizard -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Left Visual Card -->
+            <div class="order-2 lg:order-1 bg-gradient-to-br from-slate-50 to-red-50/30 rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xl space-y-4">
+                <div class="flex items-center space-x-2 pb-3 border-b border-slate-200">
+                    <span class="w-3 h-3 rounded-full bg-red-500"></span>
+                    <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                    <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                    <span class="text-xs font-bold text-slate-500 ml-2 font-mono">Contract Wizard (Step 2 of 3)</span>
+                </div>
+                <div class="space-y-3">
+                    <div class="p-3 bg-white rounded-xl border border-slate-200 text-xs flex justify-between items-center">
+                        <div>
+                            <p class="font-bold text-slate-900">Toyota Camry 70 (2022)</p>
+                            <p class="text-slate-400 text-[11px]">Plate: 01KG777AAA</p>
+                        </div>
+                        <span class="font-black text-red-600">$45.00 / day</span>
+                    </div>
+                    <div class="p-3 bg-white rounded-xl border border-slate-200 text-xs space-y-2">
+                        <p class="font-bold text-slate-800">📸 Pre-Handover Photos (Vehicle Condition)</p>
+                        <div class="grid grid-cols-3 gap-2">
+                            <div class="h-16 rounded-lg bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-xs">Front</div>
+                            <div class="h-16 rounded-lg bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-xs">Side Left</div>
+                            <div class="h-16 rounded-lg bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center text-slate-400 text-xs">Odometer</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Info -->
+            <div class="order-1 lg:order-2 space-y-5">
+                <span class="text-xs font-extrabold uppercase tracking-wider text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                    ✍️ Digital Contracts
+                </span>
+                <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
+                    Issue Legal Rental Agreements in Under 3 Minutes
+                </h2>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    Generate legally sound, customized contracts for any rental scenario without relying on cumbersome paper folders.
+                </p>
+
+                <div class="space-y-3">
+                    <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 flex items-center space-x-3">
+                        <i class="fa-solid fa-car text-red-600 text-lg"></i>
+                        <div>
+                            <p class="text-xs sm:text-sm font-bold text-slate-900">5 Supported Contract Modalities</p>
+                            <p class="text-xs text-slate-500">Short-Term Rental, Long-Term Rental, Leasing, Installment, and Vehicle Buyout.</p>
+                        </div>
+                    </div>
+                    <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 flex items-center space-x-3">
+                        <i class="fa-solid fa-camera text-red-600 text-lg"></i>
+                        <div>
+                            <p class="text-xs sm:text-sm font-bold text-slate-900">Pre-Rental Inspection Photos</p>
+                            <p class="text-xs text-slate-500">Record vehicle body condition, scratches, fuel levels, and odometer before handover.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature 3: Fleet Garage & Multi-Role Dashboards -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100">
+                🏢 Complete Fleet Control
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-3 mb-2">
+                Unified Ecosystem for Every Team Member
+            </h2>
+            <p class="text-sm text-slate-500">
+                Topd provides tailored dashboard interfaces for Super Administrators, Rental Companies, and Drivers.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white p-7 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+                <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-900">Super Admin Master Portal</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Full visibility over all subscribers, manual bank payment approvals, user management, and platform-wide website configuration.
+                </p>
+            </div>
+
+            <div class="bg-white p-7 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+                <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-building"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-900">Rental Company Portal</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Complete garage fleet management (Available, Rented, Maintenance), agreement creator, driver assignment, and live subscription status.
+                </p>
+            </div>
+
+            <div class="bg-white p-7 rounded-3xl border border-slate-200 shadow-xs space-y-4">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                    <i class="fa-solid fa-id-badge"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-900">Driver Portal</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Drivers can view their active assigned vehicle, review signed contracts, check personal performance ratings, and view incident history.
+                </p>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+<!-- CTA Banner -->
+<section class="bg-slate-900 text-white py-16 border-t border-slate-800">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
+        <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
+            Empower your operations with Topd today
+        </h2>
+        <p class="text-sm sm:text-base text-slate-300 max-w-xl mx-auto">
+            Choose a plan that fits your business or speak with our Bishkek operations team.
+        </p>
+        <div class="flex items-center justify-center space-x-4 pt-2">
+            <a href="{% url 'pricing' %}" class="px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl shadow-lg transition">
+                View Plans & Pricing
+            </a>
+            <a href="{% url 'contact' %}" class="px-8 py-3.5 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-semibold text-sm rounded-xl transition">
+                Contact Sales
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

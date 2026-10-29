@@ -1,0 +1,131 @@
+{% extends 'landing/base_frontend.html' %}
+
+{% block title %}{{ page.meta_title|default:page.title|default:'Privacy Policy' }} - {{ site_setting.site_name|default:'Topd' }}{% endblock %}
+
+{% block content %}
+<!-- Admin Quick Edit Floating Bar -->
+{% if request.user.is_authenticated and request.user.is_superuser or request.user.role == 'superadmin' or request.user.role == 'admin' %}
+<div class="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-bold flex items-center justify-between border-b border-amber-600 shadow-xs">
+    <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-pen-to-square"></i>
+        <span>Admin Mode: You are viewing an editable CMS page (<strong>{{ page.title|default:'Privacy Policy' }}</strong>)</span>
+    </div>
+    <a href="{% url 'page_edit' slug='privacy' %}" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+        <i class="fa-solid fa-pencil text-[10px]"></i>
+        <span>Edit This Page</span>
+    </a>
+</div>
+{% endif %}
+
+<!-- Page Header Banner -->
+<section class="page-header-bg text-white py-16 sm:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="px-3.5 py-1 text-xs font-bold uppercase tracking-wider bg-red-600/30 border border-red-500/40 text-red-300 rounded-full">
+            {{ page.badge|default:'Security & Trust' }}
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mt-4 mb-3">
+            {{ page.title|default:'Privacy Policy' }}
+        </h1>
+        <p class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
+            {{ page.subtitle|default:'Last updated: October 2026. How Topd collects, safeguards, and handles your business and driver data.' }}
+        </p>
+    </div>
+</section>
+
+<!-- Content Section -->
+<section class="py-16 sm:py-20 bg-slate-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white p-8 sm:p-12 rounded-3xl shadow-sm border border-slate-200 prose prose-slate max-w-none">
+            
+            {% if page.content %}
+            <!-- Dynamic Custom Content from Page CMS -->
+            <div class="space-y-6 text-sm text-slate-700 leading-relaxed">
+                {{ page.content|safe }}
+            </div>
+            {% else %}
+            <!-- Default Privacy Content -->
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">1. Overview and Commitment</h2>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    At <strong>{{ site_setting.site_name|default:'Topd' }}</strong>, we take the confidentiality and integrity of your company and driver information very seriously. This Privacy Policy details our practices concerning data collection, protection, and rights granted to users under the personal data laws of the Kyrgyz Republic.
+                </p>
+            </div>
+
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">2. Information We Collect</h2>
+                <p class="text-sm text-slate-600 leading-relaxed mb-3">
+                    In providing our fleet management and anti-fraud verification solutions, we process:
+                </p>
+                <div class="space-y-4">
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-900 mb-1">A. User & Company Account Data</h3>
+                        <p class="text-xs text-slate-600">Company registration names, tax IDs (INN), authorized representative names, email addresses, phone numbers, and encrypted account credentials.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-900 mb-1">B. Driver & Customer Information</h3>
+                        <p class="text-xs text-slate-600">Driver passport numbers, national ID numbers (PIN/INN), driver's license scans, phone numbers, verified rental histories, and incident records.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-900 mb-1">C. Vehicle & Fleet Operational Data</h3>
+                        <p class="text-xs text-slate-600">Vehicle VINs, license plate numbers, GPS telemetry (where tracking devices are integrated), inspection photographs, and maintenance records.</p>
+                    </div>
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <h3 class="text-sm font-bold text-slate-900 mb-1">D. Billing & Transaction Logs</h3>
+                        <p class="text-xs text-slate-600">Payment receipts, bank transfer slips, transaction IDs, invoice histories, and active plan statuses.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">3. How We Use This Information</h2>
+                <ul class="list-disc pl-5 space-y-2 text-sm text-slate-600">
+                    <li><strong>Cross-Verification & Fraud Prevention:</strong> Checking incoming rental applicants against verified damage and non-payment incidents reported by participating agencies.</li>
+                    <li><strong>Agreement Execution:</strong> Generating legally binding car rental agreements with digital timestamping and pre-rental condition photo evidence.</li>
+                    <li><strong>Customer Support:</strong> Assisting administrators with account troubleshooting, billing verification, and technical support.</li>
+                    <li><strong>Security & Auditing:</strong> Monitoring unauthorized access attempts and protecting system integrity.</li>
+                </ul>
+            </div>
+
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">4. Data Sharing & The Blacklist Network</h2>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    Driver blacklist data is shared strictly among authenticated and verified fleet operators on a need-to-know basis when performing a direct lookup. We do not sell personal data, driver profiles, or customer contacts to third-party advertising or marketing brokers under any circumstances.
+                </p>
+            </div>
+
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">5. Data Security Standards</h2>
+                <p class="text-sm text-slate-600 leading-relaxed mb-3">
+                    We employ modern industry security protocols to prevent data loss or compromise:
+                </p>
+                <ul class="list-disc pl-5 space-y-2 text-sm text-slate-600">
+                    <li>256-bit TLS/SSL encryption for all data in transit.</li>
+                    <li>Restricted database access protected by role-based authorization barriers.</li>
+                    <li>Daily automated backups and off-site snapshot preservation.</li>
+                </ul>
+            </div>
+
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">6. Driver Rights & Dispute Resolution</h2>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    Any driver who believes an incident report or blacklist entry regarding their record is erroneous, fraudulent, or outdated has the right to file an official review request. We provide a transparent appeal process requiring the reporting agency to provide legal verification or promptly remove inaccurate flags.
+                </p>
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">7. Contact Data Protection Officer</h2>
+                <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                    For privacy questions, data access requests, or dispute filings, reach out directly to our privacy officer:
+                </p>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1">
+                    <p><strong>Privacy Team:</strong> {{ setting.contact_email|default:'privacy@topd.kg' }}</p>
+                    <p><strong>Headquarters:</strong> {{ setting.address|default:'Chuy Avenue 124, Bishkek, Kyrgyz Republic' }}</p>
+                    <p><strong>Phone:</strong> {{ setting.contact_phone|default:'+996 555 123 456' }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+{% endblock %}

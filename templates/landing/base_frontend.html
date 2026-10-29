@@ -1,0 +1,302 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="{{ current_lang|default:'en' }}" class="h-full scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ site_setting.site_name|default:'Topd' }} - Car Rental, Fleet & Driver Verification{% endblock %}</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fef2f2',
+                            100: '#fee2e2',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        [x-cloak] { display: none !important; }
+        .hero-bg {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.94) 0%, rgba(220, 38, 38, 0.88) 100%), 
+                        url('https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        .page-header-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #991b1b 100%);
+        }
+    </style>
+</head>
+<body class="h-full flex flex-col bg-white text-gray-900 antialiased selection:bg-red-500 selection:text-white" x-data="{ mobileNavOpen: false }">
+
+    <!-- Flash Messages -->
+    {% if messages %}
+    <div class="fixed top-20 right-5 z-50 space-y-2 max-w-md w-full">
+        {% for message in messages %}
+        <div class="p-4 rounded-xl shadow-xl flex items-center justify-between text-white text-sm font-semibold {% if message.tags == 'error' %}bg-rose-600{% elif message.tags == 'warning' %}bg-amber-600{% else %}bg-emerald-600{% endif %}">
+            <div class="flex items-center space-x-2.5">
+                <i class="fa-solid {% if message.tags == 'error' %}fa-circle-exclamation{% else %}fa-circle-check{% endif %}"></i>
+                <span>{{ message }}</span>
+            </div>
+            <button onclick="this.parentElement.remove()" class="ml-3 text-white/80 hover:text-white text-lg">&times;</button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- 1. Header / Navigation Bar -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Brand Logo -->
+            <a href="{% url 'landing_page' %}" class="flex items-center space-x-2.5 group">
+                <div class="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white shadow-md shadow-red-200 group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-car-side text-lg"></i>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tight text-gray-900">
+                    <span class="text-red-600">{{ site_setting.site_name|default:'Topd' }}</span>
+                </span>
+            </a>
+
+            <!-- Navigation Links (Distinct Standalone Pages) -->
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                <a href="{% url 'landing_page' %}" 
+                   class="transition py-1 border-b-2 {% if request.path == '/' %}text-red-600 font-bold border-red-600{% else %}text-gray-600 hover:text-red-600 border-transparent{% endif %}">
+                    {{ t.home }}
+                </a>
+                <a href="{% url 'about' %}" 
+                   class="transition py-1 border-b-2 {% if '/about/' in request.path %}text-red-600 font-bold border-red-600{% else %}text-gray-600 hover:text-red-600 border-transparent{% endif %}">
+                    {{ t.about }}
+                </a>
+                <a href="{% url 'features' %}" 
+                   class="transition py-1 border-b-2 {% if '/features/' in request.path %}text-red-600 font-bold border-red-600{% else %}text-gray-600 hover:text-red-600 border-transparent{% endif %}">
+                    {{ t.features }}
+                </a>
+                <a href="{% url 'pricing' %}" 
+                   class="transition py-1 border-b-2 {% if '/pricing/' in request.path %}text-red-600 font-bold border-red-600{% else %}text-gray-600 hover:text-red-600 border-transparent{% endif %}">
+                    {{ t.pricing }}
+                </a>
+                <a href="{% url 'contact' %}" 
+                   class="transition py-1 border-b-2 {% if '/contact/' in request.path %}text-red-600 font-bold border-red-600{% else %}text-gray-600 hover:text-red-600 border-transparent{% endif %}">
+                    {{ t.contact }}
+                </a>
+            </nav>
+
+            <!-- Action Buttons & Tools -->
+            <div class="flex items-center space-x-3 sm:space-x-4">
+                
+                {% if request.user.is_authenticated %}
+                <!-- LOGGED IN: Show Dashboard Dropdown / Submenu -->
+                <div class="relative group">
+                    <button class="flex items-center space-x-2 text-xs sm:text-sm font-bold text-gray-800 bg-gray-100 hover:bg-red-50 hover:text-red-600 px-3.5 py-2 rounded-xl transition border border-gray-200/80 shadow-xs">
+                        <div class="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px] font-bold">
+                            {{ request.user.first_name|default:request.user.email|slice:":1"|upper }}
+                        </div>
+                        <span>{{ t.dashboard }}</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 group-hover:rotate-180 transition-transform"></i>
+                    </button>
+
+                    <!-- Submenu -->
+                    <div class="absolute right-0 mt-1.5 w-60 bg-white border border-gray-100 rounded-2xl shadow-2xl py-2 hidden group-hover:block transition-all z-50 divide-y divide-gray-100">
+                        <!-- User Card -->
+                        <div class="px-4 py-2.5">
+                            <p class="text-xs font-bold text-gray-900 truncate">{{ request.user.get_full_name|default:request.user.email }}</p>
+                            <p class="text-[10px] text-gray-500 capitalize font-medium flex items-center mt-0.5">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
+                                {{ request.user.role|default:'User'|title }}
+                            </p>
+                        </div>
+
+                        <!-- Submenu Items -->
+                        <div class="py-1.5 text-xs">
+                            <a href="{% url 'dashboard:index' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-semibold transition">
+                                <i class="fa-solid fa-gauge-high text-red-500 w-4"></i>
+                                <span>{{ t.dashboard }}</span>
+                            </a>
+                            <a href="{% url 'drivers:check' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium transition">
+                                <i class="fa-solid fa-id-card-clip text-slate-400 group-hover:text-red-500 w-4"></i>
+                                <span>{{ t.check_driver }}</span>
+                            </a>
+                            <a href="{% url 'billing:purchase' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium transition">
+                                <i class="fa-solid fa-credit-card text-emerald-500 w-4"></i>
+                                <span>Buy Subscription</span>
+                            </a>
+                            <a href="{% url 'billing:subscriptions' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium transition">
+                                <i class="fa-solid fa-receipt text-slate-400 w-4"></i>
+                                <span>{{ t.menu_my_subscription }}</span>
+                            </a>
+                            <a href="{% url 'agreements:create' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium transition">
+                                <i class="fa-solid fa-file-contract text-blue-500 w-4"></i>
+                                <span>{{ t.get_started }} / Create Agreement</span>
+                            </a>
+                        </div>
+
+                        <!-- Logout -->
+                        <div class="pt-1">
+                            <a href="{% url 'accounts:logout' %}" class="flex items-center space-x-2.5 px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 font-bold transition">
+                                <i class="fa-solid fa-arrow-right-from-bracket w-4"></i>
+                                <span>{{ t.logout }}</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {% else %}
+                <!-- NOT LOGGED IN: Login Link & Register Button -->
+                <a href="{% url 'accounts:login' %}" class="text-xs sm:text-sm font-semibold text-gray-700 hover:text-red-600 px-2 py-1.5 transition">
+                    {{ t.sign_in|default:'Login' }}
+                </a>
+                <a href="{% url 'accounts:register' %}" class="inline-flex items-center px-4 py-2 text-xs sm:text-sm font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-xs transition">
+                    <span>Register</span>
+                </a>
+                {% endif %}
+
+                <!-- Language Selector Dropdown -->
+                <div class="relative group">
+                    <button class="flex items-center space-x-1.5 text-xs sm:text-sm font-medium text-gray-700 hover:text-red-600 bg-gray-100 hover:bg-gray-200 px-2.5 py-1.5 rounded-lg transition border border-gray-200">
+                        <span>{% if current_lang == 'ru' %}🇷🇺 RU{% else %}🇬🇧 EN{% endif %}</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-gray-400"></i>
+                    </button>
+                    <div class="absolute right-0 mt-1 w-36 bg-white border border-gray-100 rounded-xl shadow-xl py-1 hidden group-hover:block transition-all z-50">
+                        <a href="{% url 'switch_language' 'en' %}" class="flex items-center justify-between px-4 py-2 text-xs text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium">
+                            <span>🇬🇧 English</span>
+                            {% if current_lang == 'en' %}<i class="fa-solid fa-check text-red-600 text-[10px]"></i>{% endif %}
+                        </a>
+                        <a href="{% url 'switch_language' 'ru' %}" class="flex items-center justify-between px-4 py-2 text-xs text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium">
+                            <span>🇷🇺 Русский</span>
+                            {% if current_lang == 'ru' %}<i class="fa-solid fa-check text-red-600 text-[10px]"></i>{% endif %}
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Mobile menu toggle -->
+                <button @click="mobileNavOpen = !mobileNavOpen" class="md:hidden text-gray-600 hover:text-gray-900 p-2">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div x-show="mobileNavOpen" x-cloak class="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-2">
+            <a href="{% url 'landing_page' %}" class="block px-3 py-2 text-sm font-semibold rounded-lg {% if request.path == '/' %}text-red-600 bg-red-50{% else %}text-gray-700 hover:bg-gray-50{% endif %}">{{ t.home }}</a>
+            <a href="{% url 'about' %}" class="block px-3 py-2 text-sm font-semibold rounded-lg {% if '/about/' in request.path %}text-red-600 bg-red-50{% else %}text-gray-700 hover:bg-gray-50{% endif %}">{{ t.about }}</a>
+            <a href="{% url 'features' %}" class="block px-3 py-2 text-sm font-semibold rounded-lg {% if '/features/' in request.path %}text-red-600 bg-red-50{% else %}text-gray-700 hover:bg-gray-50{% endif %}">{{ t.features }}</a>
+            <a href="{% url 'pricing' %}" class="block px-3 py-2 text-sm font-semibold rounded-lg {% if '/pricing/' in request.path %}text-red-600 bg-red-50{% else %}text-gray-700 hover:bg-gray-50{% endif %}">{{ t.pricing }}</a>
+            <a href="{% url 'contact' %}" class="block px-3 py-2 text-sm font-semibold rounded-lg {% if '/contact/' in request.path %}text-red-600 bg-red-50{% else %}text-gray-700 hover:bg-gray-50{% endif %}">{{ t.contact }}</a>
+        </div>
+    </header>
+
+    <!-- Main Page Content Block -->
+    <main class="flex-1">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Universal Footer -->
+    <footer class="bg-[#0b1325] text-gray-300 pt-16 pb-12 border-t border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-gray-800">
+                
+                <!-- Brand Info -->
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-2.5">
+                        <div class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white">
+                            <i class="fa-solid fa-car-side text-sm"></i>
+                        </div>
+                        <span class="text-xl font-bold tracking-tight text-white">{{ site_setting.site_name|default:'Topd' }}</span>
+                    </div>
+                    <p class="text-xs text-gray-400 leading-relaxed">
+                        {% if current_lang == 'ru' %}
+                        Ведущая платформа Кыргызстана по аренде, лизингу, управлению автопарком и проверке водителей.
+                        {% else %}
+                        Kyrgyzstan's premier digital platform for vehicle rentals, fleet management, and anti-fraud driver background checks.
+                        {% endif %}
+                    </p>
+                    <div class="flex space-x-4 pt-2">
+                        <a href="{{ site_setting.facebook_url|default:'#' }}" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-facebook-f text-sm"></i></a>
+                        <a href="{{ site_setting.twitter_url|default:'#' }}" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-x-twitter text-sm"></i></a>
+                        <a href="{{ site_setting.instagram_url|default:'#' }}" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-instagram text-sm"></i></a>
+                        <a href="{{ site_setting.linkedin_url|default:'#' }}" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-linkedin-in text-sm"></i></a>
+                    </div>
+                </div>
+
+                <!-- Navigation Pages -->
+                <div>
+                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">Quick Links</h4>
+                    <ul class="space-y-2.5 text-xs text-gray-400">
+                        <li><a href="{% url 'landing_page' %}" class="hover:text-white transition">{{ t.home }}</a></li>
+                        <li><a href="{% url 'about' %}" class="hover:text-white transition">{{ t.about }}</a></li>
+                        <li><a href="{% url 'features' %}" class="hover:text-white transition">{{ t.features }}</a></li>
+                        <li><a href="{% url 'pricing' %}" class="hover:text-white transition">{{ t.pricing }}</a></li>
+                        <li><a href="{% url 'contact' %}" class="hover:text-white transition">{{ t.contact }}</a></li>
+                    </ul>
+                </div>
+
+                <!-- Legal Pages -->
+                <div>
+                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">Legal & Privacy</h4>
+                    <ul class="space-y-2.5 text-xs text-gray-400">
+                        <li><a href="{% url 'terms' %}" class="hover:text-white transition">{% if current_lang == 'ru' %}Условия использования{% else %}Terms and Conditions{% endif %}</a></li>
+                        <li><a href="{% url 'privacy' %}" class="hover:text-white transition">{% if current_lang == 'ru' %}Политика конфиденциальности{% else %}Privacy Policy{% endif %}</a></li>
+                        <li><a href="{% url 'pricing' %}" class="hover:text-white transition">{% if current_lang == 'ru' %}Тарифы и подписка{% else %}Subscription Plans{% endif %}</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Details -->
+                <div>
+                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">{{ t.contact_us|default:'Contact Info' }}</h4>
+                    <ul class="space-y-2.5 text-xs text-gray-400">
+                        <li class="flex items-center space-x-2">
+                            <i class="fa-solid fa-location-dot text-red-500 text-[10px]"></i>
+                            <span>{{ site_setting.address|default:'Bishkek, Kyrgyzstan' }}</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fa-solid fa-phone text-red-500 text-[10px]"></i>
+                            <span>{{ site_setting.contact_phone|default:'+996 999 083 366' }}</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fa-solid fa-envelope text-red-500 text-[10px]"></i>
+                            <span>{{ site_setting.contact_email|default:'info@topd.kg' }}</span>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                            <i class="fa-solid fa-clock text-red-500 text-[10px]"></i>
+                            <span>{{ site_setting.working_hours|default:'Mon - Fri: 9:00 AM - 6:00 PM' }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="pt-8 text-center text-xs text-gray-500">
+                &copy; 2026 {{ site_setting.site_name|default:'Topd' }}. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

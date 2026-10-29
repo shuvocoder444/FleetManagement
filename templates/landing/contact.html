@@ -1,0 +1,247 @@
+{% extends 'landing/base_frontend.html' %}
+
+{% block title %}{{ page.meta_title|default:page.title|default:'Contact Us' }} - {{ site_setting.site_name|default:'Topd' }}{% endblock %}
+
+{% block content %}
+<!-- Admin Quick Edit Floating Bar -->
+{% if request.user.is_authenticated and request.user.is_superuser or request.user.role == 'superadmin' or request.user.role == 'admin' %}
+<div class="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-bold flex items-center justify-between border-b border-amber-600 shadow-xs">
+    <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-pen-to-square"></i>
+        <span>Admin Mode: You are viewing an editable CMS page (<strong>{{ page.title|default:'Contact Us' }}</strong>)</span>
+    </div>
+    <a href="{% url 'page_edit' slug='contact' %}" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+        <i class="fa-solid fa-pencil text-[10px]"></i>
+        <span>Edit This Page</span>
+    </a>
+</div>
+{% endif %}
+
+<!-- Page Header Banner -->
+<section class="page-header-bg text-white py-16 sm:py-24">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="px-3.5 py-1 text-xs font-bold uppercase tracking-wider bg-red-600/30 border border-red-500/40 text-red-300 rounded-full">
+            {{ page.badge|default:'Get In Touch' }}
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mt-4 mb-3">
+            {{ page.title|default:t.contact|default:'Contact Us' }}
+        </h1>
+        <p class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
+            {{ page.subtitle|default:'Have questions about fleet integration, driver verification, or custom enterprise plans? Our Bishkek team is here to help.' }}
+        </p>
+    </div>
+</section>
+
+<!-- Contact Form & Company Details -->
+<section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <!-- Left Column: Contact Form (7 cols) -->
+            <div class="lg:col-span-7 bg-white p-8 sm:p-10 rounded-3xl shadow-sm border border-slate-200">
+                <div class="mb-8">
+                    <span class="text-xs font-bold uppercase tracking-wider text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-100">
+                        Send a Message
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-3">
+                        {{ page.section_title|default:"We'd Love to Hear From You" }}
+                    </h2>
+                    <p class="text-sm text-slate-500 mt-1">
+                        {{ page.section_content|default:'Fill out the form below and we will respond within 24 business hours.' }}
+                    </p>
+                </div>
+
+                <form method="POST" action="{% url 'contact' %}" class="space-y-6">
+                    {% csrf_token %}
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div>
+                            <label for="id_name" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                                Full Name <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i class="fa-solid fa-user text-sm"></i>
+                                </div>
+                                <input type="text" id="id_name" name="name" required placeholder="Azamat Isakov"
+                                       class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="id_email" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                                Email Address <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                    <i class="fa-solid fa-envelope text-sm"></i>
+                                </div>
+                                <input type="email" id="id_email" name="email" required placeholder="azamat@company.kg"
+                                       class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="id_phone" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                            Phone Number
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-phone text-sm"></i>
+                            </div>
+                            <input type="text" id="id_phone" name="phone" placeholder="+996 555 123 456"
+                                   class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="id_message" class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                            Your Message <span class="text-red-500">*</span>
+                        </label>
+                        <textarea id="id_message" name="message" rows="5" required placeholder="Tell us how we can help your car rental company or fleet operations..."
+                                  class="w-full p-4 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-500 transition resize-none"></textarea>
+                    </div>
+
+                    <button type="submit" 
+                            class="w-full sm:w-auto inline-flex items-center justify-center space-x-2 px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-500/20 hover:scale-[1.02] active:scale-[0.98] transition">
+                        <span>Send Message</span>
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- Right Column: Contact Information Cards (5 cols) -->
+            <div class="lg:col-span-5 space-y-6">
+                
+                <!-- Main HQ Card -->
+                <div class="bg-slate-900 text-white p-8 rounded-3xl shadow-xl border border-slate-800">
+                    <h3 class="text-xl font-extrabold mb-6 flex items-center space-x-2">
+                        <span class="w-8 h-8 rounded-lg bg-red-600/30 text-red-400 flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-building"></i>
+                        </span>
+                        <span>Contact Information</span>
+                    </h3>
+
+                    <div class="space-y-6 text-sm">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-red-500 shrink-0">
+                                <i class="fa-solid fa-location-dot"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs uppercase tracking-wider text-slate-400 font-bold">Office Address</p>
+                                <p class="text-slate-200 font-medium mt-0.5 leading-snug">
+                                    {{ setting.address|default:'Chuy Avenue 124, 4th Floor, Bishkek, Kyrgyz Republic' }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-red-500 shrink-0">
+                                <i class="fa-solid fa-envelope"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs uppercase tracking-wider text-slate-400 font-bold">Email Support</p>
+                                <a href="mailto:{{ setting.contact_email|default:'support@topd.kg' }}" class="text-slate-200 hover:text-red-400 font-medium mt-0.5 block transition">
+                                    {{ setting.contact_email|default:'support@topd.kg' }}
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-red-500 shrink-0">
+                                <i class="fa-solid fa-phone"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs uppercase tracking-wider text-slate-400 font-bold">Phone Support</p>
+                                <a href="tel:{{ setting.contact_phone|default:'+996 555 123 456' }}" class="text-slate-200 hover:text-red-400 font-medium mt-0.5 block transition">
+                                    {{ setting.contact_phone|default:'+996 555 123 456' }}
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-red-500 shrink-0">
+                                <i class="fa-solid fa-clock"></i>
+                            </div>
+                            <div>
+                                <p class="text-xs uppercase tracking-wider text-slate-400 font-bold">Working Hours</p>
+                                <p class="text-slate-200 font-medium mt-0.5">
+                                    {{ setting.working_hours|default:'Monday - Saturday: 09:00 - 19:00 (GMT+6)' }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social Channels -->
+                    <div class="mt-8 pt-6 border-t border-slate-800 flex items-center space-x-3">
+                        {% if setting.facebook_url %}
+                        <a href="{{ setting.facebook_url }}" target="_blank" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-red-600 flex items-center justify-center text-slate-300 hover:text-white transition">
+                            <i class="fa-brands fa-facebook-f text-sm"></i>
+                        </a>
+                        {% endif %}
+                        {% if setting.instagram_url %}
+                        <a href="{{ setting.instagram_url }}" target="_blank" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-red-600 flex items-center justify-center text-slate-300 hover:text-white transition">
+                            <i class="fa-brands fa-instagram text-sm"></i>
+                        </a>
+                        {% endif %}
+                        {% if setting.linkedin_url %}
+                        <a href="{{ setting.linkedin_url }}" target="_blank" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-red-600 flex items-center justify-center text-slate-300 hover:text-white transition">
+                            <i class="fa-brands fa-linkedin-in text-sm"></i>
+                        </a>
+                        {% endif %}
+                        {% if setting.twitter_url %}
+                        <a href="{{ setting.twitter_url }}" target="_blank" class="w-9 h-9 rounded-lg bg-slate-800 hover:bg-red-600 flex items-center justify-center text-slate-300 hover:text-white transition">
+                            <i class="fa-brands fa-x-twitter text-sm"></i>
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Fast Verification Hotline / Support Card -->
+                <div class="bg-gradient-to-br from-red-600 to-rose-700 text-white p-6 rounded-3xl shadow-lg">
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                            <i class="fa-solid fa-headset text-sm"></i>
+                        </div>
+                        <h4 class="font-extrabold text-base">Direct Onboarding Assistance</h4>
+                    </div>
+                    <p class="text-xs text-red-100 leading-relaxed">
+                        Need immediate assistance onboarding your fleet or migrating existing customer databases? Message us directly on WhatsApp or Telegram.
+                    </p>
+                    <div class="mt-4 flex items-center space-x-2">
+                        <a href="https://t.me/" target="_blank" class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-bold transition">
+                            <i class="fa-brands fa-telegram"></i>
+                            <span>Telegram</span>
+                        </a>
+                        <a href="https://wa.me/" target="_blank" class="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-bold transition">
+                            <i class="fa-brands fa-whatsapp"></i>
+                            <span>WhatsApp</span>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bishkek Location Map Section -->
+<section class="py-12 bg-white border-t border-slate-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="rounded-3xl overflow-hidden border border-slate-200 shadow-sm bg-slate-100 p-8 sm:p-12 text-center">
+            <div class="w-14 h-14 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4">
+                <i class="fa-solid fa-map-location-dot text-2xl"></i>
+            </div>
+            <h3 class="text-xl font-extrabold text-slate-900 mb-2">Visit Our Bishkek Office</h3>
+            <p class="text-sm text-slate-600 max-w-xl mx-auto mb-6">
+                {{ setting.address|default:'Chuy Avenue 124, 4th Floor, Bishkek, Kyrgyz Republic' }}
+            </p>
+            <div class="inline-flex items-center space-x-2 px-5 py-2.5 bg-white border border-slate-300 rounded-xl text-xs font-bold text-slate-700 shadow-xs">
+                <i class="fa-solid fa-circle text-emerald-500 text-[8px] animate-pulse"></i>
+                <span>Open for In-Person Consultations Mon-Fri 09:00 - 18:00</span>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

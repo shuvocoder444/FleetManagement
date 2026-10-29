@@ -63,3 +63,47 @@ class ContactMessage(models.Model):
 
     def __str__(self):
         return f"Message from {self.name} ({self.email})"
+
+
+class FrontendPage(models.Model):
+    PAGE_CHOICES = [
+        ('home', 'Home Page'),
+        ('about', 'About Us'),
+        ('features', 'Features'),
+        ('pricing', 'Pricing Page Info'),
+        ('contact', 'Contact Us'),
+        ('terms', 'Terms & Conditions'),
+        ('privacy', 'Privacy Policy'),
+    ]
+
+    slug = models.SlugField(max_length=50, unique=True, choices=PAGE_CHOICES)
+    title = models.CharField(max_length=255)
+    badge = models.CharField(max_length=150, blank=True, null=True, help_text="Badge or category text (e.g. 'Our Mission & Platform')")
+    subtitle = models.TextField(blank=True, null=True, help_text="Header subtitle / introductory paragraph")
+    
+    # Section 1 (Headline + Content)
+    section_title = models.CharField(max_length=255, blank=True, null=True, help_text="Section title (e.g. 'Empowering Car Rental Companies With Technology & Trust')")
+    section_content = models.TextField(blank=True, null=True, help_text="Section narrative or supporting text")
+    
+    # Main Body / Full HTML Content
+    content = models.TextField(blank=True, null=True, help_text="Main HTML or formatted body content for the page")
+    
+    # Optional image
+    image = models.ImageField(upload_to='pages/', blank=True, null=True)
+    
+    # SEO
+    meta_title = models.CharField(max_length=255, blank=True, null=True)
+    meta_description = models.TextField(blank=True, null=True)
+    
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Frontend Page'
+        verbose_name_plural = 'Frontend Pages'
+        ordering = ['slug']
+
+    def __str__(self):
+        return f"{self.get_slug_display()} ({self.slug})"
+

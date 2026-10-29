@@ -11,5 +11,9 @@ urlpatterns = [
     path('manual-payments/<int:pk>/reject/', views.reject_payment, name='reject_payment'),
     path('subscriptions/', views.subscriptions_list, name='subscriptions'),
     path('plans/', views.plans_list, name='plans'),
+    path('plans/create/', views.plan_create, name='plan_create'),
+    path('plans/<int:pk>/edit/', views.plan_edit, name='plan_edit'),
+    path('plans/<int:pk>/delete/', views.plan_delete, name='plan_delete'),
 ]
+
 

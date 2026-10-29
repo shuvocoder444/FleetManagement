@@ -1,630 +1,246 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="{{ current_lang|default:'en' }}" class="scroll-smooth">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ site_setting.site_name|default:'Topd' }} - {{ t.hero_title }}</title>
-    
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: {
-                            50: '#fef2f2',
-                            100: '#fee2e2',
-                            200: '#fecaca',
-                            500: '#ef4444',
-                            600: '#dc2626',
-                            700: '#b91c1c',
-                        },
-                        darknavy: '#0f172a',
-                    }
-                }
-            }
-        }
-    </script>
+{% extends 'landing/base_frontend.html' %}
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
-    <!-- Google Fonts: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+{% block title %}{{ page.meta_title|default:site_setting.site_name|default:'Topd' }} - Car Rental, Fleet & Driver Verification Platform{% endblock %}
 
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .hero-bg {
-            background: linear-gradient(rgba(10, 15, 29, 0.75), rgba(10, 15, 29, 0.85)), url('{% static "images/hero-bg.jpg" %}');
-            background-size: cover;
-            background-position: center;
-        }
-        @media (min-width: 1024px) {
-            .hero-bg {
-                background: linear-gradient(rgba(10, 15, 29, 0.72), rgba(10, 15, 29, 0.82)), url('https://images.unsplash.com/photo-1506521781263-d8422e82f27a?auto=format&fit=crop&w=1920&q=80');
-                background-size: cover;
-                background-position: center;
-            }
-        }
-    </style>
-</head>
-<body class="bg-gray-50 text-gray-800 antialiased">
-
-    <!-- Flash Messages -->
-    {% if messages %}
-    <div class="fixed top-20 right-6 z-50 max-w-md space-y-2">
-        {% for message in messages %}
-        <div class="p-4 rounded-xl shadow-lg flex items-center justify-between text-white text-sm font-medium {% if message.tags == 'error' %}bg-red-600{% else %}bg-green-600{% endif %}">
-            <span>{{ message }}</span>
-            <button onclick="this.parentElement.remove()" class="ml-3 text-white/80 hover:text-white">&times;</button>
-        </div>
-        {% endfor %}
+{% block content %}
+<!-- Admin Quick Edit Floating Bar -->
+{% if request.user.is_authenticated and request.user.is_superuser or request.user.role == 'superadmin' or request.user.role == 'admin' %}
+<div class="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-bold flex items-center justify-between border-b border-amber-600 shadow-xs">
+    <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-pen-to-square"></i>
+        <span>Admin Mode: You are viewing an editable CMS page (<strong>Home Page</strong>)</span>
     </div>
-    {% endif %}
+    <a href="{% url 'page_edit' slug='home' %}" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+        <i class="fa-solid fa-pencil text-[10px]"></i>
+        <span>Edit This Page</span>
+    </a>
+</div>
+{% endif %}
 
-    <!-- 1. Header / Navigation -->
-    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <!-- Brand Logo -->
-            <a href="{% url 'landing_page' %}" class="flex items-center space-x-2 group">
-                <div class="w-10 h-10 rounded-xl bg-red-600 flex items-center justify-center text-white shadow-md shadow-red-200 group-hover:scale-105 transition-transform">
-                    <i class="fa-solid fa-car-side text-lg"></i>
-                </div>
-                <span class="text-2xl font-extrabold tracking-tight text-gray-900">
-                    <span class="text-red-600">{{ site_setting.site_name|default:'Topd' }}</span>
-                </span>
+<!-- 1. Hero Section -->
+<section class="relative hero-bg text-white py-24 sm:py-32 lg:py-40 flex items-center justify-center min-h-[580px]">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+        
+        <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-red-600/30 border border-red-500/40 text-xs sm:text-sm font-semibold text-red-200 mb-6 backdrop-blur-sm">
+            <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
+            <span>{{ page.badge|default:"Kyrgyzstan's #1 Fleet & Verification Hub" }}</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight sm:leading-tight mb-6">
+            {{ page.title|default:t.hero_title|default:"Kyrgyzstan's First Unified Vehicle Rental Platform" }}
+        </h1>
+        
+        <p class="text-base sm:text-lg lg:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed mb-10 font-normal">
+            {{ page.subtitle|default:t.hero_subtitle|default:"Streamline your vehicle rental, leasing, and installment operations with our comprehensive platform. Connect with customers, manage contracts, and grow your business efficiently." }}
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="{% url 'pricing' %}" class="w-full sm:w-auto px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-900/50 hover:shadow-red-900/70 transition flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-rocket text-xs"></i>
+                <span>{{ t.get_started|default:'Get Started' }}</span>
             </a>
+            <a href="{% url 'about' %}" class="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/20 border border-white/30 backdrop-blur-md text-white font-semibold text-sm rounded-xl transition flex items-center justify-center space-x-2">
+                <i class="fa-solid fa-circle-play text-xs"></i>
+                <span>{{ t.learn_more|default:'Learn More' }}</span>
+            </a>
+        </div>
+    </div>
+</section>
 
-            <!-- Navigation Links -->
-            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-600">
-                <a href="#home" class="text-red-600 font-semibold hover:text-red-700 transition">{{ t.home }}</a>
-                <a href="#how-it-works" class="hover:text-red-600 transition">{{ t.about }}</a>
-                <a href="#benefits" class="hover:text-red-600 transition">{{ t.features }}</a>
-                <a href="#pricing" class="hover:text-red-600 transition">{{ t.pricing }}</a>
-                <a href="#contact" class="hover:text-red-600 transition">{{ t.contact }}</a>
-            </nav>
-
-            <!-- Action Buttons & Tools -->
-            <div class="flex items-center space-x-3 sm:space-x-4">
-                <!-- Language Selector Dropdown -->
-                <div class="relative group">
-                    <button class="flex items-center space-x-1 text-xs sm:text-sm font-medium text-gray-700 hover:text-red-600 bg-gray-100 hover:bg-gray-200 px-2.5 py-1.5 rounded-lg transition">
-                        <span>{% if current_lang == 'ru' %}🇷🇺 RU{% else %}🇬🇧 EN{% endif %}</span>
-                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
-                    </button>
-                    <div class="absolute right-0 mt-1 w-36 bg-white border border-gray-100 rounded-xl shadow-xl py-1 hidden group-hover:block transition-all z-50">
-                        <a href="{% url 'switch_language' 'en' %}" class="flex items-center justify-between px-4 py-2 text-xs text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium">
-                            <span>🇬🇧 English</span>
-                            {% if current_lang == 'en' %}<i class="fa-solid fa-check text-red-600 text-[10px]"></i>{% endif %}
-                        </a>
-                        <a href="{% url 'switch_language' 'ru' %}" class="flex items-center justify-between px-4 py-2 text-xs text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium">
-                            <span>🇷🇺 Русский</span>
-                            {% if current_lang == 'ru' %}<i class="fa-solid fa-check text-red-600 text-[10px]"></i>{% endif %}
-                        </a>
-                    </div>
-                </div>
-
-                {% if request.user.is_authenticated %}
-                <!-- LOGGED IN: Show Dashboard Dropdown / Submenu with Dashboard, Check Driver, Get Started, Subscriptions, Logout -->
-                <div class="relative group">
-                    <button class="flex items-center space-x-2 text-xs sm:text-sm font-bold text-gray-800 bg-gray-100 hover:bg-red-50 hover:text-red-600 px-3.5 py-2 rounded-xl transition border border-gray-200/80 shadow-xs">
-                        <div class="w-6 h-6 rounded-full bg-red-600 text-white flex items-center justify-center text-[10px] font-bold">
-                            {{ request.user.first_name|default:request.user.email|slice:":1"|upper }}
-                        </div>
-                        <span>{{ t.dashboard }}</span>
-                        <i class="fa-solid fa-chevron-down text-[10px] text-gray-400 group-hover:rotate-180 transition-transform"></i>
-                    </button>
-
-                    <!-- Submenu -->
-                    <div class="absolute right-0 mt-1.5 w-60 bg-white border border-gray-100 rounded-2xl shadow-2xl py-2 hidden group-hover:block transition-all z-50 divide-y divide-gray-100">
-                        <!-- User Card -->
-                        <div class="px-4 py-2.5">
-                            <p class="text-xs font-bold text-gray-900 truncate">{{ request.user.get_full_name|default:request.user.email }}</p>
-                            <p class="text-[10px] text-gray-500 capitalize font-medium flex items-center mt-0.5">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1.5"></span>
-                                {{ request.user.role|default:'User'|title }}
-                            </p>
-                        </div>
-
-                        <!-- Submenu Items -->
-                        <div class="py-1.5 text-xs">
-                            <a href="{% url 'dashboard:index' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-semibold transition">
-                                <i class="fa-solid fa-gauge-high text-red-500 w-4"></i>
-                                <span>{{ t.dashboard }}</span>
-                            </a>
-                            <a href="{% url 'drivers:check' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium transition">
-                                <i class="fa-solid fa-id-card-clip text-slate-400 group-hover:text-red-500 w-4"></i>
-                                <span>{{ t.check_driver }}</span>
-                            </a>
-                            <a href="{% url 'billing:purchase' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium transition">
-                                <i class="fa-solid fa-credit-card text-emerald-500 w-4"></i>
-                                <span>Buy Subscription (Manual)</span>
-                            </a>
-                            <a href="{% url 'billing:subscriptions' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium transition">
-                                <i class="fa-solid fa-receipt text-slate-400 w-4"></i>
-                                <span>{{ t.menu_my_subscription }}</span>
-                            </a>
-                            <a href="{% url 'agreements:create' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium transition">
-                                <i class="fa-solid fa-file-contract text-blue-500 w-4"></i>
-                                <span>{{ t.get_started }} / Create Agreement</span>
-                            </a>
-                        </div>
-
-                        <!-- Logout -->
-                        <div class="pt-1">
-                            <a href="{% url 'accounts:logout' %}" class="flex items-center space-x-2.5 px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 font-bold transition">
-                                <i class="fa-solid fa-arrow-right-from-bracket w-4"></i>
-                                <span>{{ t.logout }}</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                {% else %}
-                <!-- NOT LOGGED IN: Show Login Button -->
-                <a href="{% url 'accounts:login' %}" class="inline-flex items-center space-x-1.5 px-4 py-2 text-xs sm:text-sm font-bold text-white bg-red-600 rounded-xl shadow-sm hover:bg-red-700 hover:shadow-md transition">
-                    <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
-                    <span>{{ t.sign_in|default:'Login' }}</span>
-                </a>
-                {% endif %}
+<!-- 2. Live Metrics / Statistics Bar -->
+<section class="bg-slate-900 text-white py-10 border-y border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60">
+                <p class="text-3xl sm:text-4xl font-black text-red-500">1,200+</p>
+                <p class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">Agreements Created</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60">
+                <p class="text-3xl sm:text-4xl font-black text-emerald-400">550+</p>
+                <p class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">Verified Drivers</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60">
+                <p class="text-3xl sm:text-4xl font-black text-amber-400">380+</p>
+                <p class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">Fleet Vehicles</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60">
+                <p class="text-3xl sm:text-4xl font-black text-blue-400">99.8%</p>
+                <p class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">Fraud Prevention</p>
             </div>
         </div>
-    </header>
+    </div>
+</section>
 
-    <!-- 2. Hero Section -->
-    <section id="home" class="relative hero-bg text-white py-28 sm:py-36 lg:py-44 flex items-center justify-center min-h-[580px]">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight sm:leading-tight mb-6">
-                {{ t.hero_title }}
-            </h1>
-            <p class="text-base sm:text-lg lg:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed mb-10 font-normal">
-                {{ t.hero_subtitle }}
-            </p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="#pricing" class="w-full sm:w-auto px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-lg shadow-lg shadow-red-900/50 transition">
-                    {{ t.get_started }}
-                </a>
-                <a href="{% url 'drivers:check' %}" class="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/20 border border-white/30 text-white font-semibold text-sm rounded-lg backdrop-blur-sm transition">
-                    {{ t.check_data }}
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3. How It Works Section -->
-    <section id="how-it-works" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-16">
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
-                    {{ t.how_it_works }}
-                </h2>
-                <p class="text-sm sm:text-base text-gray-500">
-                    {{ t.how_it_works_sub }}
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Step 1 -->
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-xl shadow-gray-100/70 hover:shadow-2xl transition-all duration-300 text-center flex flex-col items-center group">
-                    <div class="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-2xl mb-6 group-hover:bg-red-600 group-hover:text-white transition-colors duration-300 shadow-sm">
-                        <i class="fa-regular fa-user"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ t.step_1_title }}</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed">{{ t.step_1_desc }}</p>
-                </div>
-
-                <!-- Step 2 -->
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-xl shadow-gray-100/70 hover:shadow-2xl transition-all duration-300 text-center flex flex-col items-center group">
-                    <div class="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-2xl mb-6 group-hover:bg-red-600 group-hover:text-white transition-colors duration-300 shadow-sm">
-                        <i class="fa-regular fa-file-lines"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ t.step_2_title }}</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed">{{ t.step_2_desc }}</p>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="bg-white rounded-2xl p-8 border border-gray-100 shadow-xl shadow-gray-100/70 hover:shadow-2xl transition-all duration-300 text-center flex flex-col items-center group">
-                    <div class="w-16 h-16 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-2xl mb-6 group-hover:bg-red-600 group-hover:text-white transition-colors duration-300 shadow-sm">
-                        <i class="fa-solid fa-chart-line"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">{{ t.step_3_title }}</h3>
-                    <p class="text-sm text-gray-500 leading-relaxed">{{ t.step_3_desc }}</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 4. Who It's For Section -->
-    <section class="py-20 bg-gray-50/70">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-16">
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
-                    {{ t.who_its_for }}
-                </h2>
-                <p class="text-sm sm:text-base text-gray-500">
-                    {{ t.who_its_for_sub }}
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Persona 1 -->
-                <div class="bg-[#fef2f2] rounded-2xl p-8 border border-red-100/70 text-center flex flex-col items-center hover:scale-[1.02] transition-transform">
-                    <div class="w-12 h-12 rounded-xl bg-white text-red-600 flex items-center justify-center text-xl mb-5 shadow-sm">
-                        <i class="fa-solid fa-mobile-screen"></i>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-900 mb-2">{{ t.target_1_title }}</h3>
-                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">{{ t.target_1_desc }}</p>
-                </div>
-
-                <!-- Persona 2 -->
-                <div class="bg-[#fef2f2] rounded-2xl p-8 border border-red-100/70 text-center flex flex-col items-center hover:scale-[1.02] transition-transform">
-                    <div class="w-12 h-12 rounded-xl bg-white text-red-600 flex items-center justify-center text-xl mb-5 shadow-sm">
-                        <i class="fa-solid fa-hand-holding-heart"></i>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-900 mb-2">{{ t.target_2_title }}</h3>
-                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">{{ t.target_2_desc }}</p>
-                </div>
-
-                <!-- Persona 3 -->
-                <div class="bg-[#fef2f2] rounded-2xl p-8 border border-red-100/70 text-center flex flex-col items-center hover:scale-[1.02] transition-transform">
-                    <div class="w-12 h-12 rounded-xl bg-white text-red-600 flex items-center justify-center text-xl mb-5 shadow-sm">
-                        <i class="fa-regular fa-user"></i>
-                    </div>
-                    <h3 class="text-base font-bold text-gray-900 mb-2">{{ t.target_3_title }}</h3>
-                    <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">{{ t.target_3_desc }}</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. Key Benefits Section -->
-    <section id="benefits" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-16">
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
-                    {{ t.key_benefits }}
-                </h2>
-                <p class="text-sm sm:text-base text-gray-500">
-                    {{ t.key_benefits_sub }}
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Benefit 1 -->
-                <div class="flex items-start space-x-4">
-                    <div class="w-10 h-10 rounded-full bg-red-600 text-white flex-shrink-0 flex items-center justify-center text-base shadow-md shadow-red-200">
-                        <i class="fa-solid fa-star"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-base font-bold text-gray-900 mb-1">{{ t.benefit_1_title }}</h4>
-                        <p class="text-xs sm:text-sm text-gray-500">{{ t.benefit_1_desc }}</p>
-                    </div>
-                </div>
-
-                <!-- Benefit 2 -->
-                <div class="flex items-start space-x-4">
-                    <div class="w-10 h-10 rounded-full bg-red-600 text-white flex-shrink-0 flex items-center justify-center text-base shadow-md shadow-red-200">
-                        <i class="fa-solid fa-clock-rotate-left"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-base font-bold text-gray-900 mb-1">{{ t.benefit_2_title }}</h4>
-                        <p class="text-xs sm:text-sm text-gray-500">{{ t.benefit_2_desc }}</p>
-                    </div>
-                </div>
-
-                <!-- Benefit 3 -->
-                <div class="flex items-start space-x-4">
-                    <div class="w-10 h-10 rounded-full bg-red-600 text-white flex-shrink-0 flex items-center justify-center text-base shadow-md shadow-red-200">
-                        <i class="fa-regular fa-file-lines"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-base font-bold text-gray-900 mb-1">{{ t.benefit_3_title }}</h4>
-                        <p class="text-xs sm:text-sm text-gray-500">{{ t.benefit_3_desc }}</p>
-                    </div>
-                </div>
-
-                <!-- Benefit 4 -->
-                <div class="flex items-start space-x-4">
-                    <div class="w-10 h-10 rounded-full bg-red-600 text-white flex-shrink-0 flex items-center justify-center text-base shadow-md shadow-red-200">
-                        <i class="fa-solid fa-chart-pie"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-base font-bold text-gray-900 mb-1">{{ t.benefit_4_title }}</h4>
-                        <p class="text-xs sm:text-sm text-gray-500">{{ t.benefit_4_desc }}</p>
-                    </div>
-                </div>
-
-                <!-- Benefit 5 -->
-                <div class="flex items-start space-x-4">
-                    <div class="w-10 h-10 rounded-full bg-red-600 text-white flex-shrink-0 flex items-center justify-center text-base shadow-md shadow-red-200">
-                        <i class="fa-solid fa-mobile-screen-button"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-base font-bold text-gray-900 mb-1">{{ t.benefit_5_title }}</h4>
-                        <p class="text-xs sm:text-sm text-gray-500">{{ t.benefit_5_desc }}</p>
-                    </div>
-                </div>
-
-                <!-- Benefit 6 -->
-                <div class="flex items-start space-x-4">
-                    <div class="w-10 h-10 rounded-full bg-red-600 text-white flex-shrink-0 flex items-center justify-center text-base shadow-md shadow-red-200">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-base font-bold text-gray-900 mb-1">{{ t.benefit_6_title }}</h4>
-                        <p class="text-xs sm:text-sm text-gray-500">{{ t.benefit_6_desc }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 6. Pricing Models Section -->
-    <section id="pricing" class="py-20 bg-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-16">
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
-                    {{ t.pricing_title }}
-                </h2>
-                <p class="text-sm sm:text-base text-gray-500">
-                    {{ t.pricing_sub }}
-                </p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto items-stretch">
-                <!-- Plan 1 -->
-                <div class="bg-white rounded-2xl overflow-hidden border border-gray-200 shadow-lg flex flex-col">
-                    <div class="bg-red-600 text-white p-6 text-center">
-                        <h3 class="text-xl font-bold tracking-tight mb-1">{{ t.plan_1_name }}</h3>
-                        <p class="text-xs text-red-100">{{ t.plan_1_sub }}</p>
-                    </div>
-
-                    <div class="p-8 flex-1 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-baseline justify-center mb-8">
-                                <span class="text-4xl font-extrabold text-gray-900">{{ t.plan_1_price }}</span>
-                                <span class="text-gray-500 text-sm ml-1.5 font-medium">{{ t.plan_1_unit }}</span>
-                            </div>
-
-                            <ul class="space-y-4 text-sm text-gray-600 mb-8">
-                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_1_f1 }}</span></li>
-                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_1_f2 }}</span></li>
-                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_1_f3 }}</span></li>
-                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_1_f4 }}</span></li>
-                            </ul>
-                        </div>
-
-                        <a href="{% url 'billing:purchase' %}?plan=2" class="w-full py-3.5 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl text-center shadow-md transition flex items-center justify-center space-x-2">
-                            <i class="fa-solid fa-credit-card text-xs"></i>
-                            <span>{{ t.plan_1_btn }}</span>
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Plan 2 -->
-                <div class="bg-white rounded-2xl overflow-hidden border-2 border-red-500 shadow-xl flex flex-col relative">
-                    <div class="absolute top-3 right-3 bg-red-100 text-red-700 text-[10px] uppercase tracking-wider font-extrabold px-3 py-1 rounded-full border border-red-200">
-                        {{ t.plan_2_badge }}
-                    </div>
-
-                    <div class="bg-red-600 text-white p-6 text-center">
-                        <h3 class="text-xl font-bold tracking-tight mb-1">{{ t.plan_2_name }}</h3>
-                        <p class="text-xs text-red-100">{{ t.plan_2_sub }}</p>
-                    </div>
-
-                    <div class="p-8 flex-1 flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-baseline justify-center mb-8">
-                                <span class="text-4xl font-extrabold text-gray-900">{{ t.plan_2_price }}</span>
-                                <span class="text-gray-500 text-sm ml-1.5 font-medium">{{ t.plan_2_unit }}</span>
-                            </div>
-
-                            <ul class="space-y-4 text-sm text-gray-600 mb-8">
-                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_2_f1 }}</span></li>
-                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_2_f2 }}</span></li>
-                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_2_f3 }}</span></li>
-                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_2_f4 }}</span></li>
-                                <li class="flex items-center space-x-3"><i class="fa-solid fa-check text-green-500 text-sm"></i><span>{{ t.plan_2_f5 }}</span></li>
-                            </ul>
-                        </div>
-
-                        <a href="{% url 'billing:purchase' %}?plan=3" class="w-full py-3.5 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl text-center shadow-md transition flex items-center justify-center space-x-2">
-                            <i class="fa-solid fa-credit-card text-xs"></i>
-                            <span>{{ t.plan_2_btn }}</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 7. CTA Banner -->
-    <section class="bg-red-600 text-white py-16">
-        <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-            <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-4">
-                {{ t.cta_title }}
+<!-- 3. How It Works Teaser -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
+                {{ t.how_it_works|default:'How It Works' }}
             </h2>
-            <p class="text-sm sm:text-base text-red-100 max-w-xl mx-auto mb-8 font-normal">
-                {{ t.cta_sub }}
+            <p class="text-sm sm:text-base text-gray-500">
+                {{ t.how_it_works_sub|default:'Simple and efficient process to get you started in minutes' }}
             </p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a href="#pricing" class="w-full sm:w-auto px-8 py-3 bg-white text-red-600 hover:bg-gray-100 font-bold text-sm rounded-lg shadow-md transition">
-                    {{ t.get_started }}
-                </a>
-                <a href="#contact" class="w-full sm:w-auto px-8 py-3 bg-red-700/60 hover:bg-red-700 border border-white/40 text-white font-semibold text-sm rounded-lg transition">
-                    {{ t.learn_more }}
-                </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Step 1 -->
+            <div class="bg-gray-50/80 rounded-2xl p-8 border border-gray-100 flex flex-col items-center text-center relative group hover:border-red-200 transition">
+                <div class="w-16 h-16 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-2xl font-black mb-6 shadow-sm group-hover:scale-105 transition-transform">
+                    1
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">{{ t.step_1_title|default:'Register & Setup' }}</h3>
+                <p class="text-xs sm:text-sm text-gray-500 leading-relaxed">{{ t.step_1_desc|default:'Create your account and complete your business profile in minutes.' }}</p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="bg-gray-50/80 rounded-2xl p-8 border border-gray-100 flex flex-col items-center text-center relative group hover:border-red-200 transition">
+                <div class="w-16 h-16 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-2xl font-black mb-6 shadow-sm group-hover:scale-105 transition-transform">
+                    2
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">{{ t.step_2_title|default:'Verify Drivers & Cars' }}</h3>
+                <p class="text-xs sm:text-sm text-gray-500 leading-relaxed">{{ t.step_2_desc|default:'Add your fleet cars and check driver background against the unified fraud database.' }}</p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="bg-gray-50/80 rounded-2xl p-8 border border-gray-100 flex flex-col items-center text-center relative group hover:border-red-200 transition">
+                <div class="w-16 h-16 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-2xl font-black mb-6 shadow-sm group-hover:scale-105 transition-transform">
+                    3
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">{{ t.step_3_title|default:'Generate Contracts' }}</h3>
+                <p class="text-xs sm:text-sm text-gray-500 leading-relaxed">{{ t.step_3_desc|default:'Issue legal digital agreements with pre-rental condition photos and digital signatures.' }}</p>
             </div>
         </div>
-    </section>
 
-    <!-- 8. Contact Us Section -->
-    <section id="contact" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center max-w-2xl mx-auto mb-16">
-                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">
-                    {{ t.contact_us }}
-                </h2>
-                <p class="text-sm sm:text-base text-gray-500">
-                    {{ t.contact_sub }}
+        <div class="text-center mt-12">
+            <a href="{% url 'about' %}" class="inline-flex items-center space-x-2 text-sm font-bold text-red-600 hover:text-red-700">
+                <span>Read our full company story & roadmap</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- 4. Key Highlights & Features Showcase Teaser -->
+<section class="py-20 bg-slate-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <span class="text-xs font-bold uppercase tracking-wider text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-100">
+                Features & Benefits
+            </span>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mt-3 mb-2">
+                {{ t.why_choose_title|default:'Why Choose Our Platform' }}
+            </h2>
+            <p class="text-sm text-gray-500">
+                Comprehensive fleet software designed specifically for the Central Asian car rental market.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white p-7 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition">
+                <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xl mb-4">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-900 mb-2">Anti-Fraud Driver Check</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Search driver history by passport or PIN to instantly uncover unpaid fines, disappeared cars, or contract violations before handing over keys.
                 </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 max-w-6xl mx-auto">
-                <!-- Left Details -->
-                <div class="lg:col-span-5 space-y-6">
-                    <h3 class="text-lg font-bold text-gray-900 mb-6">{{ t.get_in_touch }}</h3>
-
-                    <div class="flex items-start space-x-4">
-                        <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-base flex-shrink-0">
-                            <i class="fa-solid fa-location-dot"></i>
-                        </div>
-                        <div>
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">{{ t.address_label }}</span>
-                            <span class="text-sm font-medium text-gray-800">{{ site_setting.address|default:'Bishkek, Kyrgyzstan' }}</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start space-x-4">
-                        <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-base flex-shrink-0">
-                            <i class="fa-solid fa-phone"></i>
-                        </div>
-                        <div>
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">{{ t.phone_label }}</span>
-                            <span class="text-sm font-medium text-gray-800">{{ site_setting.contact_phone|default:'+996 999 083 366' }}</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start space-x-4">
-                        <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-base flex-shrink-0">
-                            <i class="fa-solid fa-envelope"></i>
-                        </div>
-                        <div>
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">{{ t.email_label }}</span>
-                            <span class="text-sm font-medium text-gray-800">{{ site_setting.contact_email|default:'info@topd.kg' }}</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-start space-x-4">
-                        <div class="w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-base flex-shrink-0">
-                            <i class="fa-solid fa-clock"></i>
-                        </div>
-                        <div>
-                            <span class="block text-xs font-semibold uppercase tracking-wider text-gray-400">{{ t.hours_label }}</span>
-                            <span class="text-sm font-medium text-gray-800">{{ site_setting.working_hours|default:'Monday - Friday: 9:00 AM - 6:00 PM' }}</span>
-                        </div>
-                    </div>
+            <div class="bg-white p-7 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-4">
+                    <i class="fa-solid fa-file-signature"></i>
                 </div>
+                <h3 class="text-base font-bold text-slate-900 mb-2">3-Step Agreement Wizard</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Quickly generate short-term, long-term, leasing, and installment contracts complete with photo inspection records.
+                </p>
+            </div>
 
-                <!-- Right Form -->
-                <div class="lg:col-span-7 bg-white p-8 rounded-2xl border border-gray-100 shadow-xl shadow-gray-100">
-                    <form method="POST" action="{% url 'landing_page' %}#contact" class="space-y-4">
-                        {% csrf_token %}
-                        <input type="hidden" name="contact_submit" value="1">
-
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">{{ t.full_name_label }}</label>
-                            <input type="text" name="name" required placeholder="Maximum 50 characters" maxlength="50" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition">
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">{{ t.email_address_label }}</label>
-                                <input type="email" name="email" required placeholder="name@email.com" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">{{ t.phone_number_label }}</label>
-                                <input type="text" name="phone" placeholder="+996 ..." class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1">{{ t.message_label }}</label>
-                            <textarea name="message" rows="4" required placeholder="Maximum 500 characters" maxlength="500" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition"></textarea>
-                        </div>
-
-                        <button type="submit" class="w-full py-3.5 px-6 bg-red-600 hover:bg-red-700 text-white font-semibold text-sm rounded-xl shadow-md transition">
-                            {{ t.send_message }}
-                        </button>
-                    </form>
+            <div class="bg-white p-7 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition">
+                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4">
+                    <i class="fa-solid fa-warehouse"></i>
                 </div>
+                <h3 class="text-base font-bold text-slate-900 mb-2">Fleet & Garage Management</h3>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Organize your vehicles by status (Available, Rented, Leased, Maintenance), upload documents and track maintenance.
+                </p>
             </div>
         </div>
-    </section>
 
-    <!-- 9. Footer -->
-    <footer class="bg-[#0b1325] text-gray-300 pt-16 pb-12 border-t border-gray-800">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 pb-12 border-b border-gray-800">
-                <div class="space-y-4">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 rounded-lg bg-red-600 flex items-center justify-center text-white">
-                            <i class="fa-solid fa-car-side text-sm"></i>
-                        </div>
-                        <span class="text-xl font-bold tracking-tight text-white">{{ site_setting.site_name|default:'Topd' }}</span>
-                    </div>
-                    <p class="text-xs text-gray-400 leading-relaxed">
-                        {% if current_lang == 'ru' %}
-                        Ведущая платформа Кыргызстана по аренде, лизингу и выкупу автомобилей.
-                        {% else %}
-                        Kyrgyzstan's leading platform for vehicle rental, leasing, and installment services.
-                        {% endif %}
-                    </p>
-                    <div class="flex space-x-4 pt-2">
-                        <a href="{{ site_setting.facebook_url }}" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-facebook-f text-sm"></i></a>
-                        <a href="{{ site_setting.twitter_url }}" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-x-twitter text-sm"></i></a>
-                        <a href="{{ site_setting.instagram_url }}" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-instagram text-sm"></i></a>
-                        <a href="{{ site_setting.linkedin_url }}" class="text-gray-400 hover:text-white transition"><i class="fa-brands fa-linkedin-in text-sm"></i></a>
-                    </div>
-                </div>
-
-                <div>
-                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">{{ t.features }}</h4>
-                    <ul class="space-y-2.5 text-xs text-gray-400">
-                        <li><a href="#how-it-works" class="hover:text-white transition">{{ t.about }}</a></li>
-                        <li><a href="#benefits" class="hover:text-white transition">{{ t.features }}</a></li>
-                        <li><a href="#pricing" class="hover:text-white transition">{{ t.pricing }}</a></li>
-                        <li><a href="#contact" class="hover:text-white transition">{{ t.contact }}</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">Legal</h4>
-                    <ul class="space-y-2.5 text-xs text-gray-400">
-                        <li><a href="#" class="hover:text-white transition">{% if current_lang == 'ru' %}Условия использования{% else %}Terms and Conditions{% endif %}</a></li>
-                        <li><a href="#" class="hover:text-white transition">{% if current_lang == 'ru' %}Политика конфиденциальности{% else %}Privacy Policy{% endif %}</a></li>
-                        <li><a href="#" class="hover:text-white transition">{% if current_lang == 'ru' %}Правила возврата{% else %}Return Policy{% endif %}</a></li>
-                    </ul>
-                </div>
-
-                <div>
-                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">{{ t.contact_us }}</h4>
-                    <ul class="space-y-2.5 text-xs text-gray-400">
-                        <li class="flex items-center space-x-2">
-                            <i class="fa-solid fa-location-dot text-red-500 text-[10px]"></i>
-                            <span>{{ site_setting.address|default:'Bishkek, Kyrgyzstan' }}</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fa-solid fa-phone text-red-500 text-[10px]"></i>
-                            <span>{{ site_setting.contact_phone|default:'+996 999 083 366' }}</span>
-                        </li>
-                        <li class="flex items-center space-x-2">
-                            <i class="fa-solid fa-envelope text-red-500 text-[10px]"></i>
-                            <span>{{ site_setting.contact_email|default:'info@topd.kg' }}</span>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="pt-8 text-center text-xs text-gray-500">
-                &copy; 2026 {{ site_setting.site_name|default:'Topd' }}. All Rights Reserved. | webkoders
-            </div>
+        <div class="text-center mt-10">
+            <a href="{% url 'features' %}" class="inline-flex items-center space-x-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm transition">
+                <span>Explore All Features & Capabilities</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
         </div>
-    </footer>
+    </div>
+</section>
 
-</body>
-</html>
+<!-- 5. Pricing Preview -->
+<section class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-2xl mx-auto mb-16">
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-2">
+                {{ t.pricing_title|default:'Flexible Pricing for Any Fleet Size' }}
+            </h2>
+            <p class="text-sm text-gray-500">
+                Choose pay-per-check or unlimited monthly and yearly subscriptions with manual bank transfer support.
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {% for plan in plans %}
+            <div class="bg-white rounded-2xl border {% if plan.slug == 'premium-monthly' %}border-red-500 ring-2 ring-red-500/10 shadow-lg{% else %}border-slate-200 shadow-xs{% endif %} p-6 flex flex-col justify-between">
+                <div>
+                    <span class="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-slate-100 text-slate-700">
+                        {{ plan.get_interval_display }}
+                    </span>
+                    <h3 class="text-lg font-black text-slate-900 mt-3">{{ plan.name }}</h3>
+                    <p class="text-xs text-slate-500 mt-1">{{ plan.description }}</p>
+
+                    <div class="mt-5 flex items-baseline">
+                        <span class="text-3xl font-black text-slate-900">${{ plan.price }}</span>
+                        <span class="text-xs text-slate-400 ml-1 font-medium">/ {{ plan.interval }}</span>
+                    </div>
+                </div>
+
+                <div class="mt-8 pt-5 border-t border-slate-100">
+                    <a href="{% url 'billing:purchase_plan' plan.id %}" class="w-full py-2.5 text-xs font-bold rounded-xl flex items-center justify-center transition {% if plan.slug == 'premium-monthly' %}bg-red-600 hover:bg-red-700 text-white shadow-sm{% else %}bg-slate-900 hover:bg-slate-800 text-white{% endif %}">
+                        <i class="fa-solid fa-credit-card mr-1.5 text-xs"></i>
+                        <span>Choose Plan</span>
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-10">
+            <a href="{% url 'pricing' %}" class="inline-flex items-center space-x-1.5 text-xs font-bold text-red-600 hover:text-red-700">
+                <span>View Full Pricing Comparison & FAQ</span>
+                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- 6. Bottom High-Impact Call to Action -->
+<section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+        <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-4">
+            Ready to Protect Your Fleet and Accelerate Growth?
+        </h2>
+        <p class="text-sm sm:text-base text-red-100 max-w-xl mx-auto mb-8 font-normal">
+            Join hundreds of vehicle rental companies across Kyrgyzstan utilizing our digital contracts and driver verification engine.
+        </p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="{% url 'pricing' %}" class="w-full sm:w-auto px-8 py-3.5 bg-white text-red-600 hover:bg-gray-100 font-bold text-sm rounded-xl shadow-lg transition">
+                {{ t.get_started|default:'Get Started Now' }}
+            </a>
+            <a href="{% url 'contact' %}" class="w-full sm:w-auto px-8 py-3.5 bg-red-800/80 hover:bg-red-800 border border-white/30 text-white font-semibold text-sm rounded-xl transition">
+                {{ t.contact|default:'Contact Sales' }}
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}

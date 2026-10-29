@@ -1,0 +1,157 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}{% if is_edit %}Edit Package: {{ plan.name }}{% else %}Create New Package{% endif %} - Plans{% endblock %}
+{% block breadcrumb %}
+<a href="{% url 'billing:plans' %}" class="hover:text-red-600 transition">Plans & Subscriptions</a> / 
+{% if is_edit %}Edit: {{ plan.name }}{% else %}New Package{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+
+    <!-- Header Bar -->
+    <div class="flex items-center justify-between">
+        <div>
+            <div class="flex items-center space-x-2">
+                <a href="{% url 'billing:plans' %}" class="text-xs font-bold text-slate-500 hover:text-red-600 transition flex items-center space-x-1">
+                    <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                    <span>All Packages</span>
+                </a>
+                <span class="text-slate-300">•</span>
+                <span class="px-2 py-0.5 rounded-full bg-red-100 text-red-600 text-[10px] font-bold uppercase tracking-wider">
+                    {% if is_edit %}Edit Mode{% else %}New Package{% endif %}
+                </span>
+            </div>
+            <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">
+                {% if is_edit %}Edit Subscription Package: {{ plan.name }}{% else %}Create New Subscription Package{% endif %}
+            </h1>
+            <p class="text-xs text-slate-500 mt-0.5">
+                Configure package pricing, billing frequency, features, and visibility status.
+            </p>
+        </div>
+
+        <a href="{% url 'billing:plans' %}" class="inline-flex items-center space-x-1 px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition">
+            <i class="fa-solid fa-xmark text-xs"></i>
+            <span>Cancel</span>
+        </a>
+    </div>
+
+    <!-- Form Card -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-6 sm:p-8">
+        <form method="POST" class="space-y-6">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <!-- Package Name -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Package Name <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="name" value="{{ plan.name|default:'' }}" required placeholder="e.g. Pro Fleet Monthly"
+                           class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none font-medium transition">
+                </div>
+
+                <!-- Slug -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        URL Slug
+                    </label>
+                    <input type="text" name="slug" value="{{ plan.slug|default:'' }}" placeholder="e.g. pro-fleet-monthly (auto-generated if empty)"
+                           class="w-full px-3.5 py-2.5 text-xs font-mono rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition">
+                    <p class="text-[10px] text-slate-400 mt-1">Leave empty to generate automatically from name</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                <!-- Price -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Price <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 font-bold text-xs">
+                            $
+                        </div>
+                        <input type="number" step="0.01" min="0" name="price" value="{{ plan.price|default:'' }}" required placeholder="19.99"
+                               class="w-full pl-7 pr-3 py-2.5 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none font-bold transition">
+                    </div>
+                </div>
+
+                <!-- Currency -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Currency
+                    </label>
+                    <select name="currency" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 outline-none font-medium bg-white">
+                        <option value="USD" {% if plan.currency == 'USD' %}selected{% endif %}>USD ($)</option>
+                        <option value="KGS" {% if plan.currency == 'KGS' %}selected{% endif %}>KGS (Som)</option>
+                        <option value="EUR" {% if plan.currency == 'EUR' %}selected{% endif %}>EUR (€)</option>
+                        <option value="RUB" {% if plan.currency == 'RUB' %}selected{% endif %}>RUB (₽)</option>
+                    </select>
+                </div>
+
+                <!-- Interval -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Billing Frequency
+                    </label>
+                    <select name="interval" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 outline-none font-medium bg-white">
+                        {% for val, label in intervals %}
+                        <option value="{{ val }}" {% if plan.interval == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <!-- Status -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Status
+                    </label>
+                    <select name="status" class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 outline-none font-medium bg-white">
+                        {% for val, label in statuses %}
+                        <option value="{{ val }}" {% if plan.status == val %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                    <p class="text-[10px] text-slate-400 mt-1">Inactive plans are hidden from public pricing and purchase</p>
+                </div>
+
+                <!-- Highlight / Badge -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Highlight Badge (Optional)
+                    </label>
+                    <input type="text" name="highlight" value="{{ plan.highlight|default:'' }}" placeholder="e.g. Most Popular, 20% Off, Best Value"
+                           class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition">
+                    <p class="text-[10px] text-slate-400 mt-1">Tag shown above the plan card to attract users</p>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                    Package Description & Features
+                </label>
+                <textarea name="description" rows="4" placeholder="Detail the key inclusions, such as driver check quotas, vehicle limits, support level, etc."
+                          class="w-full p-3.5 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none transition resize-none leading-relaxed">{{ plan.description|default:'' }}</textarea>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="pt-6 border-t border-slate-100 flex items-center justify-between">
+                <a href="{% url 'billing:plans' %}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition">
+                    Cancel
+                </a>
+
+                <button type="submit" 
+                        class="inline-flex items-center space-x-2 px-7 py-2.5 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl shadow-md shadow-red-500/20 transition">
+                    <i class="fa-solid fa-floppy-disk text-xs"></i>
+                    <span>{% if is_edit %}Save Changes{% else %}Create Package{% endif %}</span>
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+{% endblock %}

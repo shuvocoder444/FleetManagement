@@ -183,10 +183,149 @@ def subscriptions_list(request):
 
 
 def plans_list(request):
-    plans = Plan.objects.all()
+    plans = Plan.objects.all().order_by('price')
+    is_admin = request.user.is_authenticated and (
+        request.user.is_superuser or getattr(request.user, 'role', '') in ['superadmin', 'admin']
+    )
     context = {
         'plans': plans,
+        'is_admin': is_admin,
         'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
     }
     return render(request, 'billing/plans.html', context)
+
+
+def plan_create(request):
+    from django.utils.text import slugify
+
+    is_admin = request.user.is_authenticated and (
+        request.user.is_superuser or getattr(request.user, 'role', '') in ['superadmin', 'admin']
+    )
+    if not is_admin:
+        messages.error(request, 'Access restricted to administrators.')
+        return redirect('billing:plans')
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        slug = request.POST.get('slug', '').strip() or slugify(name)
+        price = request.POST.get('price', '').strip()
+        currency = request.POST.get('currency', 'USD').strip().upper()
+        interval = request.POST.get('interval', Plan.Interval.MONTHLY)
+        status = request.POST.get('status', Plan.Status.ACTIVE)
+        description = request.POST.get('description', '').strip()
+        highlight = request.POST.get('highlight', '').strip()
+
+        if not name or not price:
+            messages.error(request, 'Please provide package name and price.')
+        else:
+            base_slug = slug or 'plan'
+            candidate_slug = base_slug
+            counter = 1
+            while Plan.objects.filter(slug=candidate_slug).exists():
+                candidate_slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            plan = Plan.objects.create(
+                name=name,
+                slug=candidate_slug,
+                price=price,
+                currency=currency,
+                interval=interval,
+                status=status,
+                description=description,
+                highlight=highlight,
+            )
+            messages.success(request, f"Package '{plan.name}' created successfully!")
+            return redirect('billing:plans')
+
+    context = {
+        'plan': None,
+        'intervals': Plan.Interval.choices,
+        'statuses': Plan.Status.choices,
+        'is_edit': False,
+        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+    }
+    return render(request, 'billing/plan_form.html', context)
+
+
+def plan_edit(request, pk):
+    from django.utils.text import slugify
+
+    is_admin = request.user.is_authenticated and (
+        request.user.is_superuser or getattr(request.user, 'role', '') in ['superadmin', 'admin']
+    )
+    if not is_admin:
+        messages.error(request, 'Access restricted to administrators.')
+        return redirect('billing:plans')
+
+    plan = get_object_or_404(Plan, pk=pk)
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        slug = request.POST.get('slug', '').strip() or slugify(name)
+        price = request.POST.get('price', '').strip()
+        currency = request.POST.get('currency', 'USD').strip().upper()
+        interval = request.POST.get('interval', Plan.Interval.MONTHLY)
+        status = request.POST.get('status', Plan.Status.ACTIVE)
+        description = request.POST.get('description', '').strip()
+        highlight = request.POST.get('highlight', '').strip()
+
+        if not name or not price:
+            messages.error(request, 'Please provide package name and price.')
+        else:
+            base_slug = slug or 'plan'
+            candidate_slug = base_slug
+            counter = 1
+            while Plan.objects.filter(slug=candidate_slug).exclude(pk=plan.pk).exists():
+                candidate_slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            plan.name = name
+            plan.slug = candidate_slug
+            plan.price = price
+            plan.currency = currency
+            plan.interval = interval
+            plan.status = status
+            plan.description = description
+            plan.highlight = highlight
+            plan.save()
+
+            messages.success(request, f"Package '{plan.name}' updated successfully!")
+            return redirect('billing:plans')
+
+    context = {
+        'plan': plan,
+        'intervals': Plan.Interval.choices,
+        'statuses': Plan.Status.choices,
+        'is_edit': True,
+        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+    }
+    return render(request, 'billing/plan_form.html', context)
+
+
+def plan_delete(request, pk):
+    is_admin = request.user.is_authenticated and (
+        request.user.is_superuser or getattr(request.user, 'role', '') in ['superadmin', 'admin']
+    )
+    if not is_admin:
+        messages.error(request, 'Access restricted to administrators.')
+        return redirect('billing:plans')
+
+    plan = get_object_or_404(Plan, pk=pk)
+
+    if request.method == 'POST':
+        plan_name = plan.name
+        if plan.subscriptions.exists():
+            plan.status = Plan.Status.INACTIVE
+            plan.save()
+            messages.warning(
+                request,
+                f"Package '{plan_name}' has existing subscriptions, so its status was changed to INACTIVE instead of permanent deletion."
+            )
+        else:
+            plan.delete()
+            messages.success(request, f"Package '{plan_name}' deleted successfully!")
+    
+    return redirect('billing:plans')
+
 

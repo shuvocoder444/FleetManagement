@@ -46,36 +46,51 @@ def register_view(request):
         return redirect('dashboard:index')
 
     if request.method == 'POST':
-        first_name = request.POST.get('first_name', '').strip()
-        last_name = request.POST.get('last_name', '').strip()
+        account_type = request.POST.get('account_type', 'individual').strip()
+        full_name = request.POST.get('full_name', '').strip()
         email = request.POST.get('email', '').strip()
         phone = request.POST.get('phone', '').strip()
-        company_name = request.POST.get('company_name', '').strip()
         password = request.POST.get('password', '').strip()
         confirm_password = request.POST.get('confirm_password', '').strip()
 
-        if not email or not password:
-            messages.error(request, 'Email and password are required.')
+        # Company-specific fields
+        company_name = request.POST.get('company_name', '').strip()
+        business_type = request.POST.get('business_type', '').strip()
+        business_registration_number = request.POST.get('business_registration_number', '').strip()
+
+        if not email or not password or not full_name:
+            messages.error(request, 'Full Name, Email and Password are required.')
+        elif len(password) < 8:
+            messages.error(request, 'Password must be at least 8 characters long.')
         elif password != confirm_password:
             messages.error(request, 'Passwords do not match.')
         elif CustomUser.objects.filter(email=email).exists():
             messages.error(request, 'An account with this email already exists.')
         else:
+            names = full_name.split(' ', 1)
+            first_name = names[0]
+            last_name = names[1] if len(names) > 1 else ''
+
+            role = CustomUser.Role.COMPANY if account_type == 'company' else CustomUser.Role.INDIVIDUAL
+
             user = CustomUser.objects.create_user(
                 email=email,
                 password=password,
                 first_name=first_name,
                 last_name=last_name,
                 phone=phone,
-                company_name=company_name,
-                role=CustomUser.Role.COMPANY,
+                company_name=company_name if account_type == 'company' else '',
+                business_type=business_type if account_type == 'company' else '',
+                business_registration_number=business_registration_number if account_type == 'company' else '',
+                role=role,
                 status=CustomUser.Status.VERIFIED
             )
             auth_login(request, user)
-            messages.success(request, 'Account created successfully! Please select your subscription plan.')
+            messages.success(request, f'Welcome, {full_name}! Your account has been created successfully.')
             return redirect('billing:purchase')
 
     return render(request, 'users/register.html')
+
 
 
 def users_list(request):

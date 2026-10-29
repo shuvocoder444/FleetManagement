@@ -1,0 +1,127 @@
+{% extends 'landing/base_frontend.html' %}
+
+{% block title %}{{ page.meta_title|default:page.title|default:'Terms & Conditions' }} - {{ site_setting.site_name|default:'Topd' }}{% endblock %}
+
+{% block content %}
+<!-- Admin Quick Edit Floating Bar -->
+{% if request.user.is_authenticated and request.user.is_superuser or request.user.role == 'superadmin' or request.user.role == 'admin' %}
+<div class="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-bold flex items-center justify-between border-b border-amber-600 shadow-xs">
+    <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-pen-to-square"></i>
+        <span>Admin Mode: You are viewing an editable CMS page (<strong>{{ page.title|default:'Terms & Conditions' }}</strong>)</span>
+    </div>
+    <a href="{% url 'page_edit' slug='terms' %}" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
+        <i class="fa-solid fa-pencil text-[10px]"></i>
+        <span>Edit This Page</span>
+    </a>
+</div>
+{% endif %}
+
+<!-- Page Header Banner -->
+<section class="page-header-bg text-white py-16 sm:py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <span class="px-3.5 py-1 text-xs font-bold uppercase tracking-wider bg-red-600/30 border border-red-500/40 text-red-300 rounded-full">
+            {{ page.badge|default:'Legal & Compliance' }}
+        </span>
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mt-4 mb-3">
+            {{ page.title|default:'Terms & Conditions' }}
+        </h1>
+        <p class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
+            {{ page.subtitle|default:'Last updated: October 2026. Please read these terms carefully before utilizing the Topd platform.' }}
+        </p>
+    </div>
+</section>
+
+<!-- Content Section -->
+<section class="py-16 sm:py-20 bg-slate-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white p-8 sm:p-12 rounded-3xl shadow-sm border border-slate-200 prose prose-slate max-w-none">
+            
+            {% if page.content %}
+            <!-- Dynamic Custom Content from Page CMS -->
+            <div class="space-y-6 text-sm text-slate-700 leading-relaxed">
+                {{ page.content|safe }}
+            </div>
+            {% else %}
+            <!-- Default Terms & Conditions -->
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">1. Acceptance of Terms</h2>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    By registering for an account, accessing, or using the <strong>{{ site_setting.site_name|default:'Topd' }}</strong> platform ("Service"), operated in Bishkek, Kyrgyz Republic, you agree to be legally bound by these Terms and Conditions. If you do not agree to these terms, you must refrain from accessing or using our Service.
+                </p>
+            </div>
+
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">2. Description of Service</h2>
+                <p class="text-sm text-slate-600 leading-relaxed mb-3">
+                    {{ site_setting.site_name|default:'Topd' }} provides software-as-a-service (SaaS) tools designed for car rental agencies, leasing operators, and automotive fleets. Features include:
+                </p>
+                <ul class="list-disc pl-5 space-y-2 text-sm text-slate-600">
+                    <li>Driver background verification and blacklist lookup against shared fleet safety records.</li>
+                    <li>Digital rental agreement drafting, photo condition logging, and contract lifecycle management.</li>
+                    <li>Fleet tracking, maintenance recording, and telemetry oversight.</li>
+                    <li>Role-based administrative dashboards for owners, managers, mechanics, and drivers.</li>
+                </ul>
+            </div>
+
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">3. User Accounts and Verification</h2>
+                <p class="text-sm text-slate-600 leading-relaxed mb-3">
+                    To access the dashboard and premium features, users must register an account and maintain accurate, up-to-date business documentation. You are solely responsible for:
+                </p>
+                <ul class="list-disc pl-5 space-y-2 text-sm text-slate-600">
+                    <li>Maintaining the confidentiality of your login credentials and two-factor authentication tokens.</li>
+                    <li>Ensuring that all driver documentation and passport scans uploaded comply with applicable privacy regulations.</li>
+                    <li>All actions conducted under your account, whether authorized or unauthorized.</li>
+                </ul>
+            </div>
+
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">4. Driver Verification and Blacklist Database</h2>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    The driver check system collates reports provided by verified fleet operators regarding unpaid rental fees, traffic violation defaults, vehicle damage, or criminal misappropriation. Participating companies agree that any incident report submitted must be factual, accurate, and supported by valid agreements or police reports. False or malicious blacklisting is strictly prohibited and constitutes grounds for immediate platform termination.
+                </p>
+            </div>
+
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">5. Subscriptions, Fees & Manual Payments</h2>
+                <p class="text-sm text-slate-600 leading-relaxed mb-3">
+                    Access to paid plans (Pay Per Check, Basic, Premium) is governed by the pricing schedule published on the platform.
+                </p>
+                <ul class="list-disc pl-5 space-y-2 text-sm text-slate-600">
+                    <li><strong>Manual Bank & Mobile Transfers:</strong> Users purchasing subscriptions via Demir Kyrgyz International Bank (DKIB) bank wire, MBank, or Optima Bank must upload legible payment receipts or transaction references.</li>
+                    <li><strong>Admin Approval:</strong> Manual payments are verified and activated by our billing administrators upon bank clearing.</li>
+                    <li><strong>Refunds:</strong> Payments for driver checks performed or active monthly terms are non-refundable unless required by applicable law.</li>
+                </ul>
+            </div>
+
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">6. Intellectual Property & License</h2>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    All software, design systems, algorithms, databases, logos, and UI components remain the exclusive intellectual property of {{ site_setting.site_name|default:'Topd' }}. Users are granted a limited, non-transferable, revocable license to access the platform solely for internal business operations.
+                </p>
+            </div>
+
+            <div class="border-b border-slate-100 pb-6 mb-8">
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">7. Limitation of Liability</h2>
+                <p class="text-sm text-slate-600 leading-relaxed">
+                    To the maximum extent permitted under Kyrgyz Republic law, {{ site_setting.site_name|default:'Topd' }} and its directors shall not be liable for any indirect, incidental, punitive, or consequential damages, including loss of profits, vehicle damage, or operational interruptions resulting from the use or inability to use the platform.
+                </p>
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900 mb-2">8. Contact & Governing Law</h2>
+                <p class="text-sm text-slate-600 leading-relaxed mb-4">
+                    These Terms are governed by and construed in accordance with the laws of the Kyrgyz Republic. Any dispute arising under these Terms shall be subject to the exclusive jurisdiction of the competent courts in Bishkek.
+                </p>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs text-slate-600 space-y-1">
+                    <p><strong>Legal Inquiries:</strong> {{ setting.contact_email|default:'legal@topd.kg' }}</p>
+                    <p><strong>Registered Address:</strong> {{ setting.address|default:'Chuy Avenue 124, Bishkek, Kyrgyz Republic' }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Manage Frontend Pages (CMS) - {{ site_setting.site_name|default:'Topd' }}{% endblock %}
+{% block breadcrumb %}Page Content (CMS){% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-6">
+
+    <!-- Header Banner -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-0.5 rounded-full bg-red-100 text-red-600 text-xs font-bold uppercase tracking-wider">
+                    Content Management System
+                </span>
+            </div>
+            <h1 class="text-2xl font-black text-slate-900 tracking-tight mt-1">
+                Manage Frontend Pages
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">
+                Easily edit titles, hero subtitles, body text, badges, and SEO metadata for all public website pages.
+            </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <a href="{% url 'settings' %}" class="inline-flex items-center space-x-1.5 px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-xl transition shadow-xs">
+                <i class="fa-solid fa-sliders text-slate-400"></i>
+                <span>General Settings</span>
+            </a>
+            <a href="{% url 'landing_page' %}" target="_blank" class="inline-flex items-center space-x-1.5 px-3.5 py-2 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-xl transition shadow-sm shadow-red-500/20">
+                <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                <span>Visit Live Website</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Pages List Table / Cards -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h2 class="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center space-x-2">
+                <i class="fa-solid fa-file-code text-red-600"></i>
+                <span>Available Frontend Pages ({{ pages|length }})</span>
+            </h2>
+            <span class="text-[11px] text-slate-400">Click "Edit Page" to customize content</span>
+        </div>
+
+        <div class="divide-y divide-slate-100">
+            {% for p in pages %}
+            <div class="p-5 sm:p-6 hover:bg-slate-50/60 transition flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                
+                <!-- Left: Info -->
+                <div class="space-y-1.5 flex-1 max-w-2xl">
+                    <div class="flex items-center space-x-2.5">
+                        <span class="w-8 h-8 rounded-lg bg-red-50 text-red-600 font-bold flex items-center justify-center text-xs shrink-0">
+                            {% if p.slug == 'home' %}<i class="fa-solid fa-house"></i>
+                            {% elif p.slug == 'about' %}<i class="fa-solid fa-circle-info"></i>
+                            {% elif p.slug == 'features' %}<i class="fa-solid fa-wand-magic-sparkles"></i>
+                            {% elif p.slug == 'pricing' %}<i class="fa-solid fa-tags"></i>
+                            {% elif p.slug == 'contact' %}<i class="fa-solid fa-envelope"></i>
+                            {% elif p.slug == 'terms' %}<i class="fa-solid fa-scale-balanced"></i>
+                            {% elif p.slug == 'privacy' %}<i class="fa-solid fa-shield-halved"></i>
+                            {% else %}<i class="fa-solid fa-file"></i>{% endif %}
+                        </span>
+                        
+                        <div>
+                            <h3 class="text-sm font-extrabold text-slate-900 flex items-center space-x-2">
+                                <span>{{ p.title }}</span>
+                                {% if p.badge %}
+                                <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                                    {{ p.badge }}
+                                </span>
+                                {% endif %}
+                            </h3>
+                            <p class="text-xs font-mono text-slate-400">
+                                Path: {% if p.slug == 'home' %}/
+                                {% elif p.slug == 'about' %}/about/
+                                {% elif p.slug == 'features' %}/features/
+                                {% elif p.slug == 'pricing' %}/pricing/
+                                {% elif p.slug == 'contact' %}/contact/
+                                {% elif p.slug == 'terms' %}/terms/
+                                {% elif p.slug == 'privacy' %}/privacy/
+                                {% else %}/{{ p.slug }}/{% endif %}
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if p.subtitle %}
+                    <p class="text-xs text-slate-600 line-clamp-1 pl-10.5">
+                        {{ p.subtitle }}
+                    </p>
+                    {% endif %}
+                </div>
+
+                <!-- Middle: Status & Last Updated -->
+                <div class="flex items-center space-x-4 shrink-0 text-xs">
+                    <div>
+                        {% if p.is_active %}
+                        <span class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[11px] border border-emerald-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            <span>Published</span>
+                        </span>
+                        {% else %}
+                        <span class="inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 font-bold text-[11px] border border-amber-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                            <span>Draft</span>
+                        </span>
+                        {% endif %}
+                    </div>
+                    <span class="text-[11px] text-slate-400 hidden lg:inline">
+                        Updated {{ p.updated_at|timesince }} ago
+                    </span>
+                </div>
+
+                <!-- Right: Actions -->
+                <div class="flex items-center space-x-2 shrink-0">
+                    <a href="{% if p.slug == 'home' %}{% url 'landing_page' %}
+                             {% elif p.slug == 'about' %}{% url 'about' %}
+                             {% elif p.slug == 'features' %}{% url 'features' %}
+                             {% elif p.slug == 'pricing' %}{% url 'pricing' %}
+                             {% elif p.slug == 'contact' %}{% url 'contact' %}
+                             {% elif p.slug == 'terms' %}{% url 'terms' %}
+                             {% elif p.slug == 'privacy' %}{% url 'privacy' %}
+                             {% else %}/{% endif %}" 
+                       target="_blank" 
+                       title="View Live Page in New Tab"
+                       class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition text-xs">
+                        <i class="fa-solid fa-external-link"></i>
+                    </a>
+
+                    <a href="{% url 'page_edit' slug=p.slug %}" 
+                       class="inline-flex items-center space-x-1.5 px-3.5 py-2 bg-slate-900 hover:bg-red-600 text-white text-xs font-bold rounded-xl transition shadow-xs">
+                        <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                        <span>Edit Page</span>
+                    </a>
+                </div>
+
+            </div>
+            {% empty %}
+            <div class="p-12 text-center">
+                <i class="fa-solid fa-file-circle-xmark text-3xl text-slate-300 mb-3 block"></i>
+                <p class="text-sm font-bold text-slate-700">No pages found</p>
+                <p class="text-xs text-slate-400 mt-1">Run seed script to initialize default pages.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Quick Documentation Card -->
+    <div class="bg-slate-50 border border-slate-200 rounded-2xl p-6">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center space-x-2 mb-2">
+            <i class="fa-solid fa-lightbulb text-amber-500"></i>
+            <span>How to Edit Pages</span>
+        </h3>
+        <p class="text-xs text-slate-600 leading-relaxed">
+            Click <strong>"Edit Page"</strong> on any entry above to modify its hero headline, badge tag, intro summary, and body text. If you provide custom content, it renders dynamically with full HTML formatting. Changes take effect on the live website immediately upon saving.
+        </p>
+    </div>
+
+</div>
+{% endblock %}
