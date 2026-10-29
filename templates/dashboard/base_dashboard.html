@@ -89,8 +89,9 @@
             <div>
                 <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_main }}</p>
                 <nav class="space-y-1">
-                    <a href="{% url 'dashboard:superadmin' %}" class="flex items-center px-3 py-2.5 text-xs font-semibold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50">
-                        <i class="fa-solid fa-crown w-5 text-red-600 text-sm"></i>
+                    <a href="{% url 'dashboard:superadmin' %}" 
+                       class="flex items-center px-3 {% if request.path == '/dashboard/superadmin/' %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-crown w-5 {% if request.path == '/dashboard/superadmin/' %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_admin_dashboard }}</span>
                     </a>
                 </nav>
@@ -99,23 +100,27 @@
             <div>
                 <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_operations }}</p>
                 <nav class="space-y-1">
-                    <a href="{% url 'agreements:list' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-regular fa-file-lines w-5 text-slate-400"></i>
+                    <a href="{% url 'agreements:list' %}" 
+                       class="flex items-center px-3 {% if '/agreements/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-regular fa-file-lines w-5 {% if '/agreements/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_agreements }}</span>
-                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">4</span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full {% if '/agreements/' in request.path %}bg-red-100 text-red-700{% else %}bg-slate-100 text-slate-600{% endif %}">4</span>
                     </a>
-                    <a href="{% url 'drivers:list' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-regular fa-user w-5 text-slate-400"></i>
+                    <a href="{% url 'drivers:list' %}" 
+                       class="flex items-center px-3 {% if '/drivers/' in request.path and '/check/' not in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-regular fa-user w-5 {% if '/drivers/' in request.path and '/check/' not in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_drivers }}</span>
-                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">6</span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full {% if '/drivers/' in request.path and '/check/' not in request.path %}bg-red-100 text-red-700{% else %}bg-slate-100 text-slate-600{% endif %}">6</span>
                     </a>
-                    <a href="{% url 'drivers:check' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-id-card-clip w-5 text-slate-400"></i>
+                    <a href="{% url 'drivers:check' %}" 
+                       class="flex items-center px-3 {% if '/drivers/check/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-id-card-clip w-5 {% if '/drivers/check/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_check_driver }}</span>
                         <span class="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600 border border-emerald-100">{{ t.badge_live }}</span>
                     </a>
-                    <a href="{% url 'vehicles:list' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-car w-5 text-slate-400"></i>
+                    <a href="{% url 'vehicles:list' %}" 
+                       class="flex items-center px-3 {% if '/vehicles/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-car w-5 {% if '/vehicles/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_vehicles_garage }}</span>
                     </a>
                 </nav>
@@ -124,17 +129,25 @@
             <div>
                 <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_finance }}</p>
                 <nav class="space-y-1">
-                    <a href="{% url 'billing:manual_payments' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-money-bill-transfer w-5 text-slate-400"></i>
+                    <a href="{% url 'billing:manual_payments' %}" 
+                       class="flex items-center px-3 {% if '/billing/manual-payments/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-money-bill-transfer w-5 {% if '/billing/manual-payments/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_manual_payments }}</span>
                         <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600">1</span>
                     </a>
-                    <a href="{% url 'billing:subscriptions' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-credit-card w-5 text-slate-400"></i>
+                    <a href="{% url 'billing:subscriptions' %}" 
+                       class="flex items-center px-3 {% if '/billing/subscriptions/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-credit-card w-5 {% if '/billing/subscriptions/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_subscriptions }}</span>
                     </a>
-                    <a href="{% url 'billing:plans' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-cubes-stacked w-5 text-slate-400"></i>
+                    <a href="{% url 'billing:purchase' %}" 
+                       class="flex items-center px-3 {% if '/billing/purchase/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-cart-plus w-5 {% if '/billing/purchase/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
+                        <span class="ml-2.5 flex-1">Buy Subscription (Manual)</span>
+                    </a>
+                    <a href="{% url 'billing:plans' %}" 
+                       class="flex items-center px-3 {% if '/billing/plans/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-cubes-stacked w-5 {% if '/billing/plans/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_plans }}</span>
                     </a>
                 </nav>
@@ -143,12 +156,14 @@
             <div>
                 <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_admin }}</p>
                 <nav class="space-y-1">
-                    <a href="{% url 'accounts:users' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-users-gear w-5 text-slate-400"></i>
+                    <a href="{% url 'accounts:users' %}" 
+                       class="flex items-center px-3 {% if '/accounts/users/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-users-gear w-5 {% if '/accounts/users/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_users_management }}</span>
                     </a>
-                    <a href="{% url 'settings' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-sliders w-5 text-slate-400"></i>
+                    <a href="{% url 'settings' %}" 
+                       class="flex items-center px-3 {% if '/settings/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-sliders w-5 {% if '/settings/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_website_settings }}</span>
                     </a>
                 </nav>
@@ -159,8 +174,9 @@
             <div>
                 <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_fleet_overview }}</p>
                 <nav class="space-y-1">
-                    <a href="{% url 'dashboard:admin' %}" class="flex items-center px-3 py-2.5 text-xs font-semibold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50">
-                        <i class="fa-solid fa-chart-pie w-5 text-red-600 text-sm"></i>
+                    <a href="{% url 'dashboard:admin' %}" 
+                       class="flex items-center px-3 {% if request.path == '/dashboard/admin/' %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-chart-pie w-5 {% if request.path == '/dashboard/admin/' %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_company_dashboard }}</span>
                     </a>
                 </nav>
@@ -169,20 +185,24 @@
             <div>
                 <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_operations }}</p>
                 <nav class="space-y-1">
-                    <a href="{% url 'vehicles:list' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-car w-5 text-slate-400"></i>
+                    <a href="{% url 'vehicles:list' %}" 
+                       class="flex items-center px-3 {% if '/vehicles/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-car w-5 {% if '/vehicles/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_my_vehicles }}</span>
                     </a>
-                    <a href="{% url 'agreements:list' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-regular fa-file-lines w-5 text-slate-400"></i>
+                    <a href="{% url 'agreements:list' %}" 
+                       class="flex items-center px-3 {% if '/agreements/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-regular fa-file-lines w-5 {% if '/agreements/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_rental_agreements }}</span>
                     </a>
-                    <a href="{% url 'drivers:list' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-regular fa-user w-5 text-slate-400"></i>
+                    <a href="{% url 'drivers:list' %}" 
+                       class="flex items-center px-3 {% if '/drivers/' in request.path and '/check/' not in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-regular fa-user w-5 {% if '/drivers/' in request.path and '/check/' not in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_agency_drivers }}</span>
                     </a>
-                    <a href="{% url 'drivers:check' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-id-card-clip w-5 text-slate-400"></i>
+                    <a href="{% url 'drivers:check' %}" 
+                       class="flex items-center px-3 {% if '/drivers/check/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-id-card-clip w-5 {% if '/drivers/check/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_check_driver }}</span>
                     </a>
                 </nav>
@@ -191,10 +211,16 @@
             <div>
                 <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_my_account }}</p>
                 <nav class="space-y-1">
-                    <a href="{% url 'billing:subscriptions' %}" class="flex items-center px-3 py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50">
-                        <i class="fa-solid fa-credit-card w-5 text-slate-400"></i>
+                    <a href="{% url 'billing:subscriptions' %}" 
+                       class="flex items-center px-3 {% if '/billing/subscriptions/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-credit-card w-5 {% if '/billing/subscriptions/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_my_subscription }}</span>
                         <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">{{ t.badge_active }}</span>
+                    </a>
+                    <a href="{% url 'billing:purchase' %}" 
+                       class="flex items-center px-3 {% if '/billing/purchase/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-cart-plus w-5 {% if '/billing/purchase/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
+                        <span class="ml-2.5 flex-1">Buy Subscription (Manual)</span>
                     </a>
                 </nav>
             </div>
@@ -204,8 +230,9 @@
             <div>
                 <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">{{ t.section_driver_portal }}</p>
                 <nav class="space-y-1">
-                    <a href="{% url 'dashboard:driver' %}" class="flex items-center px-3 py-2.5 text-xs font-semibold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50">
-                        <i class="fa-solid fa-id-badge w-5 text-red-600 text-sm"></i>
+                    <a href="{% url 'dashboard:driver' %}" 
+                       class="flex items-center px-3 {% if request.path == '/dashboard/driver/' %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
+                        <i class="fa-solid fa-id-badge w-5 {% if request.path == '/dashboard/driver/' %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_driver_portal }}</span>
                     </a>
                 </nav>
@@ -341,8 +368,9 @@
                             <p class="text-[11px] text-slate-400 truncate">{{ display_user.email }}</p>
                         </div>
                         <div class="py-1 text-xs">
-                            <a href="{% url 'dashboard:superadmin' %}" class="flex items-center px-4 py-2 text-slate-600 hover:bg-slate-50">{{ t.dashboard }}</a>
-                            <a href="{% url 'landing_page' %}" class="flex items-center px-4 py-2 text-rose-600 hover:bg-rose-50">{{ t.logout }}</a>
+                            <a href="{% url 'dashboard:index' %}" class="flex items-center px-4 py-2 text-slate-600 hover:bg-slate-50">{{ t.dashboard }}</a>
+                            <a href="{% url 'billing:purchase' %}" class="flex items-center px-4 py-2 text-slate-600 hover:bg-slate-50">Buy Subscription</a>
+                            <a href="{% url 'accounts:logout' %}" class="flex items-center px-4 py-2 text-rose-600 hover:bg-rose-50 font-semibold">{{ t.logout }}</a>
                         </div>
                     </div>
                 </div>

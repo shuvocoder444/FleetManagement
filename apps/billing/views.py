@@ -1,12 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from .models import ManualPayment, Subscription, Plan
 
 
 def manual_payments_list(request):
     status_filter = request.GET.get('status', '').strip()
-    payments = ManualPayment.objects.all()
+    payments = ManualPayment.objects.all().select_related('user', 'plan')
     if status_filter:
         payments = payments.filter(status=status_filter)
 
@@ -33,15 +34,35 @@ def approve_payment(request, pk):
         payment.reviewed_by = request.user
     payment.save()
 
-    # Automatically activate or extend subscription
-    Subscription.objects.create(
+    # Determine duration based on interval
+    days = 30
+    if payment.plan.interval == Plan.Interval.YEARLY:
+        days = 365
+    elif payment.plan.interval == Plan.Interval.ONCE:
+        days = 365
+
+    # Check if there is an existing pending subscription for this user and plan
+    sub = Subscription.objects.filter(
         user=payment.user,
         plan=payment.plan,
-        start_date=timezone.now(),
-        end_date=timezone.now() + timezone.timedelta(days=30),
-        status=Subscription.Status.ACTIVE
-    )
-    messages.success(request, f'Payment #{payment.id} has been approved and subscription activated!')
+        status=Subscription.Status.PENDING
+    ).first()
+
+    if sub:
+        sub.status = Subscription.Status.ACTIVE
+        sub.start_date = timezone.now()
+        sub.end_date = timezone.now() + timezone.timedelta(days=days)
+        sub.save()
+    else:
+        Subscription.objects.create(
+            user=payment.user,
+            plan=payment.plan,
+            start_date=timezone.now(),
+            end_date=timezone.now() + timezone.timedelta(days=days),
+            status=Subscription.Status.ACTIVE
+        )
+
+    messages.success(request, f'Payment #{payment.id} approved and subscription activated for {payment.user.email}!')
     return redirect('billing:manual_payments')
 
 
@@ -52,27 +73,111 @@ def reject_payment(request, pk):
     if request.user.is_authenticated:
         payment.reviewed_by = request.user
     payment.save()
+
+    # Cancel pending subscription if any
+    Subscription.objects.filter(
+        user=payment.user,
+        plan=payment.plan,
+        status=Subscription.Status.PENDING
+    ).update(status=Subscription.Status.CANCELLED)
+
     messages.warning(request, f'Payment #{payment.id} marked as rejected.')
     return redirect('billing:manual_payments')
 
 
+def purchase_subscription(request, plan_id=None):
+    """Allows user to manually purchase a subscription via bank transfer / cash / mobile money."""
+    if not request.user.is_authenticated:
+        messages.info(request, 'Please log in to purchase a subscription.')
+        login_url = f"/accounts/login/?next={request.path}"
+        return redirect(login_url)
+
+    plans = Plan.objects.filter(status=Plan.Status.ACTIVE).order_by('price')
+    
+    selected_plan = None
+    target_id = plan_id or request.GET.get('plan')
+    if target_id:
+        selected_plan = Plan.objects.filter(pk=target_id, status=Plan.Status.ACTIVE).first()
+    if not selected_plan and plans.exists():
+        selected_plan = plans.first()
+
+    if request.method == 'POST':
+        submitted_plan_id = request.POST.get('plan_id')
+        payment_method = request.POST.get('payment_method', ManualPayment.PaymentMethod.BANK_TRANSFER)
+        transaction_info = request.POST.get('transaction_info', '').strip()
+        custom_amount = request.POST.get('amount', '').strip()
+        currency = request.POST.get('currency', 'USD').strip()
+
+        plan = get_object_or_404(Plan, pk=submitted_plan_id)
+        amount = custom_amount if custom_amount else plan.price
+
+        if not transaction_info:
+            messages.error(request, 'Please provide the transaction reference / TrxID or receipt details.')
+            selected_plan = plan
+        else:
+            # 1. Create ManualPayment record
+            payment = ManualPayment.objects.create(
+                user=request.user,
+                plan=plan,
+                amount=amount,
+                currency=currency,
+                payment_method=payment_method,
+                transaction_date=timezone.now(),
+                transaction_info=transaction_info,
+                status=ManualPayment.Status.PENDING
+            )
+
+            # 2. Record Pending Subscription
+            Subscription.objects.create(
+                user=request.user,
+                plan=plan,
+                start_date=timezone.now(),
+                status=Subscription.Status.PENDING
+            )
+
+            messages.success(
+                request,
+                f'Success! Your manual payment for "{plan.name}" (Reference #{payment.id}) has been submitted. Our team will verify and activate your subscription shortly.'
+            )
+            return redirect('billing:subscriptions')
+
+    context = {
+        'plans': plans,
+        'selected_plan': selected_plan,
+        'payment_methods': ManualPayment.PaymentMethod.choices,
+        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+    }
+    return render(request, 'billing/purchase.html', context)
+
+
 def subscriptions_list(request):
     status_filter = request.GET.get('status', '').strip()
-    subscriptions = Subscription.objects.all()
+    
+    # If superadmin, show all; otherwise show user's own subscriptions
+    is_super = request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin'
+    if is_super:
+        subscriptions = Subscription.objects.all().select_related('user', 'plan')
+        my_payments = None
+    else:
+        subscriptions = Subscription.objects.filter(user=request.user).select_related('user', 'plan') if request.user.is_authenticated else Subscription.objects.none()
+        my_payments = ManualPayment.objects.filter(user=request.user).select_related('plan') if request.user.is_authenticated else ManualPayment.objects.none()
+
     if status_filter:
         subscriptions = subscriptions.filter(status=status_filter)
 
-    total_count = Subscription.objects.count()
-    active_count = Subscription.objects.filter(status=Subscription.Status.ACTIVE).count()
-    pending_count = Subscription.objects.filter(status=Subscription.Status.PENDING).count()
+    total_count = subscriptions.count()
+    active_count = subscriptions.filter(status=Subscription.Status.ACTIVE).count()
+    pending_count = subscriptions.filter(status=Subscription.Status.PENDING).count()
 
     context = {
         'subscriptions': subscriptions,
+        'my_payments': my_payments,
         'status_filter': status_filter,
         'total_count': total_count,
         'active_count': active_count,
         'pending_count': pending_count,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'is_super': is_super,
+        'current_dashboard': 'superadmin' if is_super else 'admin',
     }
     return render(request, 'billing/subscriptions.html', context)
 
@@ -84,3 +189,4 @@ def plans_list(request):
         'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
     }
     return render(request, 'billing/plans.html', context)
+

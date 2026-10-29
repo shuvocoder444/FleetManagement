@@ -44,7 +44,7 @@ def agreement_list(request):
         'search_query': search_query,
         'current_type': contract_type,
         'contract_types': Agreement.ContractType.choices,
-        'current_dashboard': 'superadmin',
+        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
     }
     return render(request, 'agreements/list.html', context)
 
@@ -105,6 +105,6 @@ def agreement_create(request):
         'vehicles': vehicles if vehicles.exists() else Vehicle.objects.all()[:5],
         'drivers': drivers if drivers.exists() else Driver.objects.all()[:5],
         'contract_types': Agreement.ContractType.choices,
-        'current_dashboard': 'superadmin',
+        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
     }
     return render(request, 'agreements/create.html', context)
