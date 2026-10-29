@@ -1,4 +1,5 @@
 {% extends 'landing/base_frontend.html' %}
+{% load site_tags %}
 
 {% block title %}{{ page.meta_title|default:page.title|default:'Pricing & Plans' }} - {{ site_setting.site_name|default:'Topd' }}{% endblock %}
 
@@ -34,16 +35,48 @@
 
 
 <!-- Pricing Plans Grid -->
-<section class="py-20 bg-slate-50">
+<section class="py-20 bg-slate-50" x-data="{ billingCycle: 'monthly' }">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+        <!-- Monthly / Yearly Billing Toggle Switch -->
+        <div class="flex flex-col items-center justify-center mb-12">
+            <div class="bg-white p-1.5 rounded-2xl border border-slate-200/90 shadow-sm flex items-center space-x-1">
+                <button type="button" 
+                        @click="billingCycle = 'monthly'" 
+                        :class="billingCycle === 'monthly' ? 'bg-red-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'"
+                        class="px-6 py-2.5 rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center space-x-2">
+                    <i class="fa-regular fa-calendar-days text-xs"></i>
+                    <span>{{ t.monthly_billing|default:'Monthly Billing' }}</span>
+                </button>
+                <button type="button" 
+                        @click="billingCycle = 'yearly'" 
+                        :class="billingCycle === 'yearly' ? 'bg-red-600 text-white shadow-md font-bold' : 'text-slate-600 hover:text-slate-900 font-medium'"
+                        class="px-6 py-2.5 rounded-xl text-xs sm:text-sm transition-all duration-200 flex items-center space-x-2">
+                    <i class="fa-solid fa-bolt text-xs"></i>
+                    <span>{{ t.yearly_billing|default:'Yearly Billing' }}</span>
+                    <span :class="billingCycle === 'yearly' ? 'bg-white text-red-600' : 'bg-red-100 text-red-600'" class="text-[10px] font-black uppercase px-2 py-0.5 rounded-full shadow-xs">
+                        {{ t.save_20|default:'Save 20%' }}
+                    </span>
+                </button>
+            </div>
+            <p class="text-xs text-slate-500 mt-2.5 flex items-center space-x-1">
+                <i class="fa-solid fa-circle-check text-emerald-500 text-[11px]"></i>
+                <span x-show="billingCycle === 'monthly'">{{ t.flexible_monthly_desc|default:'Flexible month-to-month contracts. Cancel anytime.' }}</span>
+                <span x-show="billingCycle === 'yearly'">{{ t.yearly_discount_desc|default:'Billed annually. Enjoy maximum savings with 2 months free!' }}</span>
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch max-w-5xl mx-auto">
             {% for plan in plans %}
-            <div class="bg-white rounded-3xl border {% if plan.slug == 'premium-monthly' %}border-red-500 ring-2 ring-red-500/20 shadow-xl relative{% else %}border-slate-200/90 shadow-sm{% endif %} p-7 flex flex-col justify-between transition hover:-translate-y-1">
+            <div x-show="billingCycle === 'monthly' ? ('{{ plan.interval }}' !== 'yearly') : ('{{ plan.interval }}' !== 'monthly')"
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="bg-white rounded-3xl border {% if 'premium' in plan.slug %}border-red-500 ring-2 ring-red-500/20 shadow-xl relative{% else %}border-slate-200/90 shadow-sm{% endif %} p-7 flex flex-col justify-between transition hover:-translate-y-1">
                 
-                {% if plan.slug == 'premium-monthly' %}
+                {% if 'premium' in plan.slug %}
                 <div class="absolute -top-3 right-6 bg-red-600 text-white text-[10px] uppercase tracking-wider font-extrabold px-3 py-1 rounded-full shadow-sm">
-                    Most Popular
+                    {{ t.most_popular|default:'Most Popular' }}
                 </div>
                 {% endif %}
 
@@ -61,7 +94,7 @@
                     <p class="text-xs text-slate-500 mt-1 min-h-[36px]">{{ plan.description }}</p>
 
                     <div class="mt-6 flex items-baseline">
-                        <span class="text-4xl font-black text-slate-900">${{ plan.price }}</span>
+                        <span class="text-3xl sm:text-4xl font-black text-slate-900">{% convert_price plan.price %}</span>
                         <span class="text-xs text-slate-400 ml-1.5 font-medium">/ {{ plan.interval }}</span>
                     </div>
 
@@ -94,9 +127,9 @@
 
                 <div class="mt-8 pt-6 border-t border-slate-100">
                     <a href="{% url 'billing:purchase_plan' plan.id %}" 
-                       class="w-full py-3 px-4 text-xs font-bold rounded-xl flex items-center justify-center space-x-2 transition {% if plan.slug == 'premium-monthly' %}bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-200{% else %}bg-slate-900 hover:bg-slate-800 text-white{% endif %}">
+                       class="w-full py-3 px-4 text-xs font-bold rounded-xl flex items-center justify-center space-x-2 transition {% if 'premium' in plan.slug %}bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-200{% else %}bg-slate-900 hover:bg-slate-800 text-white{% endif %}">
                         <i class="fa-solid fa-credit-card text-xs"></i>
-                        <span>Buy Subscription</span>
+                        <span>{{ t.buy_subscription|default:'Buy Subscription' }}</span>
                     </a>
                 </div>
             </div>

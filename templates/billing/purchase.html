@@ -1,4 +1,5 @@
 {% extends 'dashboard/base_dashboard.html' %}
+{% load site_tags %}
 
 {% block title %}Purchase Subscription{% endblock %}
 {% block breadcrumb %}Buy Subscription{% endblock %}
@@ -10,6 +11,9 @@
     selectedPlanPrice: '{{ selected_plan.price|default:plans.0.price }}',
     selectedPlanInterval: '{{ selected_plan.interval|default:plans.0.interval }}',
     selectedPlanCurrency: '{{ selected_plan.currency|default:plans.0.currency|default:'USD' }}',
+    exchangeRate: parseFloat('{{ active_currency.exchange_rate|default:'1.0' }}') || 1.0,
+    currencyCode: '{{ current_currency|default:'USD' }}',
+    currencySymbol: '{{ active_currency.symbol|default:'$' }}',
     paymentMethod: 'Bank Transfer'
 }">
 
@@ -72,7 +76,7 @@
                     <p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ plan.description }}</p>
 
                     <div class="mt-4 flex items-baseline">
-                        <span class="text-2xl font-black text-slate-900">${{ plan.price }}</span>
+                        <span class="text-2xl font-black text-slate-900">{% convert_price plan.price %}</span>
                         <span class="text-xs text-slate-400 ml-1 font-medium">/ {{ plan.interval }}</span>
                     </div>
 
@@ -186,7 +190,9 @@
                                 <span class="font-bold text-slate-900" x-text="selectedPlanName"></span>
                             </div>
                             <span class="font-extrabold text-red-600">
-                                $<span x-text="selectedPlanPrice"></span> (<span x-text="selectedPlanInterval"></span>)
+                                <span x-show="currencyCode === 'KGS'" x-text="Math.round(selectedPlanPrice * exchangeRate).toLocaleString() + ' сом ($' + selectedPlanPrice + ')'"></span>
+                                <span x-show="currencyCode !== 'KGS'" x-text="'$' + selectedPlanPrice"></span>
+                                (<span x-text="selectedPlanInterval"></span>)
                             </span>
                         </div>
                     </div>

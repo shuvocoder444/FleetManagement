@@ -1,6 +1,6 @@
 {% extends 'landing/base_frontend.html' %}
 
-{% block title %}Sign In - {{ site_setting.site_name|default:'Topd' }}{% endblock %}
+{% block title %}{{ t.sign_in|default:'Sign In' }} - {{ site_setting.site_name|default:'Topd' }}{% endblock %}
 
 {% block content %}
 <section class="py-12 sm:py-16 bg-slate-50/50 min-h-[calc(100vh-280px)]">
@@ -9,10 +9,10 @@
         <!-- Centered Header -->
         <div class="text-center max-w-xl mx-auto mb-8">
             <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Sign in to your account
+                {{ t.login_title|default:'Sign in to your account' }}
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 mt-2 font-normal leading-relaxed">
-                Welcome back! Please enter your details to access your fleet and verification portal.
+                {{ t.login_subtitle|default:'Welcome back! Please enter your details to access your fleet and verification portal.' }}
             </p>
         </div>
 
@@ -26,28 +26,28 @@
                 <!-- Email Address -->
                 <div>
                     <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                        Email Address <span class="text-red-500">*</span>
+                        {{ t.label_email_address|default:'Email Address' }} <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                             <i class="fa-regular fa-envelope text-sm"></i>
                         </div>
-                        <input type="email" id="id_login_email" name="email" required placeholder="Enter your email address"
+                        <input type="email" id="id_login_email" name="email" required placeholder="{{ t.placeholder_email_address|default:'Enter your email address' }}"
                                class="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition bg-white text-slate-800 font-medium">
                     </div>
-                    <p class="text-[11px] text-slate-400 mt-1">Maximum 255 characters.</p>
+                    <p class="text-[11px] text-slate-400 mt-1">{{ t.max_255_chars|default:'Maximum 255 characters.' }}</p>
                 </div>
 
                 <!-- Password -->
                 <div>
                     <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                        Password <span class="text-red-500">*</span>
+                        {{ t.label_password|default:'Password' }} <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                             <i class="fa-solid fa-lock text-sm"></i>
                         </div>
-                        <input type="password" id="id_login_password" name="password" required placeholder="Enter your password"
+                        <input type="password" id="id_login_password" name="password" required placeholder="{{ t.placeholder_login_password|default:'Enter your password' }}"
                                class="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition bg-white text-slate-800 font-medium">
                     </div>
                 </div>
@@ -56,22 +56,22 @@
                 <div class="flex items-center justify-between text-xs pt-0.5">
                     <label class="flex items-center space-x-2 text-slate-600 cursor-pointer select-none">
                         <input type="checkbox" name="remember_me" class="w-4 h-4 rounded text-red-600 focus:ring-red-500 border-slate-300">
-                        <span>Remember me</span>
+                        <span>{{ t.remember_me|default:'Remember me' }}</span>
                     </label>
-                    <a href="{% url 'contact' %}" class="text-red-600 hover:underline font-semibold">Forgot password?</a>
+                    <a href="{% url 'contact' %}" class="text-red-600 hover:underline font-semibold">{{ t.forgot_password|default:'Forgot password?' }}</a>
                 </div>
 
                 <!-- Sign In Button -->
                 <button type="submit" 
                         class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl shadow-md shadow-red-500/20 transition flex items-center justify-center space-x-2 hover:scale-[1.01] active:scale-[0.99]">
-                    <span>Sign In</span>
+                    <span>{{ t.btn_sign_in|default:'Sign In' }}</span>
                     <i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
 
                 <!-- Demo Quick Login Helper (Development convenience) -->
                 <div class="pt-4 border-t border-slate-100">
                     <p class="text-[10px] uppercase font-bold tracking-wider text-slate-400 text-center mb-2.5">
-                        Quick Demo Sign In
+                        {{ t.quick_demo_sign_in|default:'Quick Demo Sign In' }}
                     </p>
                     <div class="grid grid-cols-3 gap-2">
                         <button type="button" 
@@ -97,8 +97,8 @@
 
         <!-- Bottom Link -->
         <p class="text-center text-xs sm:text-sm text-slate-600 mt-6 mb-12">
-            Don't have an account? 
-            <a href="{% url 'accounts:register' %}" class="text-red-600 font-bold hover:underline">Create an account</a>
+            {{ t.dont_have_account|default:"Don't have an account?" }} 
+            <a href="{% url 'accounts:register' %}" class="text-red-600 font-bold hover:underline">{{ t.create_account_link|default:'Create an account' }}</a>
         </p>
 
     </div>

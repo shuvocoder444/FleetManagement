@@ -1,6 +1,6 @@
 {% extends 'landing/base_frontend.html' %}
 
-{% block title %}Register - {{ site_setting.site_name|default:'Topd' }}{% endblock %}
+{% block title %}{{ t.register|default:'Register' }} - {{ site_setting.site_name|default:'Topd' }}{% endblock %}
 
 {% block content %}
 <section class="py-12 sm:py-16 bg-slate-50/50 min-h-[calc(100vh-280px)]">
@@ -9,10 +9,10 @@
         <!-- Centered Header -->
         <div class="text-center max-w-xl mx-auto mb-8">
             <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Create an account
+                {{ t.create_account_title|default:'Create an account' }}
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 mt-2 font-normal leading-relaxed">
-                Join us today and start managing your vehicle rentals, leases, and installments with ease
+                {{ t.create_account_subtitle|default:'Join us today and start managing your vehicle rentals, leases, and installments with ease' }}
             </p>
         </div>
 
@@ -28,7 +28,7 @@
                             ? 'text-red-600 font-bold border-b-2 border-red-600 pb-3 -mb-[2px]' 
                             : 'text-slate-500 font-medium hover:text-slate-700 pb-3 -mb-[2px] border-b-2 border-transparent'"
                         class="text-xs sm:text-sm transition select-none outline-none">
-                    Individual Account
+                    {{ t.tab_individual_account|default:'Individual Account' }}
                 </button>
 
                 <button type="button" 
@@ -37,7 +37,7 @@
                             ? 'text-red-600 font-bold border-b-2 border-red-600 pb-3 -mb-[2px]' 
                             : 'text-slate-500 font-medium hover:text-slate-700 pb-3 -mb-[2px] border-b-2 border-transparent'"
                         class="text-xs sm:text-sm transition select-none outline-none">
-                    Company Account
+                    {{ t.tab_company_account|default:'Company Account' }}
                 </button>
             </div>
 
@@ -48,16 +48,16 @@
                 <!-- 1. Full Name (Both) -->
                 <div>
                     <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                        Full Name <span class="text-red-500">*</span>
+                        {{ t.label_full_name|default:'Full Name' }} <span class="text-red-500">*</span>
                     </label>
                     <div class="relative">
                         <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                             <i class="fa-regular fa-user text-sm"></i>
                         </div>
-                        <input type="text" name="full_name" required placeholder="Enter your full name"
+                        <input type="text" name="full_name" required placeholder="{{ t.placeholder_full_name|default:'Enter your full name' }}"
                                class="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition bg-white text-slate-800 font-medium">
                     </div>
-                    <p class="text-[11px] text-slate-400 mt-1">Maximum 255 characters.</p>
+                    <p class="text-[11px] text-slate-400 mt-1">{{ t.max_255_chars|default:'Maximum 255 characters.' }}</p>
                 </div>
 
                 <!-- 2. COMPANY SPECIFIC FIELDS (Company Account Only) -->
@@ -66,30 +66,30 @@
                         <!-- Company Name -->
                         <div>
                             <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                                Company Name <span class="text-red-500">*</span>
+                                {{ t.label_company_name|default:'Company Name' }} <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                     <i class="fa-regular fa-building text-sm"></i>
                                 </div>
-                                <input type="text" name="company_name" :required="accountType === 'company'" placeholder="Enter your company name"
+                                <input type="text" name="company_name" :required="accountType === 'company'" placeholder="{{ t.placeholder_company_name|default:'Enter your company name' }}"
                                        class="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition bg-white text-slate-800 font-medium">
                             </div>
-                            <p class="text-[11px] text-slate-400 mt-1">Maximum 255 characters.</p>
+                            <p class="text-[11px] text-slate-400 mt-1">{{ t.max_255_chars|default:'Maximum 255 characters.' }}</p>
                         </div>
 
                         <!-- Business Type Dropdown -->
                         <div>
                             <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                                Business Type <span class="text-red-500">*</span>
+                                {{ t.label_business_type|default:'Business Type' }} <span class="text-red-500">*</span>
                             </label>
                             <select name="business_type" :required="accountType === 'company'"
                                     class="w-full px-3.5 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition bg-white text-slate-800 font-medium">
-                                <option value="" disabled selected>Select business type</option>
-                                <option value="Vehicle Rental Company">Vehicle Rental Company</option>
-                                <option value="Leasing Provider">Leasing Provider</option>
-                                <option value="Vehicle Broker">Vehicle Broker</option>
-                                <option value="Other">Other</option>
+                                <option value="" disabled selected>{{ t.select_business_type|default:'Select business type' }}</option>
+                                <option value="Vehicle Rental Company">{{ t.opt_rental_company|default:'Vehicle Rental Company' }}</option>
+                                <option value="Leasing Provider">{{ t.opt_leasing_provider|default:'Leasing Provider' }}</option>
+                                <option value="Vehicle Broker">{{ t.opt_vehicle_broker|default:'Vehicle Broker' }}</option>
+                                <option value="Other">{{ t.opt_other|default:'Other' }}</option>
                             </select>
                         </div>
                     </div>
@@ -97,16 +97,16 @@
                     <!-- Business Registration Number -->
                     <div>
                         <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                            Business Registration Number <span class="text-red-500">*</span>
+                            {{ t.label_business_reg_no|default:'Business Registration Number' }} <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                 <i class="fa-regular fa-id-card text-sm"></i>
                             </div>
-                            <input type="text" name="business_registration_number" :required="accountType === 'company'" placeholder="Enter your registration number"
+                            <input type="text" name="business_registration_number" :required="accountType === 'company'" placeholder="{{ t.placeholder_business_reg_no|default:'Enter your registration number' }}"
                                    class="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition bg-white text-slate-800 font-medium font-mono">
                         </div>
-                        <p class="text-[11px] text-slate-400 mt-1">Maximum 255 characters.</p>
+                        <p class="text-[11px] text-slate-400 mt-1">{{ t.max_255_chars|default:'Maximum 255 characters.' }}</p>
                     </div>
                 </div>
 
@@ -115,22 +115,22 @@
                     <!-- Email Address -->
                     <div>
                         <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                            Email Address <span class="text-red-500">*</span>
+                            {{ t.label_email_address|default:'Email Address' }} <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                 <i class="fa-regular fa-envelope text-sm"></i>
                             </div>
-                            <input type="email" name="email" required placeholder="Enter your email address"
+                            <input type="email" name="email" required placeholder="{{ t.placeholder_email_address|default:'Enter your email address' }}"
                                    class="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition bg-white text-slate-800 font-medium">
                         </div>
-                        <p class="text-[11px] text-slate-400 mt-1">Maximum 255 characters.</p>
+                        <p class="text-[11px] text-slate-400 mt-1">{{ t.max_255_chars|default:'Maximum 255 characters.' }}</p>
                     </div>
 
                     <!-- Phone Number -->
                     <div>
                         <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                            Phone Number <span class="text-red-500">*</span>
+                            {{ t.label_phone_number|default:'Phone Number' }} <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
@@ -139,7 +139,7 @@
                             <input type="text" name="phone" required placeholder="+996 ( _ _ _ ) _ _ _ - _ _ _"
                                    class="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition bg-white text-slate-800 font-medium font-mono">
                         </div>
-                        <p class="text-[11px] text-slate-400 mt-1">Maximum 20 characters.</p>
+                        <p class="text-[11px] text-slate-400 mt-1">{{ t.max_20_chars|default:'Maximum 20 characters.' }}</p>
                     </div>
                 </div>
 
@@ -149,13 +149,13 @@
                         <!-- Password -->
                         <div>
                             <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                                Password <span class="text-red-500">*</span>
+                                {{ t.label_password|default:'Password' }} <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                     <i class="fa-solid fa-lock text-sm"></i>
                                 </div>
-                                <input type="password" name="password" required placeholder="Create a strong password"
+                                <input type="password" name="password" required placeholder="{{ t.placeholder_password|default:'Create a strong password' }}"
                                        class="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition bg-white text-slate-800 font-medium">
                             </div>
                         </div>
@@ -163,18 +163,18 @@
                         <!-- Confirm Password -->
                         <div>
                             <label class="block text-xs font-bold text-slate-800 mb-1.5">
-                                Confirm Password <span class="text-red-500">*</span>
+                                {{ t.label_confirm_password|default:'Confirm Password' }} <span class="text-red-500">*</span>
                             </label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                     <i class="fa-solid fa-lock text-sm"></i>
                                 </div>
-                                <input type="password" name="confirm_password" required placeholder="Confirm your password"
+                                <input type="password" name="confirm_password" required placeholder="{{ t.placeholder_confirm_password|default:'Confirm your password' }}"
                                        class="w-full pl-10 pr-4 py-2.5 text-xs sm:text-sm rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none transition bg-white text-slate-800 font-medium">
                             </div>
                         </div>
                     </div>
-                    <p class="text-[11px] text-slate-400 mt-1.5">Password must be at least 8 characters long</p>
+                    <p class="text-[11px] text-slate-400 mt-1.5">{{ t.password_min_length|default:'Password must be at least 8 characters long' }}</p>
                 </div>
 
                 <!-- 5. Terms of Service & Privacy Policy Agreement -->
@@ -183,7 +183,10 @@
                         <input type="checkbox" name="terms_agree" required 
                                class="w-4 h-4 rounded text-red-600 focus:ring-red-500 border-slate-300 mt-0.5">
                         <span class="text-xs text-slate-600">
-                            I agree to the <a href="{% url 'terms' %}" target="_blank" class="text-red-600 font-medium hover:underline">Terms of Service</a> and <a href="{% url 'privacy' %}" target="_blank" class="text-red-600 font-medium hover:underline">Privacy Policy</a>
+                            {{ t.agree_terms_text|default:'I agree to the' }} 
+                            <a href="{% url 'terms' %}" target="_blank" class="text-red-600 font-medium hover:underline">{{ t.terms_of_service|default:'Terms of Service' }}</a> 
+                            {{ t.and_word|default:'and' }} 
+                            <a href="{% url 'privacy' %}" target="_blank" class="text-red-600 font-medium hover:underline">{{ t.privacy_policy|default:'Privacy Policy' }}</a>
                         </span>
                     </label>
                 </div>
@@ -192,7 +195,7 @@
                 <button type="submit" 
                         class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl shadow-md shadow-red-500/20 transition flex items-center justify-center space-x-2 hover:scale-[1.01] active:scale-[0.99]">
                     <i class="fa-solid fa-user-plus text-xs"></i>
-                    <span>Create Account</span>
+                    <span>{{ t.btn_create_account|default:'Create Account' }}</span>
                 </button>
 
             </form>
@@ -200,8 +203,8 @@
 
         <!-- Bottom Link -->
         <p class="text-center text-xs sm:text-sm text-slate-600 mt-6 mb-12">
-            Already have an account? 
-            <a href="{% url 'accounts:login' %}" class="text-red-600 font-bold hover:underline">Sign in</a>
+            {{ t.already_have_account|default:'Already have an account?' }} 
+            <a href="{% url 'accounts:login' %}" class="text-red-600 font-bold hover:underline">{{ t.sign_in_link|default:'Sign in' }}</a>
         </p>
 
     </div>

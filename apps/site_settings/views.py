@@ -82,10 +82,13 @@ def privacy_page(request):
 
 
 def switch_currency(request, code):
+    code = code.upper()
     if Currency.objects.filter(code=code, is_active=True).exists():
         request.session['currency'] = code
     next_url = request.META.get('HTTP_REFERER', '/')
-    return redirect(next_url)
+    response = redirect(next_url)
+    response.set_cookie('user_currency', code, max_age=365*24*3600, path='/')
+    return response
 
 
 def switch_language(request, lang_code):
@@ -103,7 +106,16 @@ def settings_view(request):
         messages.error(request, 'Access restricted to administrators.')
         return redirect('accounts:login')
 
+    from decimal import Decimal
     setting = WebsiteSetting.load()
+    usd_currency, _ = Currency.objects.get_or_create(
+        code='USD',
+        defaults={'name': 'US Dollar', 'symbol': '$', 'exchange_rate': Decimal('1.0000'), 'is_base': True, 'is_active': True}
+    )
+    kgs_currency, _ = Currency.objects.get_or_create(
+        code='KGS',
+        defaults={'name': 'Kyrgyzstani Som', 'symbol': 'сом', 'exchange_rate': Decimal('87.4500'), 'is_base': False, 'is_active': True}
+    )
 
     if request.method == 'POST':
         setting.site_name = request.POST.get('site_name', 'Topd').strip()
@@ -120,11 +132,33 @@ def settings_view(request):
             setting.logo = request.FILES.get('logo')
 
         setting.save()
-        messages.success(request, 'Website settings saved successfully!')
+
+        # Currency & Exchange Rate Updates
+        kgs_rate_raw = request.POST.get('kgs_exchange_rate', '').strip()
+        kgs_symbol = request.POST.get('kgs_symbol', 'сом').strip()
+        usd_symbol = request.POST.get('usd_symbol', '$').strip()
+
+        if kgs_rate_raw:
+            try:
+                rate_decimal = Decimal(kgs_rate_raw)
+                if rate_decimal > 0:
+                    kgs_currency.exchange_rate = rate_decimal
+                    kgs_currency.symbol = kgs_symbol or 'сом'
+                    kgs_currency.save()
+            except Exception as e:
+                messages.warning(request, f'Invalid KGS exchange rate: {e}')
+
+        if usd_symbol:
+            usd_currency.symbol = usd_symbol
+            usd_currency.save()
+
+        messages.success(request, f'Website settings and Currency Exchange Rate (1 USD = {kgs_currency.exchange_rate} KGS) saved successfully!')
         return redirect('settings')
 
     context = {
         'setting': setting,
+        'usd_currency': usd_currency,
+        'kgs_currency': kgs_currency,
         'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
     }
     return render(request, 'settings/general.html', context)

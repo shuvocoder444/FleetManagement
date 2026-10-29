@@ -38,13 +38,13 @@ def convert_currency(amount, active_currency=None):
             return f"${int(converted):,}"
         return f"${converted:,.2f}"
     elif code == 'KGS':
-        # Rounded to clean whole integer for Som when > 100
+        disp_symbol = 'KGS'
         if converted >= 100:
-            return f"{round(converted):,} {symbol}"
+            return f"{round(converted):,} {disp_symbol}"
         elif converted == converted.to_integral():
-            return f"{int(converted):,} {symbol}"
+            return f"{int(converted):,} {disp_symbol}"
         else:
-            return f"{converted:,.2f} {symbol}"
+            return f"{converted:,.2f} {disp_symbol}"
     else:
         if converted == converted.to_integral():
             return f"{int(converted):,} {symbol}"

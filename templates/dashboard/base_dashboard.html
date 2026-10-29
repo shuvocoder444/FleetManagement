@@ -319,38 +319,62 @@
             <div class="flex items-center space-x-2 sm:space-x-3">
                 
                 <!-- Currency Selector -->
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" @click.away="open = false" 
+                <div class="relative" x-data="{ openCurr: false }">
+                    <button @click="openCurr = !openCurr" @click.away="openCurr = false" 
                             class="flex items-center space-x-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
-                        <span>{{ current_currency|default:'KGS' }}</span>
+                        {% if current_currency == 'KGS' %}
+                        <img src="https://flagcdn.com/w40/kg.png" class="w-4 h-3 object-cover rounded-xs shadow-xs" alt="Kyrgyzstan">
+                        <span>KGS</span>
+                        {% else %}
+                        <img src="https://flagcdn.com/w40/us.png" class="w-4 h-3 object-cover rounded-xs shadow-xs" alt="USA">
+                        <span>USD ($)</span>
+                        {% endif %}
                         <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
                     </button>
-                    <div x-show="open" x-cloak class="absolute right-0 mt-1.5 w-32 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-50 text-xs">
-                        <a href="{% url 'switch_currency' 'KGS' %}" class="flex items-center justify-between px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium">
-                            <span>🇰🇬 KGS (Som)</span>
-                            {% if current_currency == 'KGS' %}<i class="fa-solid fa-check text-red-600 text-xs"></i>{% endif %}
-                        </a>
-                        <a href="{% url 'switch_currency' 'USD' %}" class="flex items-center justify-between px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium">
-                            <span>🇺🇸 USD ($)</span>
+                    <div x-show="openCurr" x-cloak class="absolute right-0 mt-1.5 w-44 bg-white rounded-xl shadow-xl border border-slate-100 py-1.5 z-50 text-xs">
+                        <a href="{% url 'switch_currency' 'USD' %}" class="flex items-center justify-between px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium transition">
+                            <span class="flex items-center space-x-2">
+                                <img src="https://flagcdn.com/w40/us.png" class="w-4 h-3 object-cover rounded-xs shadow-xs" alt="USD">
+                                <span>USD ($ - Dollar)</span>
+                            </span>
                             {% if current_currency == 'USD' %}<i class="fa-solid fa-check text-red-600 text-xs"></i>{% endif %}
+                        </a>
+                        <a href="{% url 'switch_currency' 'KGS' %}" class="flex items-center justify-between px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium transition">
+                            <span class="flex items-center space-x-2">
+                                <img src="https://flagcdn.com/w40/kg.png" class="w-4 h-3 object-cover rounded-xs shadow-xs" alt="KGS">
+                                <span>KGS (Som)</span>
+                            </span>
+                            {% if current_currency == 'KGS' %}<i class="fa-solid fa-check text-red-600 text-xs"></i>{% endif %}
                         </a>
                     </div>
                 </div>
 
                 <!-- Language Selector Dropdown -->
-                <div class="relative" x-data="{ open: false }">
-                    <button @click="open = !open" @click.away="open = false" 
+                <div class="relative" x-data="{ openLang: false }">
+                    <button @click="openLang = !openLang" @click.away="openLang = false" 
                             class="flex items-center space-x-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 transition">
-                        <span>{% if current_lang == 'ru' %}🇷🇺 RU{% else %}🇬🇧 EN{% endif %}</span>
+                        {% if current_lang == 'ru' %}
+                        <img src="https://flagcdn.com/w40/ru.png" class="w-4 h-3 object-cover rounded-xs shadow-xs" alt="Russian">
+                        <span>RU</span>
+                        {% else %}
+                        <img src="https://flagcdn.com/w40/gb.png" class="w-4 h-3 object-cover rounded-xs shadow-xs" alt="English">
+                        <span>EN</span>
+                        {% endif %}
                         <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
                     </button>
-                    <div x-show="open" x-cloak class="absolute right-0 mt-1.5 w-36 bg-white rounded-xl shadow-lg border border-slate-100 py-1 z-50 text-xs">
-                        <a href="{% url 'switch_language' 'en' %}" class="flex items-center justify-between px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium">
-                            <span>🇬🇧 English</span>
+                    <div x-show="openLang" x-cloak class="absolute right-0 mt-1.5 w-36 bg-white rounded-xl shadow-xl border border-slate-100 py-1.5 z-50 text-xs">
+                        <a href="{% url 'switch_language' 'en' %}" class="flex items-center justify-between px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium transition">
+                            <span class="flex items-center space-x-2">
+                                <img src="https://flagcdn.com/w40/gb.png" class="w-4 h-3 object-cover rounded-xs shadow-xs" alt="English">
+                                <span>English</span>
+                            </span>
                             {% if current_lang == 'en' %}<i class="fa-solid fa-check text-red-600 text-xs"></i>{% endif %}
                         </a>
-                        <a href="{% url 'switch_language' 'ru' %}" class="flex items-center justify-between px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium">
-                            <span>🇷🇺 Русский</span>
+                        <a href="{% url 'switch_language' 'ru' %}" class="flex items-center justify-between px-3 py-2 hover:bg-red-50 hover:text-red-600 font-medium transition">
+                            <span class="flex items-center space-x-2">
+                                <img src="https://flagcdn.com/w40/ru.png" class="w-4 h-3 object-cover rounded-xs shadow-xs" alt="Russian">
+                                <span>Русский</span>
+                            </span>
                             {% if current_lang == 'ru' %}<i class="fa-solid fa-check text-red-600 text-xs"></i>{% endif %}
                         </a>
                     </div>
