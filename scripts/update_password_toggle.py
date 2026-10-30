@@ -39,3 +39,4 @@ c_norm = c_norm.replace(old_conf_norm, new_conf)
 with open(path, 'w', encoding='utf-8') as f:
     f.write(c_norm)
 print('Updated register.html!')
+

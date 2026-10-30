@@ -36,6 +36,11 @@ SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SAMESITE = 'Lax'
 
+# Long-lived persistent sessions (2 weeks, renewed on every request)
+SESSION_COOKIE_AGE = 1209600
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
