@@ -43,19 +43,18 @@ def dashboard_router(request):
 
 def superadmin_dashboard(request):
     """1. Super Admin Master Dashboard"""
-    # Guard: If logged in as driver, redirect to driver dashboard
-    if request.user.is_authenticated and getattr(request.user, 'role', '') == CustomUser.Role.DRIVER:
-        request.session['active_dashboard_role'] = 'driver'
-        return redirect('dashboard:driver')
+    # Strict Guard: Must be authenticated and superadmin
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
 
-    # Guard: If logged in as company, redirect to company admin
-    if request.user.is_authenticated and not (request.user.is_superuser or getattr(request.user, 'role', '') == CustomUser.Role.SUPERADMIN):
-        request.session['active_dashboard_role'] = 'admin'
+    if not (request.user.is_superuser or getattr(request.user, 'role', '') == CustomUser.Role.SUPERADMIN):
+        if getattr(request.user, 'role', '') == CustomUser.Role.DRIVER:
+            return redirect('dashboard:driver')
         return redirect('dashboard:admin')
 
     request.session['active_dashboard_role'] = 'superadmin'
     request.session.modified = True
-    display_user = request.user if request.user.is_authenticated else CustomUser.objects.filter(role=CustomUser.Role.SUPERADMIN).first()
+    display_user = request.user
 
     # Subscriber Metrics
     total_subscribers = CustomUser.objects.filter(role__in=[CustomUser.Role.INDIVIDUAL, CustomUser.Role.COMPANY]).count()
@@ -66,7 +65,7 @@ def superadmin_dashboard(request):
     # Platform Contracts & Revenue
     total_contracts = Agreement.objects.count()
     active_contracts = Agreement.objects.filter(status=Agreement.Status.ACTIVE).count()
-    payments_received = ManualPayment.objects.filter(status=ManualPayment.Status.APPROVED).aggregate(total=Sum('amount'))['total'] or 2623.50
+    payments_received = ManualPayment.objects.filter(status=ManualPayment.Status.APPROVED).aggregate(total=Sum('amount'))['total'] or 0.00
 
     # Vehicles Fleet
     vehicles_available = Vehicle.objects.filter(status=Vehicle.Status.AVAILABLE).count()
@@ -120,15 +119,18 @@ def superadmin_dashboard(request):
 
 def admin_dashboard(request):
     """2. Rental Company / Fleet Admin Dashboard (like Team JBDIT)"""
+    if not request.user.is_authenticated:
+        return redirect('accounts:login')
+
     # Guard: If logged in as driver, redirect to driver dashboard!
-    if request.user.is_authenticated and getattr(request.user, 'role', '') == CustomUser.Role.DRIVER:
+    if getattr(request.user, 'role', '') == CustomUser.Role.DRIVER:
         request.session['active_dashboard_role'] = 'driver'
         return redirect('dashboard:driver')
 
     if not (request.user.is_authenticated and getattr(request.user, 'is_superadmin', False)):
         request.session['active_dashboard_role'] = 'admin'
         request.session.modified = True
-    display_user = request.user if request.user.is_authenticated else CustomUser.objects.filter(role=CustomUser.Role.COMPANY).first()
+    display_user = request.user
 
     # Filter data for this company / fleet
     vehicles = Vehicle.objects.all()
@@ -182,11 +184,16 @@ def admin_dashboard(request):
 
 
 def get_current_driver(request):
-    """Helper to retrieve current driver profile and display user for driver views."""
-    if not (request.user.is_authenticated and getattr(request.user, 'is_superadmin', False)):
+    """Helper to resolve driver instance for the active driver view."""
+    if not request.user.is_authenticated:
+        return None, None
+    # Block company user from driver portal
+    if not (request.user.is_superuser or getattr(request.user, 'role', '') in [CustomUser.Role.SUPERADMIN, CustomUser.Role.DRIVER]):
+        return None, None
+    if not getattr(request.user, 'is_superadmin', False):
         request.session['active_dashboard_role'] = 'driver'
         request.session.modified = True
-    display_user = request.user if request.user.is_authenticated else CustomUser.objects.filter(role=CustomUser.Role.DRIVER).first()
+    display_user = request.user
 
     driver = None
     if display_user and hasattr(display_user, 'driver_profile'):
@@ -202,6 +209,10 @@ def get_current_driver(request):
 def driver_dashboard(request):
     """3. Driver Dedicated Portal Dashboard - Profile & Performance"""
     display_user, driver = get_current_driver(request)
+    if not display_user:
+        if not request.user.is_authenticated:
+            return redirect('accounts:login')
+        return redirect('dashboard:admin')
 
     # Driver statistics
     agreements = Agreement.objects.filter(driver=driver) if driver else Agreement.objects.none()
@@ -233,6 +244,10 @@ def driver_dashboard(request):
 def driver_vehicle_view(request):
     """Current Assigned Vehicle dedicated page for driver"""
     display_user, driver = get_current_driver(request)
+    if not display_user:
+        if not request.user.is_authenticated:
+            return redirect('accounts:login')
+        return redirect('dashboard:admin')
 
     agreements = Agreement.objects.filter(driver=driver) if driver else Agreement.objects.none()
     active_agreement = agreements.filter(status=Agreement.Status.ACTIVE).select_related('vehicle').first()

@@ -250,14 +250,18 @@ def team_members_view(request):
 
 
 def team_member_delete(request, pk):
-    """Remove a team member to free up a company seat."""
+    """Remove a team member to free up a company seat (Company or Super Admin)."""
     user = request.user
-    if user.is_authenticated:
-        company = user.get_company_account()
-    else:
-        company = CustomUser.objects.filter(role=CustomUser.Role.COMPANY).first()
+    if not user.is_authenticated:
+        return redirect('accounts:login')
 
-    member = get_object_or_404(CustomUser, pk=pk, company=company)
+    if user.is_superuser or getattr(user, 'role', '') == CustomUser.Role.SUPERADMIN:
+        member = get_object_or_404(CustomUser, pk=pk)
+        company = member.get_company_account() or member.company_account
+    else:
+        company = user.get_company_account()
+        member = get_object_or_404(CustomUser, pk=pk, company_account=company)
+
     member_name = member.get_full_name() or member.email
     member.delete()
 
@@ -268,7 +272,7 @@ def team_member_delete(request, pk):
         f"Removed team member: {member_name}",
         company=company
     )
-    messages.success(request, f'Team member {member_name} has been removed. A seat is now free.')
+    messages.success(request, f'Team member {member_name} has been removed successfully.')
     return redirect('accounts:team')
 
 
@@ -314,6 +318,14 @@ def activity_log_view(request):
 
 
 def users_list(request):
+    if not (request.user.is_authenticated and (request.user.is_superuser or getattr(request.user, 'role', '') == CustomUser.Role.SUPERADMIN)):
+        messages.error(request, 'Access denied. Super Admin privileges required.')
+        if request.user.is_authenticated:
+            if getattr(request.user, 'role', '') == CustomUser.Role.DRIVER:
+                return redirect('dashboard:driver')
+            return redirect('dashboard:admin')
+        return redirect('accounts:login')
+
     query = request.GET.get('q', '').strip()
     role_filter = request.GET.get('role', '').strip()
 
@@ -346,3 +358,21 @@ def users_list(request):
         'current_dashboard': get_active_dashboard_role(request),
     }
     return render(request, 'users/list.html', context)
+
+
+@login_required
+def user_delete(request, pk):
+    """Permanently delete a user or team member account (Super Admin only)."""
+    if not (request.user.is_superuser or getattr(request.user, 'role', '') == CustomUser.Role.SUPERADMIN):
+        messages.error(request, 'Access denied. Super Admin privileges required.')
+        return redirect('dashboard:index')
+
+    user_to_delete = get_object_or_404(CustomUser, pk=pk)
+    if user_to_delete == request.user:
+        messages.error(request, 'You cannot delete your own Super Admin account.')
+        return redirect('accounts:users')
+
+    target_email = user_to_delete.email
+    user_to_delete.delete()
+    messages.success(request, f'User {target_email} has been permanently deleted.')
+    return redirect('accounts:users')

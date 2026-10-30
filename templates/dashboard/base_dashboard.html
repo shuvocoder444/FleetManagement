@@ -126,13 +126,13 @@
                        class="flex items-center px-3 {% if '/agreements/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
                         <i class="fa-regular fa-file-lines w-5 {% if '/agreements/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_agreements }}</span>
-                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full {% if '/agreements/' in request.path %}bg-red-100 text-red-700{% else %}bg-slate-100 text-slate-600{% endif %}">4</span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full {% if '/agreements/' in request.path %}bg-red-100 text-red-700{% else %}bg-slate-100 text-slate-600{% endif %}">{{ nav_counts.agreements }}</span>
                     </a>
                     <a href="{% url 'drivers:list' %}" 
                        class="flex items-center px-3 {% if '/drivers/' in request.path and '/check/' not in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
                         <i class="fa-regular fa-user w-5 {% if '/drivers/' in request.path and '/check/' not in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_drivers }}</span>
-                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full {% if '/drivers/' in request.path and '/check/' not in request.path %}bg-red-100 text-red-700{% else %}bg-slate-100 text-slate-600{% endif %}">6</span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full {% if '/drivers/' in request.path and '/check/' not in request.path %}bg-red-100 text-red-700{% else %}bg-slate-100 text-slate-600{% endif %}">{{ nav_counts.drivers }}</span>
                     </a>
                     <a href="{% url 'drivers:check' %}" 
                        class="flex items-center px-3 {% if '/drivers/check/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
@@ -144,6 +144,7 @@
                        class="flex items-center px-3 {% if '/vehicles/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
                         <i class="fa-solid fa-car w-5 {% if '/vehicles/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_vehicles_garage }}</span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">{{ nav_counts.vehicles }}</span>
                     </a>
                 </nav>
             </div>
@@ -155,7 +156,9 @@
                        class="flex items-center px-3 {% if '/billing/manual-payments/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
                         <i class="fa-solid fa-money-bill-transfer w-5 {% if '/billing/manual-payments/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_manual_payments }}</span>
-                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600">1</span>
+                        {% if nav_counts.pending_payments > 0 %}
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-amber-50 text-amber-600">{{ nav_counts.pending_payments }}</span>
+                        {% endif %}
                     </a>
                     <a href="{% url 'billing:subscriptions' %}" 
                        class="flex items-center px-3 {% if '/billing/subscriptions/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
@@ -192,7 +195,7 @@
                        class="flex items-center px-3 {% if '/settings/pages/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
                         <i class="fa-solid fa-file-pen w-5 {% if '/settings/pages/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">Manage Pages (CMS)</span>
-                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-red-100 text-red-600">7</span>
+                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-red-100 text-red-600">{{ nav_counts.pages }}</span>
                     </a>
                 </nav>
             </div>
@@ -217,16 +220,19 @@
                        class="flex items-center px-3 {% if '/vehicles/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
                         <i class="fa-solid fa-car w-5 {% if '/vehicles/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_my_vehicles }}</span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">{{ nav_counts.vehicles }}</span>
                     </a>
                     <a href="{% url 'agreements:list' %}" 
                        class="flex items-center px-3 {% if '/agreements/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
                         <i class="fa-regular fa-file-lines w-5 {% if '/agreements/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_rental_agreements }}</span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">{{ nav_counts.agreements }}</span>
                     </a>
                     <a href="{% url 'drivers:list' %}" 
                        class="flex items-center px-3 {% if '/drivers/' in request.path and '/check/' not in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
                         <i class="fa-regular fa-user w-5 {% if '/drivers/' in request.path and '/check/' not in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_agency_drivers }}</span>
+                        <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600">{{ nav_counts.drivers }}</span>
                     </a>
                     <a href="{% url 'drivers:check' %}" 
                        class="flex items-center px-3 {% if '/drivers/check/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
@@ -243,7 +249,7 @@
                        class="flex items-center px-3 {% if '/accounts/team/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
                         <i class="fa-solid fa-users-gear w-5 {% if '/accounts/team/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_team_members|default:'Team Members' }}</span>
-                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-blue-50 text-blue-600">3 Seats</span>
+                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-blue-50 text-blue-600">{{ nav_counts.team_members }} Seats</span>
                     </a>
                     <a href="{% url 'accounts:activity_log' %}" 
                        class="flex items-center px-3 {% if '/accounts/activity-log/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
@@ -261,7 +267,7 @@
                        class="flex items-center px-3 {% if '/billing/subscriptions/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
                         <i class="fa-solid fa-credit-card w-5 {% if '/billing/subscriptions/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
                         <span class="ml-2.5 flex-1">{{ t.menu_my_subscription }}</span>
-                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">{{ t.badge_active }}</span>
+                        {% if nav_counts.active_subscriptions > 0 %}<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-600">{{ t.badge_active }}</span>{% else %}<span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-amber-50 text-amber-600">Inactive</span>{% endif %}
                     </a>
                     <a href="{% url 'billing:purchase' %}" 
                        class="flex items-center px-3 {% if '/billing/purchase/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
@@ -339,31 +345,22 @@
                     <i class="fa-solid fa-bars text-lg"></i>
                 </button>
                 
-                <!-- 3 DASHBOARD SWITCHER TABS (Live One-Click Switcher) -->
+                <!-- Clean Role Status Badge (No Switcher Tabs) -->
                 {% if request.user.is_authenticated and request.user.is_superadmin %}
-                <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
-                    <a href="{% url 'dashboard:superadmin' %}" 
-                       class="px-2.5 py-1.5 rounded-lg transition flex items-center space-x-1.5 {% if current_dashboard == 'superadmin' %}bg-white text-red-600 shadow-xs font-bold{% else %}text-slate-600 hover:text-slate-900{% endif %}">
-                        <i class="fa-solid fa-crown text-[10px]"></i>
-                        <span>{{ t.tab_superadmin }}</span>
-                    </a>
-                    <a href="{% url 'dashboard:admin' %}" 
-                       class="px-2.5 py-1.5 rounded-lg transition flex items-center space-x-1.5 {% if current_dashboard == 'admin' %}bg-white text-red-600 shadow-xs font-bold{% else %}text-slate-600 hover:text-slate-900{% endif %}">
-                        <i class="fa-solid fa-building text-[10px]"></i>
-                        <span>{{ t.tab_fleetadmin }}</span>
-                    </a>
-                    <a href="{% url 'dashboard:driver' %}" 
-                       class="px-2.5 py-1.5 rounded-lg transition flex items-center space-x-1.5 {% if current_dashboard == 'driver' %}bg-white text-red-600 shadow-xs font-bold{% else %}text-slate-600 hover:text-slate-900{% endif %}">
-                        <i class="fa-solid fa-id-badge text-[10px]"></i>
-                        <span>{{ t.tab_driver }}</span>
-                    </a>
+                <div class="flex items-center space-x-2">
+                    <span class="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 border border-red-100 font-bold text-xs flex items-center space-x-1.5 shadow-xs">
+                        <i class="fa-solid fa-crown text-[11px]"></i>
+                        <span>Platform Master</span>
+                    </span>
                 </div>
                 {% elif current_dashboard == 'admin' %}
                 <div class="flex items-center space-x-2">
-                    <span class="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 border border-red-100 font-bold text-xs flex items-center space-x-1.5">
+                    <span class="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 border border-red-100 font-bold text-xs flex items-center space-x-1.5 shadow-xs">
                         <i class="fa-solid fa-building text-[11px]"></i>
                         <span>
-                            {% if display_user.company_name %}
+                            {% if display_user.get_company_account.company_name %}
+                                {{ display_user.get_company_account.company_name }}
+                            {% elif display_user.company_name %}
                                 {{ display_user.company_name }}
                             {% elif display_user.role == 'individual' %}
                                 Personal
@@ -375,16 +372,16 @@
                 </div>
                 {% elif current_dashboard == 'driver' %}
                 <div class="flex items-center space-x-2">
-                    <span class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 font-bold text-xs flex items-center space-x-1.5">
+                    <span class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100 font-bold text-xs flex items-center space-x-1.5 shadow-xs">
                         <i class="fa-solid fa-id-badge text-[11px]"></i>
-                        <span>{{ t.tab_driver|default:'3. Driver Portal' }}</span>
+                        <span>Driver Portal</span>
                     </span>
                 </div>
                 {% else %}
                 <div class="flex items-center space-x-2">
-                    <span class="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 border border-red-100 font-bold text-xs flex items-center space-x-1.5">
-                        <i class="fa-solid fa-crown text-[11px]"></i>
-                        <span>{{ t.tab_superadmin|default:'1. Super Admin' }}</span>
+                    <span class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs flex items-center space-x-1.5">
+                        <i class="fa-solid fa-user text-[11px]"></i>
+                        <span>Dashboard</span>
                     </span>
                 </div>
                 {% endif %}

@@ -104,10 +104,13 @@ def switch_language(request, lang_code):
 
 
 def settings_view(request):
-    if not request.user.is_authenticated:
-        admin_user = CustomUser.objects.filter(role='superadmin').first() or CustomUser.objects.filter(is_superuser=True).first() or CustomUser.objects.first()
-        if admin_user:
-            request.user = admin_user
+    if not (request.user.is_authenticated and (request.user.is_superuser or getattr(request.user, 'role', '') == CustomUser.Role.SUPERADMIN)):
+        messages.error(request, 'Access denied. Super Admin privileges required.')
+        if request.user.is_authenticated:
+            if getattr(request.user, 'role', '') == CustomUser.Role.DRIVER:
+                return redirect('dashboard:driver')
+            return redirect('dashboard:admin')
+        return redirect('accounts:login')
 
     from decimal import Decimal
     setting = WebsiteSetting.load()
@@ -172,10 +175,13 @@ def settings_view(request):
 # ========================================================
 
 def pages_list_view(request):
-    if not request.user.is_authenticated:
-        admin_user = CustomUser.objects.filter(role='superadmin').first() or CustomUser.objects.filter(is_superuser=True).first() or CustomUser.objects.first()
-        if admin_user:
-            request.user = admin_user
+    if not (request.user.is_authenticated and (request.user.is_superuser or getattr(request.user, 'role', '') == CustomUser.Role.SUPERADMIN)):
+        messages.error(request, 'Access denied. Super Admin privileges required.')
+        if request.user.is_authenticated:
+            if getattr(request.user, 'role', '') == CustomUser.Role.DRIVER:
+                return redirect('dashboard:driver')
+            return redirect('dashboard:admin')
+        return redirect('accounts:login')
 
     pages = FrontendPage.objects.all().order_by('slug')
     setting = WebsiteSetting.load()
@@ -188,10 +194,13 @@ def pages_list_view(request):
 
 
 def page_edit_view(request, slug):
-    if not request.user.is_authenticated:
-        admin_user = CustomUser.objects.filter(role='superadmin').first() or CustomUser.objects.filter(is_superuser=True).first() or CustomUser.objects.first()
-        if admin_user:
-            request.user = admin_user
+    if not (request.user.is_authenticated and (request.user.is_superuser or getattr(request.user, 'role', '') == CustomUser.Role.SUPERADMIN)):
+        messages.error(request, 'Access denied. Super Admin privileges required.')
+        if request.user.is_authenticated:
+            if getattr(request.user, 'role', '') == CustomUser.Role.DRIVER:
+                return redirect('dashboard:driver')
+            return redirect('dashboard:admin')
+        return redirect('accounts:login')
 
     page = get_object_or_404(FrontendPage, slug=slug)
     setting = WebsiteSetting.load()

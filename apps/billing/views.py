@@ -8,6 +8,14 @@ from apps.accounts.models import CustomUser
 
 
 def manual_payments_list(request):
+    if not (request.user.is_authenticated and (request.user.is_superuser or getattr(request.user, 'role', '') == CustomUser.Role.SUPERADMIN)):
+        messages.error(request, 'Access denied. Super Admin privileges required.')
+        if request.user.is_authenticated:
+            if getattr(request.user, 'role', '') == CustomUser.Role.DRIVER:
+                return redirect('dashboard:driver')
+            return redirect('dashboard:admin')
+        return redirect('accounts:login')
+
     status_filter = request.GET.get('status', '').strip()
     payments = ManualPayment.objects.all().select_related('user', 'plan')
     if status_filter:
@@ -29,6 +37,9 @@ def manual_payments_list(request):
 
 
 def approve_payment(request, pk):
+    if not (request.user.is_authenticated and (request.user.is_superuser or getattr(request.user, 'role', '') == CustomUser.Role.SUPERADMIN)):
+        messages.error(request, 'Access denied. Super Admin privileges required.')
+        return redirect('dashboard:index')
     payment = get_object_or_404(ManualPayment, pk=pk)
     payment.status = ManualPayment.Status.APPROVED
     payment.reviewed_at = timezone.now()
@@ -69,6 +80,9 @@ def approve_payment(request, pk):
 
 
 def reject_payment(request, pk):
+    if not (request.user.is_authenticated and (request.user.is_superuser or getattr(request.user, 'role', '') == CustomUser.Role.SUPERADMIN)):
+        messages.error(request, 'Access denied. Super Admin privileges required.')
+        return redirect('dashboard:index')
     payment = get_object_or_404(ManualPayment, pk=pk)
     payment.status = ManualPayment.Status.CANCELLED
     payment.reviewed_at = timezone.now()

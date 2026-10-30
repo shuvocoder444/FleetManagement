@@ -8,6 +8,7 @@ urlpatterns = [
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.register_view, name='register'),
     path('users/', views.users_list, name='users'),
+    path('users/<int:pk>/delete/', views.user_delete, name='user_delete'),
     path('team/', views.team_members_view, name='team'),
     path('team/<int:pk>/delete/', views.team_member_delete, name='team_delete'),
     path('activity-log/', views.activity_log_view, name='activity_log'),

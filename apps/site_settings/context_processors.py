@@ -107,6 +107,59 @@ def site_settings_processor(request):
         except Exception:
             display_user = None
 
+    # 4. Calculate dynamic navigation badge counts
+    nav_counts = {
+        'agreements': 0,
+        'drivers': 0,
+        'vehicles': 0,
+        'pending_payments': 0,
+        'active_subscriptions': 0,
+        'pages': 0,
+        'users': 0,
+        'team_members': 0,
+    }
+    try:
+        from apps.agreements.models import Agreement
+        from apps.drivers.models import Driver
+        from apps.vehicles.models import Vehicle
+        from apps.billing.models import ManualPayment, Subscription
+        from apps.site_settings.models import FrontendPage
+        from apps.accounts.models import CustomUser
+
+        is_super = user and user.is_authenticated and (user.is_superuser or getattr(user, 'role', '') == CustomUser.Role.SUPERADMIN)
+        if is_super:
+            nav_counts['agreements'] = Agreement.objects.count()
+            nav_counts['drivers'] = Driver.objects.count()
+            nav_counts['vehicles'] = Vehicle.objects.count()
+            nav_counts['pending_payments'] = ManualPayment.objects.filter(status=ManualPayment.Status.PENDING).count()
+            nav_counts['active_subscriptions'] = Subscription.objects.filter(status=Subscription.Status.ACTIVE).count()
+            nav_counts['pages'] = FrontendPage.objects.count()
+            nav_counts['users'] = CustomUser.objects.count()
+        elif user and user.is_authenticated:
+            company = user.get_company_account() if hasattr(user, 'get_company_account') else None
+            if company:
+                nav_counts['agreements'] = Agreement.objects.filter(company=company).count()
+                nav_counts['drivers'] = Driver.objects.filter(company=company).count()
+                nav_counts['vehicles'] = Vehicle.objects.filter(created_by=user).count() or Vehicle.objects.count()
+                nav_counts['team_members'] = CustomUser.objects.filter(company_account=company).count()
+            else:
+                nav_counts['agreements'] = Agreement.objects.count()
+                nav_counts['drivers'] = Driver.objects.count()
+                nav_counts['vehicles'] = Vehicle.objects.count()
+                nav_counts['team_members'] = 1
+            nav_counts['pending_payments'] = 0
+            nav_counts['pages'] = 0
+            nav_counts['active_subscriptions'] = 1 if Subscription.objects.filter(user=user, status=Subscription.Status.ACTIVE).exists() else 0
+        else:
+            nav_counts['agreements'] = Agreement.objects.count()
+            nav_counts['drivers'] = Driver.objects.count()
+            nav_counts['vehicles'] = Vehicle.objects.count()
+            nav_counts['pending_payments'] = ManualPayment.objects.filter(status=ManualPayment.Status.PENDING).count()
+            nav_counts['pages'] = FrontendPage.objects.count()
+            nav_counts['users'] = CustomUser.objects.count()
+    except Exception:
+        pass
+
     return {
         'site_setting': setting,
         'currencies': currencies,
@@ -116,4 +169,5 @@ def site_settings_processor(request):
         't': get_translation(current_lang),
         'current_dashboard': current_dashboard,
         'display_user': display_user,
+        'nav_counts': nav_counts,
     }
