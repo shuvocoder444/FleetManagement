@@ -35,7 +35,7 @@ def driver_list(request):
         'available_count': available_count,
         'busy_count': busy_count,
         'warning_count': warning_count,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'drivers/list.html', context)
 
@@ -82,7 +82,7 @@ def driver_create(request):
 
     context = {
         'status_choices': Driver.Status.choices,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'drivers/create.html', context)
 
@@ -112,7 +112,7 @@ def check_driver_view(request):
         'personal_id': personal_id,
         'matched_driver': matched_driver,
         'history_entries': history_entries,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'drivers/check_driver.html', context)
 
@@ -124,6 +124,6 @@ def driver_detail(request, pk):
         'history_entries': driver.history_entries.all(),
         'ratings': driver.ratings.all(),
         'agreements': driver.agreements.all(),
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'drivers/detail.html', context)

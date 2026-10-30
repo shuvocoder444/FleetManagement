@@ -40,7 +40,7 @@ def vehicle_list(request):
         'maintenance_count': maintenance_count,
         'vehicle_types': Vehicle.VehicleType.choices,
         'status_choices': Vehicle.Status.choices,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'vehicles/list.html', context)
 
@@ -84,7 +84,7 @@ def vehicle_create(request):
     context = {
         'vehicle_types': Vehicle.VehicleType.choices,
         'status_choices': Vehicle.Status.choices,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'vehicles/create.html', context)
 
@@ -94,6 +94,6 @@ def vehicle_detail(request, pk):
     context = {
         'vehicle': vehicle,
         'agreements': vehicle.agreements.all(),
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'vehicles/detail.html', context)

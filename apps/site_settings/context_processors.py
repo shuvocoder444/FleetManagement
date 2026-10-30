@@ -32,6 +32,33 @@ def site_settings_processor(request):
         active_currency = currencies[0]
         current_currency = active_currency.code
 
+    # 3. Determine current active dashboard role (Super Admin / Fleet Admin / Driver)
+    user = request.user
+    role_param = request.GET.get('role', '').strip().lower()
+    if role_param in ['superadmin', 'admin', 'driver']:
+        request.session['active_dashboard_role'] = role_param
+        current_dashboard = role_param
+    elif 'active_dashboard_role' in request.session:
+        current_dashboard = request.session['active_dashboard_role']
+    elif user.is_authenticated:
+        if getattr(user, 'is_superuser', False) or getattr(user, 'role', '') == 'superadmin':
+            current_dashboard = 'superadmin'
+        elif getattr(user, 'role', '') == 'driver':
+            current_dashboard = 'driver'
+        else:
+            current_dashboard = 'admin'
+    else:
+        current_dashboard = 'superadmin'
+
+    # Display user object for avatars and names in dashboard
+    display_user = user if user.is_authenticated else None
+    if not display_user:
+        try:
+            from apps.accounts.models import CustomUser
+            display_user = CustomUser.objects.filter(role='superadmin').first() or CustomUser.objects.first()
+        except Exception:
+            display_user = None
+
     return {
         'site_setting': setting,
         'currencies': currencies,
@@ -39,4 +66,6 @@ def site_settings_processor(request):
         'active_currency': active_currency,
         'current_lang': current_lang,
         't': get_translation(current_lang),
+        'current_dashboard': current_dashboard,
+        'display_user': display_user,
     }

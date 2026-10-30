@@ -123,7 +123,7 @@ def users_list(request):
         'company_count': company_count,
         'driver_count': driver_count,
         'role_choices': CustomUser.Role.choices,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'users/list.html', context)
 

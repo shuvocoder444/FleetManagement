@@ -25,6 +25,7 @@ def dashboard_router(request):
 
 def superadmin_dashboard(request):
     """1. Super Admin Master Dashboard"""
+    request.session['active_dashboard_role'] = 'superadmin'
     display_user = request.user if request.user.is_authenticated else CustomUser.objects.filter(role=CustomUser.Role.SUPERADMIN).first()
 
     # Subscriber Metrics
@@ -90,6 +91,7 @@ def superadmin_dashboard(request):
 
 def admin_dashboard(request):
     """2. Rental Company / Fleet Admin Dashboard (like Team JBDIT)"""
+    request.session['active_dashboard_role'] = 'admin'
     display_user = request.user if request.user.is_authenticated else CustomUser.objects.filter(role=CustomUser.Role.COMPANY).first()
 
     # Filter data for this company / fleet
@@ -145,6 +147,7 @@ def admin_dashboard(request):
 
 def driver_dashboard(request):
     """3. Driver Dedicated Portal Dashboard (as in car.smartbanglait.com/my-drivers/7)"""
+    request.session['active_dashboard_role'] = 'driver'
     display_user = request.user if request.user.is_authenticated else CustomUser.objects.filter(role=CustomUser.Role.DRIVER).first()
 
     # Fetch driver model

@@ -19,30 +19,23 @@
 {% endif %}
 
 <!-- 1. Hero Section -->
-<section class="relative hero-bg text-white py-24 sm:py-32 lg:py-40 flex items-center justify-center min-h-[580px]">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+<section class="relative hero-bg text-white py-24 sm:py-32 lg:py-36 flex items-center justify-center min-h-[580px]">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
         
-        <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-red-600/30 border border-red-500/40 text-xs sm:text-sm font-semibold text-red-200 mb-6 backdrop-blur-sm">
-            <span class="w-2 h-2 rounded-full bg-red-400 animate-pulse"></span>
-            <span>{{ page.badge|default:"Kyrgyzstan's #1 Fleet & Verification Hub" }}</span>
-        </div>
-
-        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight sm:leading-tight mb-6">
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight sm:leading-tight mb-6 text-white drop-shadow-md">
             {{ page.title|default:t.hero_title|default:"Kyrgyzstan's First Unified Vehicle Rental Platform" }}
         </h1>
         
-        <p class="text-base sm:text-lg lg:text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed mb-10 font-normal">
+        <p class="text-sm sm:text-base lg:text-lg text-gray-200 max-w-3xl mx-auto leading-relaxed mb-10 font-normal drop-shadow">
             {{ page.subtitle|default:t.hero_subtitle|default:"Streamline your vehicle rental, leasing, and installment operations with our comprehensive platform. Connect with customers, manage contracts, and grow your business efficiently." }}
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <a href="{% url 'pricing' %}" class="w-full sm:w-auto px-8 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-900/50 hover:shadow-red-900/70 transition flex items-center justify-center space-x-2">
-                <i class="fa-solid fa-rocket text-xs"></i>
-                <span>{{ t.get_started|default:'Get Started' }}</span>
+            <a href="{% url 'pricing' %}" class="w-full sm:w-auto px-10 py-3.5 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-lg shadow-lg shadow-red-900/50 hover:shadow-red-900/70 transition">
+                {{ t.get_started|default:'Get Started' }}
             </a>
-            <a href="{% url 'about' %}" class="w-full sm:w-auto px-8 py-3.5 bg-white/10 hover:bg-white/20 border border-white/30 backdrop-blur-md text-white font-semibold text-sm rounded-xl transition flex items-center justify-center space-x-2">
-                <i class="fa-solid fa-circle-play text-xs"></i>
-                <span>{{ t.learn_more|default:'Learn More' }}</span>
+            <a href="{% url 'drivers:check' %}" class="w-full sm:w-auto px-10 py-3.5 bg-white/10 hover:bg-white/20 border border-white/50 backdrop-blur-sm text-white font-semibold text-sm rounded-lg transition">
+                {{ t.check_data|default:'Check Data' }}
             </a>
         </div>
     </div>

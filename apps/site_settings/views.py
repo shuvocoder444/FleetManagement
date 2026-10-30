@@ -159,7 +159,7 @@ def settings_view(request):
         'setting': setting,
         'usd_currency': usd_currency,
         'kgs_currency': kgs_currency,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'settings/general.html', context)
 
@@ -178,7 +178,7 @@ def pages_list_view(request):
     context = {
         'pages': pages,
         'setting': setting,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'settings/pages_list.html', context)
 
@@ -215,6 +215,6 @@ def page_edit_view(request, slug):
     context = {
         'page': page,
         'setting': setting,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'settings/page_edit.html', context)

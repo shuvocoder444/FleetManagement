@@ -21,7 +21,7 @@ def manual_payments_list(request):
         'pending_count': pending_count,
         'approved_count': approved_count,
         'cancelled_count': cancelled_count,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'billing/manual_payments.html', context)
 
@@ -145,7 +145,7 @@ def purchase_subscription(request, plan_id=None):
         'plans': plans,
         'selected_plan': selected_plan,
         'payment_methods': ManualPayment.PaymentMethod.choices,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'billing/purchase.html', context)
 
@@ -177,7 +177,7 @@ def subscriptions_list(request):
         'active_count': active_count,
         'pending_count': pending_count,
         'is_super': is_super,
-        'current_dashboard': 'superadmin' if is_super else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'billing/subscriptions.html', context)
 
@@ -190,7 +190,7 @@ def plans_list(request):
     context = {
         'plans': plans,
         'is_admin': is_admin,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'billing/plans.html', context)
 
@@ -243,7 +243,7 @@ def plan_create(request):
         'intervals': Plan.Interval.choices,
         'statuses': Plan.Status.choices,
         'is_edit': False,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'billing/plan_form.html', context)
 
@@ -298,7 +298,7 @@ def plan_edit(request, pk):
         'intervals': Plan.Interval.choices,
         'statuses': Plan.Status.choices,
         'is_edit': True,
-        'current_dashboard': 'superadmin' if request.user.is_superuser or getattr(request.user, 'role', '') == 'superadmin' else 'admin',
+        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
     }
     return render(request, 'billing/plan_form.html', context)
 

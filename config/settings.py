@@ -13,6 +13,15 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CSRF_TRUSTED_ORIGINS = [
+    'http://rus.velohoster.com',
+    'https://rus.velohoster.com',
+    'http://top.signsabove.net',
+    'https://top.signsabove.net',
+    'http://hospital.webkoders.com',
+    'https://hospital.webkoders.com',
+]
+
 # Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
