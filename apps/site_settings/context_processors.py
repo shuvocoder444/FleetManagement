@@ -9,6 +9,7 @@ def get_active_dashboard_role(request):
     and never inadvertently gets switched to 'superadmin'.
     """
     user = getattr(request, 'user', None)
+    path = getattr(request, 'path', '')
     role_param = request.GET.get('role', '').strip().lower()
     
     if role_param in ['superadmin', 'admin', 'company', 'driver']:
@@ -17,22 +18,33 @@ def get_active_dashboard_role(request):
         request.session['active_dashboard_role'] = role_param
         return role_param
 
+    # Explicit dashboard route matching
+    if '/dashboard/superadmin/' in path:
+        request.session['active_dashboard_role'] = 'superadmin'
+        return 'superadmin'
+    elif '/dashboard/admin/' in path or '/dashboard/company/' in path:
+        request.session['active_dashboard_role'] = 'admin'
+        return 'admin'
+    elif '/dashboard/driver/' in path:
+        request.session['active_dashboard_role'] = 'driver'
+        return 'driver'
+
     if user and user.is_authenticated:
         # Non-superadmin company users MUST stay in 'admin'
         if getattr(user, 'role', '') in ['company', 'admin', 'individual']:
-            if not (getattr(user, 'is_superuser', False) or getattr(user, 'role', '') == 'superadmin'):
-                request.session['active_dashboard_role'] = 'admin'
-                return 'admin'
-            return request.session.get('active_dashboard_role', 'admin')
+            request.session['active_dashboard_role'] = 'admin'
+            return 'admin'
         elif getattr(user, 'role', '') == 'driver':
             request.session['active_dashboard_role'] = 'driver'
             return 'driver'
         elif getattr(user, 'is_superuser', False) or getattr(user, 'role', '') == 'superadmin':
             return request.session.get('active_dashboard_role', 'superadmin')
         else:
-            return request.session.get('active_dashboard_role', 'admin')
+            request.session['active_dashboard_role'] = 'admin'
+            return 'admin'
 
-    return request.session.get('active_dashboard_role', 'superadmin')
+    # Unauthenticated / guest preview: default to 'admin' (Fleet Company Dashboard)
+    return request.session.get('active_dashboard_role', 'admin')
 
 
 def site_settings_processor(request):
