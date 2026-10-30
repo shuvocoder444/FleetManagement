@@ -54,6 +54,18 @@ class CustomUser(AbstractUser):
     business_registration_number = models.CharField(max_length=100, blank=True, null=True)
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
 
+    # Multi-user Team & Seat Management:
+    # Individual = 1 user max. Company = 1 Owner + up to 2 Team Members (Total 3 seats).
+    company = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='team_members',
+        help_text="Parent company account if this user is a staff/team member."
+    )
+    member_role = models.CharField(max_length=50, default='Owner', blank=True)
+
     objects = CustomUserManager()
 
     USERNAME_FIELD = 'email'
@@ -79,3 +91,77 @@ class CustomUser(AbstractUser):
     @property
     def is_driver(self):
         return self.role == self.Role.DRIVER
+
+    def get_company_account(self):
+        """Returns the primary company account (either self if owner, or self.company if team member)."""
+        if self.company:
+            return self.company
+        return self
+
+    @property
+    def is_company_owner(self):
+        return self.role == self.Role.COMPANY and self.company is None
+
+    @property
+    def team_seat_count(self):
+        """Current number of active seats used (1 for owner + active team members)."""
+        company = self.get_company_account()
+        return 1 + company.team_members.filter(is_active=True).count()
+
+    @property
+    def max_allowed_seats(self):
+        """Individual = 1 seat. Company = 3 seats."""
+        if self.role == self.Role.INDIVIDUAL:
+            return 1
+        return 3
+
+    @property
+    def seats_available(self):
+        return max(0, self.max_allowed_seats - self.team_seat_count)
+
+
+class ActivityLog(models.Model):
+    class Module(models.TextChoices):
+        VEHICLES = 'vehicles', 'Vehicles'
+        AGREEMENTS = 'agreements', 'Rental Agreements'
+        DRIVERS = 'drivers', 'Drivers & Verification'
+        BILLING = 'billing', 'Subscription & Billing'
+        TEAM = 'team', 'Team Management'
+        AUTH = 'auth', 'Authentication'
+
+    class ActionType(models.TextChoices):
+        CREATE = 'create', 'Created'
+        UPDATE = 'update', 'Updated'
+        DELETE = 'delete', 'Deleted'
+        VERIFY = 'verify', 'Verified'
+        LOGIN = 'login', 'Logged In'
+
+    company = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name='activity_logs'
+    )
+    actor = models.ForeignKey(
+        CustomUser,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='performed_activities'
+    )
+    actor_name = models.CharField(max_length=255)
+    actor_email = models.EmailField(blank=True, null=True)
+    actor_role = models.CharField(max_length=50, default='Owner')
+
+    action_type = models.CharField(max_length=20, choices=ActionType.choices, default=ActionType.CREATE)
+    module = models.CharField(max_length=30, choices=Module.choices, default=Module.AGREEMENTS)
+    description = models.TextField()
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Activity Log'
+        verbose_name_plural = 'Activity Logs'
+
+    def __str__(self):
+        return f"[{self.created_at:%Y-%m-%d %H:%M}] {self.actor_name}: {self.description}"

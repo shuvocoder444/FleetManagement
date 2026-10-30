@@ -1,0 +1,257 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Team Members & Seats - {{ site_setting.site_name|default:'Topd' }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Top Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700">Team & Access</span>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    Company Team Members
+                </h1>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                Manage your company user seats (max 3 members for Company accounts). All actions are tracked in the Activity Log.
+            </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <a href="{% url 'accounts:activity_log' %}" class="inline-flex items-center px-4 py-2.5 text-xs font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-xs transition">
+                <i class="fa-solid fa-clock-rotate-left mr-2 text-slate-400"></i> View Activity Log
+            </a>
+            {% if seats_available > 0 %}
+            <button onclick="document.getElementById('add-member-modal').classList.remove('hidden')" class="inline-flex items-center px-4 py-2.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-sm transition">
+                <i class="fa-solid fa-user-plus mr-2 text-[11px]"></i> Add Team Member
+            </button>
+            {% else %}
+            <button disabled class="inline-flex items-center px-4 py-2.5 text-xs font-bold text-slate-400 bg-slate-100 rounded-xl cursor-not-allowed">
+                <i class="fa-solid fa-ban mr-2 text-[11px]"></i> 3 of 3 Seats Used
+            </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 1. SEATS USAGE CARD -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        
+        <!-- Total Seats Card -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-xs font-semibold text-slate-500">Account Type</span>
+                <p class="text-lg font-black text-slate-900 capitalize">{{ company.role|default:'Company' }} Account</p>
+                <span class="inline-block text-[11px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    Max {{ max_allowed_seats }} Seats Allowed
+                </span>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xl flex-shrink-0">
+                <i class="fa-solid fa-building-user"></i>
+            </div>
+        </div>
+
+        <!-- Seats In Use -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-xs font-semibold text-slate-500">Seats In Use</span>
+                <p class="text-2xl font-black text-slate-900">{{ team_seat_count }} <span class="text-sm font-semibold text-slate-400">/ {{ max_allowed_seats }}</span></p>
+                <p class="text-[11px] text-slate-400">1 Owner + {{ team_members.count }} Sub-member(s)</p>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl flex-shrink-0">
+                <i class="fa-solid fa-users"></i>
+            </div>
+        </div>
+
+        <!-- Seats Available -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs flex items-center justify-between">
+            <div class="space-y-1">
+                <span class="text-xs font-semibold text-slate-500">Seats Available</span>
+                <p class="text-2xl font-black text-slate-900 {% if seats_available > 0 %}text-emerald-600{% else %}text-amber-600{% endif %}">
+                    {{ seats_available }}
+                </p>
+                <p class="text-[11px] text-slate-400">
+                    {% if seats_available > 0 %}You can add {{ seats_available }} more member(s){% else %}Max seat limit reached{% endif %}
+                </p>
+            </div>
+            <div class="w-12 h-12 rounded-xl {% if seats_available > 0 %}bg-emerald-50 text-emerald-600{% else %}bg-amber-50 text-amber-600{% endif %} flex items-center justify-center text-xl flex-shrink-0">
+                <i class="fa-solid fa-user-check"></i>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Alert / Explanation Banner -->
+    <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 flex items-start space-x-3 text-xs text-slate-600">
+        <i class="fa-solid fa-circle-info text-red-600 text-sm mt-0.5 flex-shrink-0"></i>
+        <div class="space-y-1 leading-relaxed">
+            <p><strong class="text-slate-900">Seat Rules:</strong> Individual accounts have 1 user seat. Company accounts have up to <strong>3 user seats</strong> (1 Owner + 2 Team Members). All 3 members share access to your fleet vehicles and agreements.</p>
+            <p><strong class="text-slate-900">Audit Trail:</strong> Any action taken by any of the 3 members (adding a car, generating a rental contract, or checking a driver) is automatically recorded in the <a href="{% url 'accounts:activity_log' %}" class="text-red-600 font-bold underline hover:text-red-700">Activity Log</a>.</p>
+        </div>
+    </div>
+
+    <!-- 2. TEAM MEMBERS TABLE -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+            <div>
+                <h3 class="text-sm font-bold text-slate-900">Active Company Users ({{ team_seat_count }} / {{ max_allowed_seats }})</h3>
+                <p class="text-xs text-slate-400">Users authorized to operate under {{ company.company_name|default:company.email }}</p>
+            </div>
+            {% if seats_available > 0 %}
+            <button onclick="document.getElementById('add-member-modal').classList.remove('hidden')" class="text-xs font-bold text-red-600 hover:text-red-700 flex items-center">
+                <i class="fa-solid fa-plus mr-1"></i> Add Member
+            </button>
+            {% endif %}
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 text-slate-500 font-semibold border-b border-slate-100">
+                    <tr>
+                        <th class="py-3 px-4">Member Name</th>
+                        <th class="py-3 px-4">Email Address</th>
+                        <th class="py-3 px-4">Company Role</th>
+                        <th class="py-3 px-4">Phone</th>
+                        <th class="py-3 px-4">Date Joined</th>
+                        <th class="py-3 px-4">Status</th>
+                        <th class="py-3 px-4 text-right">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    <!-- 1. Company Primary Owner -->
+                    <tr class="bg-red-50/20 hover:bg-slate-50/60 transition">
+                        <td class="py-3 px-4 font-bold text-slate-900 flex items-center space-x-2.5">
+                            <div class="w-8 h-8 rounded-full bg-red-600 text-white font-bold flex items-center justify-center text-xs shadow-xs">
+                                {{ company.first_name|default:'O'|slice:":1" }}
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-900">{{ company.get_full_name|default:'Company Owner' }}</p>
+                                <span class="text-[10px] text-red-600 font-semibold">Primary Account Owner</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-slate-600 font-mono">{{ company.email }}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-red-100 text-red-700 border border-red-200">
+                                Owner
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-slate-600">{{ company.phone|default:'-' }}</td>
+                        <td class="py-3 px-4 text-slate-500">{{ company.date_joined|date:"M d, Y" }}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                Active (Owner)
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-right">
+                            <span class="text-[11px] text-slate-400 italic">Primary Account</span>
+                        </td>
+                    </tr>
+
+                    <!-- 2. Sub-members -->
+                    {% for member in team_members %}
+                    <tr class="hover:bg-slate-50/60 transition">
+                        <td class="py-3 px-4 font-bold text-slate-900 flex items-center space-x-2.5">
+                            <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center text-xs">
+                                {{ member.first_name|default:'M'|slice:":1" }}
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-900">{{ member.get_full_name }}</p>
+                                <span class="text-[10px] text-slate-400">Staff User</span>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-slate-600 font-mono">{{ member.email }}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-100">
+                                {{ member.member_role|default:'Manager' }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-slate-600">{{ member.phone|default:'-' }}</td>
+                        <td class="py-3 px-4 text-slate-500">{{ member.date_joined|date:"M d, Y" }}</td>
+                        <td class="py-3 px-4">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                Active
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-right">
+                            <a href="{% url 'accounts:team_delete' member.id %}" onclick="return confirm('Are you sure you want to remove {{ member.get_full_name }}? A seat will become available.')"
+                               class="text-rose-600 hover:text-rose-800 font-semibold text-xs px-2 py-1 rounded hover:bg-rose-50 transition">
+                                <i class="fa-solid fa-trash-can mr-1"></i> Remove
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- ADD TEAM MEMBER MODAL -->
+<div id="add-member-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+    <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xl max-w-lg w-full p-6 sm:p-8 space-y-5 animate-in fade-in zoom-in-95 duration-150">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+                <h3 class="text-base font-bold text-slate-900">Add New Team Member</h3>
+                <p class="text-xs text-slate-500">Provide login credentials for your staff member ({{ team_seat_count }}/{{ max_allowed_seats }} seats used)</p>
+            </div>
+            <button onclick="document.getElementById('add-member-modal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 p-1">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+        </div>
+
+        <form method="POST" action="{% url 'accounts:team' %}" class="space-y-4">
+            {% csrf_token %}
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-800 mb-1">First Name <span class="text-red-500">*</span></label>
+                    <input type="text" name="first_name" required placeholder="e.g. Almaz" class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-800 mb-1">Last Name</label>
+                    <input type="text" name="last_name" placeholder="e.g. Asanov" class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1">Email Address (Login) <span class="text-red-500">*</span></label>
+                <input type="email" name="email" required placeholder="manager@bishkekwheels.kg" class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-800 mb-1">Role in Company <span class="text-red-500">*</span></label>
+                    <select name="member_role" class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none bg-white">
+                        <option value="Manager">Manager</option>
+                        <option value="Dispatcher">Dispatcher</option>
+                        <option value="Fleet Operator">Fleet Operator</option>
+                        <option value="Accountant">Accountant</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-800 mb-1">Phone Number</label>
+                    <input type="text" name="phone" placeholder="+996 555 123456" class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-800 mb-1">Member Password <span class="text-red-500">*</span></label>
+                <input type="password" name="password" required placeholder="Minimum 8 characters" class="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500/20 focus:border-red-500 outline-none">
+                <p class="text-[10px] text-slate-400 mt-1">This user will use this email and password to log in.</p>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-end space-x-3">
+                <button type="button" onclick="document.getElementById('add-member-modal').classList.add('hidden')" class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-xl transition">
+                    Cancel
+                </button>
+                <button type="submit" class="px-5 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-xs transition">
+                    <i class="fa-solid fa-plus mr-1.5 text-[10px]"></i> Add Member (1 Seat)
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

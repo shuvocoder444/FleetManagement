@@ -1,4 +1,6 @@
 from apps.site_settings.context_processors import get_active_dashboard_role
+from apps.accounts.utils import log_activity
+from apps.accounts.models import ActivityLog
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Agreement, AgreementMedia, AgreementDocument
@@ -98,6 +100,12 @@ def agreement_create(request):
             driver.save()
 
             messages.success(request, f'Agreement {agreement.contract_number} created successfully!')
+            log_activity(
+                request,
+                ActivityLog.ActionType.CREATE,
+                ActivityLog.Module.AGREEMENTS,
+                f"Created rental agreement #{agreement.contract_number} for client {agreement.client_name} (Vehicle: {vehicle.title})"
+            )
             return redirect('agreements:list')
         else:
             messages.error(request, 'Please fill in all required fields.')

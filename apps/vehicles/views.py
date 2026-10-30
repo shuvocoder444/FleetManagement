@@ -1,4 +1,6 @@
 from apps.site_settings.context_processors import get_active_dashboard_role
+from apps.accounts.utils import log_activity
+from apps.accounts.models import ActivityLog
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
@@ -80,6 +82,12 @@ def vehicle_create(request):
                 cover_image=cover_image
             )
             messages.success(request, f'Vehicle "{vehicle.title}" added to garage successfully!')
+            log_activity(
+                request,
+                ActivityLog.ActionType.CREATE,
+                ActivityLog.Module.VEHICLES,
+                f"Added vehicle '{vehicle.title}' ({vehicle.registration_number}) to fleet garage"
+            )
             return redirect('vehicles:list')
 
     context = {
