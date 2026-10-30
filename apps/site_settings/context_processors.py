@@ -2,6 +2,39 @@ from .models import WebsiteSetting, Currency
 from .translations import get_translation
 
 
+def get_active_dashboard_role(request):
+    """
+    Returns the persistent active dashboard role ('superadmin', 'admin', 'driver').
+    Guarantees that a Company / Rental Agency user always stays in 'admin' (Fleet Admin)
+    and never inadvertently gets switched to 'superadmin'.
+    """
+    user = getattr(request, 'user', None)
+    role_param = request.GET.get('role', '').strip().lower()
+    
+    if role_param in ['superadmin', 'admin', 'company', 'driver']:
+        if role_param == 'company':
+            role_param = 'admin'
+        request.session['active_dashboard_role'] = role_param
+        return role_param
+
+    if user and user.is_authenticated:
+        # Non-superadmin company users MUST stay in 'admin'
+        if getattr(user, 'role', '') in ['company', 'admin', 'individual']:
+            if not (getattr(user, 'is_superuser', False) or getattr(user, 'role', '') == 'superadmin'):
+                request.session['active_dashboard_role'] = 'admin'
+                return 'admin'
+            return request.session.get('active_dashboard_role', 'admin')
+        elif getattr(user, 'role', '') == 'driver':
+            request.session['active_dashboard_role'] = 'driver'
+            return 'driver'
+        elif getattr(user, 'is_superuser', False) or getattr(user, 'role', '') == 'superadmin':
+            return request.session.get('active_dashboard_role', 'superadmin')
+        else:
+            return request.session.get('active_dashboard_role', 'admin')
+
+    return request.session.get('active_dashboard_role', 'superadmin')
+
+
 def site_settings_processor(request):
     try:
         setting = WebsiteSetting.load()
@@ -33,29 +66,20 @@ def site_settings_processor(request):
         current_currency = active_currency.code
 
     # 3. Determine current active dashboard role (Super Admin / Fleet Admin / Driver)
-    user = request.user
-    role_param = request.GET.get('role', '').strip().lower()
-    if role_param in ['superadmin', 'admin', 'driver']:
-        request.session['active_dashboard_role'] = role_param
-        current_dashboard = role_param
-    elif 'active_dashboard_role' in request.session:
-        current_dashboard = request.session['active_dashboard_role']
-    elif user.is_authenticated:
-        if getattr(user, 'is_superuser', False) or getattr(user, 'role', '') == 'superadmin':
-            current_dashboard = 'superadmin'
-        elif getattr(user, 'role', '') == 'driver':
-            current_dashboard = 'driver'
-        else:
-            current_dashboard = 'admin'
-    else:
-        current_dashboard = 'superadmin'
+    current_dashboard = get_active_dashboard_role(request)
+    user = getattr(request, 'user', None)
 
     # Display user object for avatars and names in dashboard
-    display_user = user if user.is_authenticated else None
+    display_user = user if (user and user.is_authenticated) else None
     if not display_user:
         try:
             from apps.accounts.models import CustomUser
-            display_user = CustomUser.objects.filter(role='superadmin').first() or CustomUser.objects.first()
+            if current_dashboard == 'admin':
+                display_user = CustomUser.objects.filter(role=CustomUser.Role.COMPANY).first() or CustomUser.objects.first()
+            elif current_dashboard == 'driver':
+                display_user = CustomUser.objects.filter(role=CustomUser.Role.DRIVER).first() or CustomUser.objects.first()
+            else:
+                display_user = CustomUser.objects.filter(role=CustomUser.Role.SUPERADMIN).first() or CustomUser.objects.first()
         except Exception:
             display_user = None
 

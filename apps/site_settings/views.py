@@ -1,3 +1,4 @@
+from apps.site_settings.context_processors import get_active_dashboard_role
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import WebsiteSetting, Currency, ContactMessage, FrontendPage
@@ -161,7 +162,7 @@ def settings_view(request):
         'setting': setting,
         'usd_currency': usd_currency,
         'kgs_currency': kgs_currency,
-        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
+        'current_dashboard': get_active_dashboard_role(request),
     }
     return render(request, 'settings/general.html', context)
 
@@ -181,7 +182,7 @@ def pages_list_view(request):
     context = {
         'pages': pages,
         'setting': setting,
-        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
+        'current_dashboard': get_active_dashboard_role(request),
     }
     return render(request, 'settings/pages_list.html', context)
 
@@ -219,6 +220,6 @@ def page_edit_view(request, slug):
     context = {
         'page': page,
         'setting': setting,
-        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
+        'current_dashboard': get_active_dashboard_role(request),
     }
     return render(request, 'settings/page_edit.html', context)

@@ -296,6 +296,7 @@
                 </button>
                 
                 <!-- 3 DASHBOARD SWITCHER TABS (Live One-Click Switcher) -->
+                {% if not request.user.is_authenticated or request.user.is_superuser or request.user.role == 'superadmin' %}
                 <div class="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-semibold">
                     <a href="{% url 'dashboard:superadmin' %}" 
                        class="px-2.5 py-1.5 rounded-lg transition flex items-center space-x-1.5 {% if current_dashboard == 'superadmin' %}bg-white text-red-600 shadow-xs font-bold{% else %}text-slate-600 hover:text-slate-900{% endif %}">
@@ -313,6 +314,14 @@
                         <span>{{ t.tab_driver }}</span>
                     </a>
                 </div>
+                {% else %}
+                <div class="flex items-center space-x-2">
+                    <span class="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 border border-red-100 font-bold text-xs flex items-center space-x-1.5">
+                        <i class="fa-solid fa-building text-[11px]"></i>
+                        <span>{{ t.tab_fleetadmin|default:'2. Fleet Admin' }}</span>
+                    </span>
+                </div>
+                {% endif %}
             </div>
 
             <!-- Right Controls: Currency, Language, Notifications, Profile -->

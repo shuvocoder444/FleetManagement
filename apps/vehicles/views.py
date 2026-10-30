@@ -1,3 +1,4 @@
+from apps.site_settings.context_processors import get_active_dashboard_role
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.db.models import Q
@@ -40,7 +41,7 @@ def vehicle_list(request):
         'maintenance_count': maintenance_count,
         'vehicle_types': Vehicle.VehicleType.choices,
         'status_choices': Vehicle.Status.choices,
-        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
+        'current_dashboard': get_active_dashboard_role(request),
     }
     return render(request, 'vehicles/list.html', context)
 
@@ -84,7 +85,7 @@ def vehicle_create(request):
     context = {
         'vehicle_types': Vehicle.VehicleType.choices,
         'status_choices': Vehicle.Status.choices,
-        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
+        'current_dashboard': get_active_dashboard_role(request),
     }
     return render(request, 'vehicles/create.html', context)
 
@@ -94,6 +95,6 @@ def vehicle_detail(request, pk):
     context = {
         'vehicle': vehicle,
         'agreements': vehicle.agreements.all(),
-        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
+        'current_dashboard': get_active_dashboard_role(request),
     }
     return render(request, 'vehicles/detail.html', context)

@@ -1,3 +1,4 @@
+from apps.site_settings.context_processors import get_active_dashboard_role
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Agreement, AgreementMedia, AgreementDocument
@@ -44,7 +45,7 @@ def agreement_list(request):
         'search_query': search_query,
         'current_type': contract_type,
         'contract_types': Agreement.ContractType.choices,
-        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
+        'current_dashboard': get_active_dashboard_role(request),
     }
     return render(request, 'agreements/list.html', context)
 
@@ -105,6 +106,6 @@ def agreement_create(request):
         'vehicles': vehicles if vehicles.exists() else Vehicle.objects.all()[:5],
         'drivers': drivers if drivers.exists() else Driver.objects.all()[:5],
         'contract_types': Agreement.ContractType.choices,
-        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
+        'current_dashboard': get_active_dashboard_role(request),
     }
     return render(request, 'agreements/create.html', context)

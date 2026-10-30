@@ -1,3 +1,4 @@
+from apps.site_settings.context_processors import get_active_dashboard_role
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
@@ -24,6 +25,12 @@ def login_view(request):
             user = authenticate(request, username=email, password=password)
             if user is not None:
                 auth_login(request, user)
+                if getattr(user, 'role', '') in [CustomUser.Role.COMPANY, CustomUser.Role.ADMIN, CustomUser.Role.INDIVIDUAL]:
+                    request.session['active_dashboard_role'] = 'admin'
+                elif getattr(user, 'role', '') == CustomUser.Role.DRIVER:
+                    request.session['active_dashboard_role'] = 'driver'
+                else:
+                    request.session['active_dashboard_role'] = 'superadmin'
                 messages.success(request, f'Welcome back, {user.first_name or user.email}!')
                 if next_url:
                     return redirect(next_url)
@@ -126,7 +133,7 @@ def users_list(request):
         'company_count': company_count,
         'driver_count': driver_count,
         'role_choices': CustomUser.Role.choices,
-        'current_dashboard': request.session.get('active_dashboard_role', 'superadmin'),
+        'current_dashboard': get_active_dashboard_role(request),
     }
     return render(request, 'users/list.html', context)
 
