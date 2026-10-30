@@ -21,13 +21,13 @@
 <section class="page-header-bg text-white py-16 sm:py-24">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <span class="px-3.5 py-1 text-xs font-bold uppercase tracking-wider bg-red-600/30 border border-red-500/40 text-red-300 rounded-full">
-            {{ page.badge|default:'Our Mission & Platform' }}
+            {% if current_lang == 'ru' %}{{ t.about_badge }}{% else %}{{ page.badge|default:t.about_badge }}{% endif %}
         </span>
         <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mt-4 mb-3">
-            {{ page.title|default:t.about|default:'About Us' }}
+            {% if current_lang == 'ru' %}{{ t.about_title }}{% else %}{{ page.title|default:t.about }}{% endif %}
         </h1>
         <p class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
-            {{ page.subtitle|default:'Building the most reliable, unified digital fleet ecosystem and driver anti-fraud network for Kyrgyzstan and Central Asia.' }}
+            {% if current_lang == 'ru' %}{{ t.about_subtitle }}{% else %}{{ page.subtitle|default:t.about_subtitle }}{% endif %}
         </p>
     </div>
 </section>
@@ -39,28 +39,28 @@
             
             <div class="space-y-6">
                 <span class="text-xs font-bold uppercase tracking-wider text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-100">
-                    Who We Are
+                    {{ t.who_we_are|default:"Who We Are" }}
                 </span>
                 <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                    {{ page.section_title|default:'Empowering Car Rental Companies With Technology & Trust' }}
+                    {% if current_lang == 'ru' %}{{ t.about_empower_title }}{% else %}{{ page.section_title|default:t.about_empower_title }}{% endif %}
                 </h2>
                 <div class="text-sm text-slate-600 leading-relaxed space-y-4">
                     {% if page.section_content %}
                         <p class="whitespace-pre-line">{{ page.section_content }}</p>
                     {% else %}
-                        <p>Vehicle rental operations have traditionally suffered from paper-heavy agreements, untracked vehicle handovers, and high risks of fraud, unpaid fines, or vehicle disappearance.</p>
-                        <p><strong>{{ site_setting.site_name|default:'Topd' }}</strong> was engineered from the ground up to eliminate these risks. We provide a single cloud platform where fleet owners, rental companies, and leasing operators can verify drivers against unified blacklist data, generate legally enforceable contracts with pre-rental condition photos, and automate payments.</p>
+                        <p>{{ t.about_p1 }}</p>
+                        <p><strong>{{ site_setting.site_name|default:'Topd' }}</strong> {{ t.about_p2 }}</p>
                     {% endif %}
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
                     <div>
                         <p class="text-2xl font-black text-red-600">99.8%</p>
-                        <p class="text-xs text-slate-500 font-medium">Risk Reduction</p>
+                        <p class="text-xs text-slate-500 font-medium">{{ t.risk_reduction }}</p>
                     </div>
                     <div>
-                        <p class="text-2xl font-black text-red-600">3-Minute</p>
-                        <p class="text-xs text-slate-500 font-medium">Agreement Generation</p>
+                        <p class="text-2xl font-black text-red-600">3-{{ t.minute|default:'Min' }}</p>
+                        <p class="text-xs text-slate-500 font-medium">{{ t.agreement_gen_speed }}</p>
                     </div>
                 </div>
             </div>
@@ -76,7 +76,7 @@
                     {% endif %}
                 </div>
                 <div class="absolute -bottom-6 -left-6 bg-slate-900 text-white p-6 rounded-2xl shadow-xl max-w-xs border border-slate-700 hidden sm:block">
-                    <p class="text-xs font-bold text-red-400 uppercase tracking-wider">Headquarters</p>
+                    <p class="text-xs font-bold text-red-400 uppercase tracking-wider">{{ t.headquarters }}</p>
                     <p class="text-sm font-semibold mt-1">{{ site_setting.address|default:'Bishkek, Kyrgyzstan' }}</p>
                     <p class="text-xs text-slate-400 mt-1">{{ site_setting.contact_phone|default:'+996 999 083 366' }}</p>
                 </div>
@@ -101,10 +101,10 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-2xl mx-auto mb-16">
             <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mb-3">
-                Our Core Pillars
+                {{ t.core_pillars_title }}
             </h2>
             <p class="text-sm text-slate-500">
-                How Topd delivers peace of mind to every rental business owner
+                {{ t.core_pillars_sub }}
             </p>
         </div>
 
@@ -113,9 +113,9 @@
                 <div class="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-xl font-bold">
                     <i class="fa-solid fa-user-shield"></i>
                 </div>
-                <h3 class="text-lg font-bold text-slate-900">Anti-Fraud Protection</h3>
+                <h3 class="text-lg font-bold text-slate-900">{{ t.pillar_1_title }}</h3>
                 <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                    A centralized, crowd-verified record of driver incidents across all participating agencies. Never unknowingly hand over expensive vehicles to repeat offenders.
+                    {{ t.pillar_1_desc }}
                 </p>
             </div>
 
@@ -123,9 +123,9 @@
                 <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl font-bold">
                     <i class="fa-solid fa-file-contract"></i>
                 </div>
-                <h3 class="text-lg font-bold text-slate-900">Digital Paperwork</h3>
+                <h3 class="text-lg font-bold text-slate-900">{{ t.pillar_2_title }}</h3>
                 <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                    Say goodbye to misplaced paperwork. Digital agreements with photo inspection, damage checklists, and clear payment terms keep your business protected.
+                    {{ t.pillar_2_desc }}
                 </p>
             </div>
 
@@ -133,9 +133,9 @@
                 <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
                     <i class="fa-solid fa-coins"></i>
                 </div>
-                <h3 class="text-lg font-bold text-slate-900">Localized Billing</h3>
+                <h3 class="text-lg font-bold text-slate-900">{{ t.pillar_3_title }}</h3>
                 <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">
-                    Designed for Central Asia: multiple currencies (KGS Som, USD), manual bank transfers, cash tracking, and flexible pay-per-check billing models.
+                    {{ t.pillar_3_desc }}
                 </p>
             </div>
         </div>
@@ -146,17 +146,17 @@
 <section class="bg-red-600 text-white py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center space-y-6">
         <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight">
-            Ready to upgrade your car rental business?
+            {{ t.about_cta_title }}
         </h2>
         <p class="text-sm sm:text-base text-red-100 max-w-xl mx-auto">
-            Get started today with our flexible subscription plans or test our driver check tool.
+            {{ t.about_cta_sub }}
         </p>
         <div class="flex items-center justify-center space-x-4 pt-2">
             <a href="{% url 'pricing' %}" class="px-8 py-3.5 bg-white text-red-600 hover:bg-slate-100 font-bold text-sm rounded-xl shadow-md transition">
-                View Pricing Plans
+                {{ t.view_pricing_plans }}
             </a>
             <a href="{% url 'contact' %}" class="px-8 py-3.5 bg-red-700 hover:bg-red-800 border border-white/30 text-white font-semibold text-sm rounded-xl transition">
-                Contact Our Team
+                {{ t.contact_our_team }}
             </a>
         </div>
     </div>

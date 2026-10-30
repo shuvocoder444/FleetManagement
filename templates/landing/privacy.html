@@ -8,7 +8,7 @@
 <div class="bg-amber-500 text-slate-950 px-4 py-2 text-xs font-bold flex items-center justify-between border-b border-amber-600 shadow-xs">
     <div class="flex items-center space-x-2">
         <i class="fa-solid fa-pen-to-square"></i>
-        <span>Admin Mode: You are viewing an editable CMS page (<strong>{{ page.title|default:'Privacy Policy' }}</strong>)</span>
+        <span>Admin Mode: You are viewing an editable CMS page (<strong>{% if current_lang == 'ru' %}{{ t.privacy_title }}{% else %}{{ page.title|default:t.privacy_title }}{% endif %}</strong>)</span>
     </div>
     <a href="{% url 'page_edit' slug='privacy' %}" class="bg-slate-900 hover:bg-slate-800 text-white px-3 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1.5 shadow-sm">
         <i class="fa-solid fa-pencil text-[10px]"></i>
@@ -24,7 +24,7 @@
             {{ page.badge|default:'Security & Trust' }}
         </span>
         <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight mt-4 mb-3">
-            {{ page.title|default:'Privacy Policy' }}
+            {% if current_lang == 'ru' %}{{ t.privacy_title }}{% else %}{{ page.title|default:t.privacy_title }}{% endif %}
         </h1>
         <p class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto font-normal leading-relaxed">
             {{ page.subtitle|default:'Last updated: October 2026. How Topd collects, safeguards, and handles your business and driver data.' }}

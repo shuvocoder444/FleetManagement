@@ -146,7 +146,7 @@
                             </a>
                             <a href="{% url 'billing:purchase' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium transition">
                                 <i class="fa-solid fa-credit-card text-emerald-500 w-4"></i>
-                                <span>Buy Subscription</span>
+                                <span>{{ t.buy_subscription|default:'Buy Subscription' }}</span>
                             </a>
                             <a href="{% url 'billing:subscriptions' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium transition">
                                 <i class="fa-solid fa-receipt text-slate-400 w-4"></i>
@@ -154,7 +154,7 @@
                             </a>
                             <a href="{% url 'agreements:create' %}" class="flex items-center space-x-2.5 px-4 py-2 text-gray-700 hover:bg-red-50 hover:text-red-600 font-medium transition">
                                 <i class="fa-solid fa-file-contract text-blue-500 w-4"></i>
-                                <span>{{ t.get_started }} / Create Agreement</span>
+                                <span>{{ t.create_agreement|default:'Create Agreement' }}</span>
                             </a>
                         </div>
 
@@ -325,7 +325,7 @@
 
                 <!-- Navigation Pages -->
                 <div>
-                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">Quick Links</h4>
+                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">{{ t.quick_links|default:'Quick Links' }}</h4>
                     <ul class="space-y-2.5 text-xs text-gray-400">
                         <li><a href="{% url 'landing_page' %}" class="hover:text-white transition">{{ t.home }}</a></li>
                         <li><a href="{% url 'about' %}" class="hover:text-white transition">{{ t.about }}</a></li>
@@ -337,17 +337,17 @@
 
                 <!-- Legal Pages -->
                 <div>
-                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">Legal & Privacy</h4>
+                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">{{ t.legal_privacy|default:'Legal & Privacy' }}</h4>
                     <ul class="space-y-2.5 text-xs text-gray-400">
-                        <li><a href="{% url 'terms' %}" class="hover:text-white transition">{% if current_lang == 'ru' %}Условия использования{% else %}Terms and Conditions{% endif %}</a></li>
-                        <li><a href="{% url 'privacy' %}" class="hover:text-white transition">{% if current_lang == 'ru' %}Политика конфиденциальности{% else %}Privacy Policy{% endif %}</a></li>
-                        <li><a href="{% url 'pricing' %}" class="hover:text-white transition">{% if current_lang == 'ru' %}Тарифы и подписка{% else %}Subscription Plans{% endif %}</a></li>
+                        <li><a href="{% url 'terms' %}" class="hover:text-white transition">{{ t.terms_title|default:'Terms and Conditions' }}</a></li>
+                        <li><a href="{% url 'privacy' %}" class="hover:text-white transition">{{ t.privacy_title|default:'Privacy Policy' }}</a></li>
+                        <li><a href="{% url 'pricing' %}" class="hover:text-white transition">{{ t.pricing_page_title|default:'Subscription Plans' }}</a></li>
                     </ul>
                 </div>
 
                 <!-- Contact Details -->
                 <div>
-                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">{{ t.contact_us|default:'Contact Info' }}</h4>
+                    <h4 class="text-xs font-semibold text-white uppercase tracking-wider mb-4">{{ t.contact_info|default:'Contact Info' }}</h4>
                     <ul class="space-y-2.5 text-xs text-gray-400">
                         <li class="flex items-center space-x-2">
                             <i class="fa-solid fa-location-dot text-red-500 text-[10px]"></i>
@@ -363,14 +363,14 @@
                         </li>
                         <li class="flex items-center space-x-2">
                             <i class="fa-solid fa-clock text-red-500 text-[10px]"></i>
-                            <span>{{ site_setting.working_hours|default:'Mon - Fri: 9:00 AM - 6:00 PM' }}</span>
+                            <span>{{ site_setting.working_hours|default:t.working_hours_val|default:'Mon - Fri: 9:00 AM - 6:00 PM' }}</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
             <div class="pt-8 text-center text-xs text-gray-500">
-                &copy; 2026 {{ site_setting.site_name|default:'Topd' }}. All Rights Reserved.
+                &copy; 2026 {{ site_setting.site_name|default:'Topd' }}. {{ t.all_rights_reserved|default:'All rights reserved.' }}
             </div>
         </div>
     </footer>

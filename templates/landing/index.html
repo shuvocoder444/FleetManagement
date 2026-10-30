@@ -23,11 +23,11 @@
     <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
         
         <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-tight sm:leading-tight mb-6 text-white drop-shadow-md">
-            {{ page.title|default:t.hero_title|default:"Kyrgyzstan's First Unified Vehicle Rental Platform" }}
+            {% if current_lang == 'ru' %}{{ t.hero_title }}{% else %}{{ page.title|default:t.hero_title }}{% endif %}
         </h1>
         
         <p class="text-sm sm:text-base lg:text-lg text-gray-200 max-w-3xl mx-auto leading-relaxed mb-10 font-normal drop-shadow">
-            {{ page.subtitle|default:t.hero_subtitle|default:"Streamline your vehicle rental, leasing, and installment operations with our comprehensive platform. Connect with customers, manage contracts, and grow your business efficiently." }}
+            {% if current_lang == 'ru' %}{{ t.hero_subtitle }}{% else %}{{ page.subtitle|default:t.hero_subtitle }}{% endif %}
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -47,19 +47,19 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60">
                 <p class="text-3xl sm:text-4xl font-black text-red-500">1,200+</p>
-                <p class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">Agreements Created</p>
+                <p class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">{{ t.stat_agreements|default:'Agreements Created' }}</p>
             </div>
             <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60">
                 <p class="text-3xl sm:text-4xl font-black text-emerald-400">550+</p>
-                <p class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">Verified Drivers</p>
+                <p class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">{{ t.stat_drivers|default:'Verified Drivers' }}</p>
             </div>
             <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60">
                 <p class="text-3xl sm:text-4xl font-black text-amber-400">380+</p>
-                <p class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">Fleet Vehicles</p>
+                <p class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">{{ t.stat_vehicles|default:'Fleet Vehicles' }}</p>
             </div>
             <div class="p-4 rounded-2xl bg-slate-800/50 border border-slate-700/60">
                 <p class="text-3xl sm:text-4xl font-black text-blue-400">99.8%</p>
-                <p class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">Fraud Prevention</p>
+                <p class="text-xs uppercase tracking-wider text-slate-400 mt-1 font-semibold">{{ t.stat_fraud|default:'Fraud Prevention' }}</p>
             </div>
         </div>
     </div>
@@ -108,7 +108,7 @@
 
         <div class="text-center mt-12">
             <a href="{% url 'about' %}" class="inline-flex items-center space-x-2 text-sm font-bold text-red-600 hover:text-red-700">
-                <span>Read our full company story & roadmap</span>
+                <span>{{ t.read_full_story|default:'Read our full company story & roadmap' }}</span>
                 <i class="fa-solid fa-arrow-right text-xs"></i>
             </a>
         </div>
@@ -120,13 +120,13 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-2xl mx-auto mb-16">
             <span class="text-xs font-bold uppercase tracking-wider text-red-600 bg-red-50 px-3 py-1 rounded-full border border-red-100">
-                Features & Benefits
+                {{ t.features_benefits_badge|default:'Features & Benefits' }}
             </span>
             <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mt-3 mb-2">
                 {{ t.why_choose_title|default:'Why Choose Our Platform' }}
             </h2>
             <p class="text-sm text-gray-500">
-                Comprehensive fleet software designed specifically for the Central Asian car rental market.
+                {{ t.why_choose_sub }}
             </p>
         </div>
 
@@ -135,9 +135,9 @@
                 <div class="w-12 h-12 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-xl mb-4">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <h3 class="text-base font-bold text-slate-900 mb-2">Anti-Fraud Driver Check</h3>
+                <h3 class="text-base font-bold text-slate-900 mb-2">{{ t.feature_anti_fraud_title }}</h3>
                 <p class="text-xs text-slate-500 leading-relaxed">
-                    Search driver history by passport or PIN to instantly uncover unpaid fines, disappeared cars, or contract violations before handing over keys.
+                    {{ t.feature_anti_fraud_desc }}
                 </p>
             </div>
 
@@ -145,9 +145,9 @@
                 <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl mb-4">
                     <i class="fa-solid fa-file-signature"></i>
                 </div>
-                <h3 class="text-base font-bold text-slate-900 mb-2">3-Step Agreement Wizard</h3>
+                <h3 class="text-base font-bold text-slate-900 mb-2">{{ t.feature_wizard_title }}</h3>
                 <p class="text-xs text-slate-500 leading-relaxed">
-                    Quickly generate short-term, long-term, leasing, and installment contracts complete with photo inspection records.
+                    {{ t.feature_wizard_desc }}
                 </p>
             </div>
 
@@ -155,16 +155,16 @@
                 <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4">
                     <i class="fa-solid fa-warehouse"></i>
                 </div>
-                <h3 class="text-base font-bold text-slate-900 mb-2">Fleet & Garage Management</h3>
+                <h3 class="text-base font-bold text-slate-900 mb-2">{{ t.feature_garage_title }}</h3>
                 <p class="text-xs text-slate-500 leading-relaxed">
-                    Organize your vehicles by status (Available, Rented, Leased, Maintenance), upload documents and track maintenance.
+                    {{ t.feature_garage_desc }}
                 </p>
             </div>
         </div>
 
         <div class="text-center mt-10">
             <a href="{% url 'features' %}" class="inline-flex items-center space-x-2 px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-sm transition">
-                <span>Explore All Features & Capabilities</span>
+                <span>{{ t.explore_all_features }}</span>
                 <i class="fa-solid fa-arrow-right text-xs"></i>
             </a>
         </div>
@@ -179,7 +179,7 @@
                 {{ t.pricing_title|default:'Flexible Pricing for Any Fleet Size' }}
             </h2>
             <p class="text-sm text-gray-500">
-                Choose pay-per-check or unlimited monthly and yearly subscriptions with manual bank transfer support.
+                {{ t.pricing_sub }}
             </p>
         </div>
 
@@ -238,7 +238,7 @@
 
         <div class="text-center mt-10">
             <a href="{% url 'pricing' %}" class="inline-flex items-center space-x-1.5 text-xs font-bold text-red-600 hover:text-red-700">
-                <span>View Full Pricing Comparison & FAQ</span>
+                <span>{{ t.view_pricing_faq }}</span>
                 <i class="fa-solid fa-arrow-right text-[10px]"></i>
             </a>
         </div>
@@ -249,17 +249,17 @@
 <section class="bg-gradient-to-r from-red-600 to-red-700 text-white py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 text-center">
         <h2 class="text-2xl sm:text-4xl font-extrabold tracking-tight mb-4">
-            Ready to Protect Your Fleet and Accelerate Growth?
+            {{ t.cta_ready_title }}
         </h2>
         <p class="text-sm sm:text-base text-red-100 max-w-xl mx-auto mb-8 font-normal">
-            Join hundreds of vehicle rental companies across Kyrgyzstan utilizing our digital contracts and driver verification engine.
+            {{ t.cta_ready_sub }}
         </p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a href="{% url 'pricing' %}" class="w-full sm:w-auto px-8 py-3.5 bg-white text-red-600 hover:bg-gray-100 font-bold text-sm rounded-xl shadow-lg transition">
-                {{ t.get_started|default:'Get Started Now' }}
+                {{ t.get_started_now }}
             </a>
             <a href="{% url 'contact' %}" class="w-full sm:w-auto px-8 py-3.5 bg-red-800/80 hover:bg-red-800 border border-white/30 text-white font-semibold text-sm rounded-xl transition">
-                {{ t.contact|default:'Contact Sales' }}
+                {{ t.contact_sales }}
             </a>
         </div>
     </div>
