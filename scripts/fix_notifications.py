@@ -134,3 +134,4 @@ av = av.replace(old_login_user, new_login_user)
 with open(r'D:\new\apps\accounts\views.py', 'w', encoding='utf-8') as f:
     f.write(av)
 print("Updated apps/accounts/views.py")
+

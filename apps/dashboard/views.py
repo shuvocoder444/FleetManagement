@@ -11,30 +11,46 @@ from django.db.models import Sum
 def dashboard_router(request):
     """Smart router: routes user to their appropriate dashboard based on their role."""
     user = request.user
-    active_role = request.session.get('active_dashboard_role')
 
-    # If role is already active in session, prioritize staying in that dashboard
-    if active_role == 'admin':
-        return redirect('dashboard:admin')
-    elif active_role == 'driver':
-        return redirect('dashboard:driver')
-    elif active_role == 'superadmin' and (user.is_authenticated and (user.is_superuser or getattr(user, 'role', '') == 'superadmin')):
-        return redirect('dashboard:superadmin')
-
+    # 1. Authenticated user's real role takes strict priority
     if user.is_authenticated:
-        if getattr(user, 'role', '') in [CustomUser.Role.COMPANY, CustomUser.Role.ADMIN, CustomUser.Role.INDIVIDUAL]:
-            return redirect('dashboard:admin')
-        elif getattr(user, 'role', '') == CustomUser.Role.DRIVER:
+        if getattr(user, 'role', '') == CustomUser.Role.DRIVER:
+            request.session['active_dashboard_role'] = 'driver'
+            request.session.modified = True
             return redirect('dashboard:driver')
+        elif getattr(user, 'role', '') in [CustomUser.Role.COMPANY, CustomUser.Role.ADMIN, CustomUser.Role.INDIVIDUAL]:
+            request.session['active_dashboard_role'] = 'admin'
+            request.session.modified = True
+            return redirect('dashboard:admin')
         elif user.is_superuser or getattr(user, 'role', '') == CustomUser.Role.SUPERADMIN:
+            active_role = request.session.get('active_dashboard_role')
+            if active_role == 'admin':
+                return redirect('dashboard:admin')
+            elif active_role == 'driver':
+                return redirect('dashboard:driver')
             return redirect('dashboard:superadmin')
 
-    # Default fallback: Company Dashboard
+    # 2. Unauthenticated / guest preview
+    active_role = request.session.get('active_dashboard_role')
+    if active_role == 'driver':
+        return redirect('dashboard:driver')
+    elif active_role == 'superadmin':
+        return redirect('dashboard:superadmin')
     return redirect('dashboard:admin')
 
 
 def superadmin_dashboard(request):
     """1. Super Admin Master Dashboard"""
+    # Guard: If logged in as driver, redirect to driver dashboard
+    if request.user.is_authenticated and getattr(request.user, 'role', '') == CustomUser.Role.DRIVER:
+        request.session['active_dashboard_role'] = 'driver'
+        return redirect('dashboard:driver')
+
+    # Guard: If logged in as company, redirect to company admin
+    if request.user.is_authenticated and not (request.user.is_superuser or getattr(request.user, 'role', '') == CustomUser.Role.SUPERADMIN):
+        request.session['active_dashboard_role'] = 'admin'
+        return redirect('dashboard:admin')
+
     request.session['active_dashboard_role'] = 'superadmin'
     request.session.modified = True
     display_user = request.user if request.user.is_authenticated else CustomUser.objects.filter(role=CustomUser.Role.SUPERADMIN).first()
@@ -102,6 +118,11 @@ def superadmin_dashboard(request):
 
 def admin_dashboard(request):
     """2. Rental Company / Fleet Admin Dashboard (like Team JBDIT)"""
+    # Guard: If logged in as driver, redirect to driver dashboard!
+    if request.user.is_authenticated and getattr(request.user, 'role', '') == CustomUser.Role.DRIVER:
+        request.session['active_dashboard_role'] = 'driver'
+        return redirect('dashboard:driver')
+
     request.session['active_dashboard_role'] = 'admin'
     request.session.modified = True
     display_user = request.user if request.user.is_authenticated else CustomUser.objects.filter(role=CustomUser.Role.COMPANY).first()
@@ -158,7 +179,7 @@ def admin_dashboard(request):
 
 
 def driver_dashboard(request):
-    """3. Driver Dedicated Portal Dashboard (as in car.smartbanglait.com/my-drivers/7)"""
+    """3. Driver Dedicated Portal Dashboard"""
     request.session['active_dashboard_role'] = 'driver'
     request.session.modified = True
     display_user = request.user if request.user.is_authenticated else CustomUser.objects.filter(role=CustomUser.Role.DRIVER).first()
@@ -167,6 +188,10 @@ def driver_dashboard(request):
     driver = None
     if display_user and hasattr(display_user, 'driver_profile'):
         driver = display_user.driver_profile
+    if not driver:
+        # Match driver by email
+        if display_user and display_user.email:
+            driver = Driver.objects.filter(email=display_user.email).first()
     if not driver:
         driver = Driver.objects.first()
 

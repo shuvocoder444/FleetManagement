@@ -28,7 +28,11 @@ def clear_messages(request):
 @csrf_exempt
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect('dashboard:index')
+        if getattr(request.user, 'role', '') == CustomUser.Role.DRIVER:
+            return redirect('dashboard:driver')
+        elif getattr(request.user, 'role', '') in [CustomUser.Role.COMPANY, CustomUser.Role.ADMIN, CustomUser.Role.INDIVIDUAL]:
+            return redirect('dashboard:admin')
+        return redirect('dashboard:superadmin')
 
     next_url = request.GET.get('next') or request.POST.get('next') or ''
 
@@ -41,29 +45,52 @@ def login_view(request):
         else:
             user = authenticate(request, username=email, password=password)
             if user is not None:
-                # Clear previous unread messages if any
                 clear_messages(request)
-
                 auth_login(request, user)
-                if getattr(user, 'role', '') in [CustomUser.Role.COMPANY, CustomUser.Role.ADMIN, CustomUser.Role.INDIVIDUAL]:
-                    request.session['active_dashboard_role'] = 'admin'
-                elif getattr(user, 'role', '') == CustomUser.Role.DRIVER:
+
+                # Route strictly according to authenticated user's role
+                if getattr(user, 'role', '') == CustomUser.Role.DRIVER:
                     request.session['active_dashboard_role'] = 'driver'
+                    request.session.modified = True
+                    log_activity(
+                        request,
+                        ActivityLog.ActionType.LOGIN,
+                        ActivityLog.Module.AUTH,
+                        f"Driver logged into dedicated portal",
+                        company=user.get_company_account()
+                    )
+                    messages.success(request, f'Welcome back, {user.first_name or user.email}!')
+                    return redirect('dashboard:driver')
+
+                elif getattr(user, 'role', '') in [CustomUser.Role.COMPANY, CustomUser.Role.ADMIN, CustomUser.Role.INDIVIDUAL]:
+                    request.session['active_dashboard_role'] = 'admin'
+                    request.session.modified = True
+                    log_activity(
+                        request,
+                        ActivityLog.ActionType.LOGIN,
+                        ActivityLog.Module.AUTH,
+                        f"Logged into company portal",
+                        company=user.get_company_account()
+                    )
+                    messages.success(request, f'Welcome back, {user.first_name or user.email}!')
+                    if next_url and '/driver/' not in next_url:
+                        return redirect(next_url)
+                    return redirect('dashboard:admin')
+
                 else:
                     request.session['active_dashboard_role'] = 'superadmin'
-
-                log_activity(
-                    request,
-                    ActivityLog.ActionType.LOGIN,
-                    ActivityLog.Module.AUTH,
-                    f"Logged into system",
-                    company=user.get_company_account()
-                )
-
-                messages.success(request, f'Welcome back, {user.first_name or user.email}!')
-                if next_url:
-                    return redirect(next_url)
-                return redirect('dashboard:index')
+                    request.session.modified = True
+                    log_activity(
+                        request,
+                        ActivityLog.ActionType.LOGIN,
+                        ActivityLog.Module.AUTH,
+                        f"Superadmin logged into system",
+                        company=user.get_company_account()
+                    )
+                    messages.success(request, f'Welcome back, {user.first_name or user.email}!')
+                    if next_url:
+                        return redirect(next_url)
+                    return redirect('dashboard:superadmin')
             else:
                 messages.error(request, 'Invalid email or password. Please try again.')
 

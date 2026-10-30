@@ -5,45 +5,56 @@ from .translations import get_translation
 def get_active_dashboard_role(request):
     """
     Returns the persistent active dashboard role ('superadmin', 'admin', 'driver').
-    Guarantees that a Company / Rental Agency user always stays in 'admin' (Fleet Admin)
-    and never inadvertently gets switched to 'superadmin'.
+    Guarantees that:
+    1. Driver user ALWAYS gets 'driver'.
+    2. Company user ALWAYS gets 'admin'.
+    3. Superadmin can preview superadmin, admin, or driver.
+    4. Unauthenticated guest preview respects selected tab or defaults to 'admin'.
     """
     user = getattr(request, 'user', None)
     path = getattr(request, 'path', '')
     role_param = request.GET.get('role', '').strip().lower()
-    
+
+    # 1. Authenticated users with dedicated roles
+    if user and user.is_authenticated:
+        if getattr(user, 'role', '') == 'driver':
+            request.session['active_dashboard_role'] = 'driver'
+            return 'driver'
+        elif getattr(user, 'role', '') in ['company', 'admin', 'individual']:
+            request.session['active_dashboard_role'] = 'admin'
+            return 'admin'
+        elif getattr(user, 'is_superuser', False) or getattr(user, 'role', '') == 'superadmin':
+            if role_param in ['superadmin', 'admin', 'driver']:
+                request.session['active_dashboard_role'] = role_param
+                return role_param
+            if '/dashboard/driver/' in path:
+                request.session['active_dashboard_role'] = 'driver'
+                return 'driver'
+            elif '/dashboard/admin/' in path or '/dashboard/company/' in path:
+                request.session['active_dashboard_role'] = 'admin'
+                return 'admin'
+            elif '/dashboard/superadmin/' in path:
+                request.session['active_dashboard_role'] = 'superadmin'
+                return 'superadmin'
+            return request.session.get('active_dashboard_role', 'superadmin')
+
+    # 2. Unauthenticated / guest preview
     if role_param in ['superadmin', 'admin', 'company', 'driver']:
         if role_param == 'company':
             role_param = 'admin'
         request.session['active_dashboard_role'] = role_param
         return role_param
 
-    # Explicit dashboard route matching
     if '/dashboard/superadmin/' in path:
         request.session['active_dashboard_role'] = 'superadmin'
         return 'superadmin'
-    elif '/dashboard/admin/' in path or '/dashboard/company/' in path:
-        request.session['active_dashboard_role'] = 'admin'
-        return 'admin'
     elif '/dashboard/driver/' in path:
         request.session['active_dashboard_role'] = 'driver'
         return 'driver'
+    elif '/dashboard/admin/' in path or '/dashboard/company/' in path:
+        request.session['active_dashboard_role'] = 'admin'
+        return 'admin'
 
-    if user and user.is_authenticated:
-        # Non-superadmin company users MUST stay in 'admin'
-        if getattr(user, 'role', '') in ['company', 'admin', 'individual']:
-            request.session['active_dashboard_role'] = 'admin'
-            return 'admin'
-        elif getattr(user, 'role', '') == 'driver':
-            request.session['active_dashboard_role'] = 'driver'
-            return 'driver'
-        elif getattr(user, 'is_superuser', False) or getattr(user, 'role', '') == 'superadmin':
-            return request.session.get('active_dashboard_role', 'superadmin')
-        else:
-            request.session['active_dashboard_role'] = 'admin'
-            return 'admin'
-
-    # Unauthenticated / guest preview: default to 'admin' (Fleet Company Dashboard)
     return request.session.get('active_dashboard_role', 'admin')
 
 
