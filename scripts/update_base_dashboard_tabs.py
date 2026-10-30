@@ -56,3 +56,4 @@ c_norm = c_norm.replace(target_norm, replacement)
 with open(path, 'w', encoding='utf-8') as f:
     f.write(c_norm)
 print('Updated base_dashboard.html!')
+

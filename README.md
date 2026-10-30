@@ -371,3 +371,39 @@ python manage.py runserver
 *প্রস্তুতকারক: Google Antigravity AI Assistant*
 
 # FleetManagement
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Super Admin:
+Email: admin@topd.kg
+Password: admin123
+
+Rental Agency:
+Email: company@topd.kg
+Password: company123
+
+
+Driver:
+Email: driver@topd.kg
+Password: driver123

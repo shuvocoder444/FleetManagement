@@ -42,3 +42,4 @@ def log_activity(request, action_type, module, description, company=None):
             ip_address=ip or '127.0.0.1'
         )
     return None
+

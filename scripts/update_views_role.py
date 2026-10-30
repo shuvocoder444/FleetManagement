@@ -28,3 +28,4 @@ for p in files:
     print(f'Updated {p}!')
 
 print('ALL VIEWS UPDATED WITH get_active_dashboard_role!')
+
