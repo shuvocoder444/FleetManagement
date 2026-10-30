@@ -33,3 +33,4 @@ for u in urls_to_test:
     user = r.wsgi_request.user
     print(f"URL: {u:25} -> status: {r.status_code}, authenticated: {user.is_authenticated}, email: {getattr(user, 'email', None)}")
     assert user.is_authenticated, f"User became unauthenticated on {u}!"
+

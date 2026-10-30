@@ -125,8 +125,9 @@ def admin_dashboard(request):
         request.session['active_dashboard_role'] = 'driver'
         return redirect('dashboard:driver')
 
-    request.session['active_dashboard_role'] = 'admin'
-    request.session.modified = True
+    if not (request.user.is_authenticated and getattr(request.user, 'is_superadmin', False)):
+        request.session['active_dashboard_role'] = 'admin'
+        request.session.modified = True
     display_user = request.user if request.user.is_authenticated else CustomUser.objects.filter(role=CustomUser.Role.COMPANY).first()
 
     # Filter data for this company / fleet
@@ -182,8 +183,9 @@ def admin_dashboard(request):
 
 def get_current_driver(request):
     """Helper to retrieve current driver profile and display user for driver views."""
-    request.session['active_dashboard_role'] = 'driver'
-    request.session.modified = True
+    if not (request.user.is_authenticated and getattr(request.user, 'is_superadmin', False)):
+        request.session['active_dashboard_role'] = 'driver'
+        request.session.modified = True
     display_user = request.user if request.user.is_authenticated else CustomUser.objects.filter(role=CustomUser.Role.DRIVER).first()
 
     driver = None

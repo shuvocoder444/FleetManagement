@@ -73,7 +73,7 @@ def login_view(request):
                         company=user.get_company_account()
                     )
                     messages.success(request, f'Welcome back, {user.first_name or user.email}!')
-                    if next_url and '/driver/' not in next_url:
+                    if next_url and not any(bad in next_url for bad in ['/driver/', '/superadmin/', '/dashboard/']):
                         return redirect(next_url)
                     return redirect('dashboard:admin')
 
@@ -88,7 +88,7 @@ def login_view(request):
                         company=user.get_company_account()
                     )
                     messages.success(request, f'Welcome back, {user.first_name or user.email}!')
-                    if next_url:
+                    if next_url and next_url not in ['/dashboard/', '/dashboard/admin/', '/dashboard/company/', '/dashboard/driver/']:
                         return redirect(next_url)
                     return redirect('dashboard:superadmin')
             else:

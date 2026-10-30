@@ -38,3 +38,4 @@ for cmd in commands:
 
 ssh.close()
 print('SUCCESS! Deployed role & badge fixes to live server.')
+

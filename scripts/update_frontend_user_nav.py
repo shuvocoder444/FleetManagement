@@ -62,3 +62,4 @@ with open('templates/landing/base_frontend.html', 'w', encoding='utf-8') as f:
     f.write(text_norm)
 
 print("Updated base_frontend.html with clickable dashboard button and mobile auth card")
+

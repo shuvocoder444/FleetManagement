@@ -18,3 +18,4 @@ with open('templates/dashboard/admin.html', 'w', encoding='utf-8') as f:
     f.write(admin_text)
 
 print("Updated company badge logic across base_dashboard.html and admin.html")
+
