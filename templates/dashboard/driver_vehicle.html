@@ -1,0 +1,282 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}{{ t.menu_current_vehicle }} - {{ t.driver_badge }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto space-y-6">
+
+    <!-- Top Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <div class="flex items-center space-x-2">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-red-100 text-red-700">{{ t.driver_badge }}</span>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    {{ t.menu_current_vehicle }}
+                </h1>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-500 mt-1">
+                {% if active_agreement %}
+                    Specifications, active rental contract details, and vehicle handover status.
+                {% else %}
+                    No active vehicle assignment found at this time.
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <a href="{% url 'dashboard:driver' %}" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-slate-600 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-xs transition">
+                <i class="fa-solid fa-arrow-left mr-2"></i> {{ t.menu_driver_portal }}
+            </a>
+            <a href="{% url 'dashboard:driver_agreements' %}" class="inline-flex items-center px-3.5 py-2 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-xs transition">
+                <i class="fa-regular fa-file-lines mr-2"></i> {{ t.menu_trip_contracts }}
+            </a>
+        </div>
+    </div>
+
+    {% if active_agreement and vehicle %}
+    <!-- CURRENT VEHICLE DETAILS GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+        <!-- Left Column: Vehicle Card & Spec Overview -->
+        <div class="lg:col-span-5 space-y-6">
+            <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+                <!-- Vehicle Image -->
+                <div class="relative bg-slate-900 h-64 sm:h-72 flex items-center justify-center overflow-hidden">
+                    {% if vehicle.cover_image %}
+                    <img src="{{ vehicle.cover_image.url }}" alt="{{ vehicle.title }}" class="w-full h-full object-cover">
+                    {% else %}
+                    <div class="text-center text-slate-400">
+                        <i class="fa-solid fa-car-side text-6xl text-slate-600 mb-2"></i>
+                        <p class="text-xs font-semibold text-slate-400">{{ vehicle.brand }} {{ vehicle.model }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Plate Number Floating Badge -->
+                    <div class="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md px-3.5 py-1.5 rounded-xl border border-slate-200 shadow-md flex items-center space-x-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="font-mono text-sm font-extrabold text-slate-900 tracking-wider">{{ vehicle.registration_number }}</span>
+                    </div>
+
+                    <!-- Status Pill -->
+                    <div class="absolute top-4 right-4">
+                        <span class="px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-500 text-white shadow-sm">
+                            {{ vehicle.status }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Vehicle Info Body -->
+                <div class="p-6 space-y-4">
+                    <div>
+                        <h2 class="text-xl font-black text-slate-900">{{ vehicle.title }}</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">{{ vehicle.brand }} {{ vehicle.model }} • Year {{ vehicle.year }}</p>
+                    </div>
+
+                    <!-- Quick Specs Grid -->
+                    <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-100 text-xs">
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">{{ t.brand }}</span>
+                            <span class="font-bold text-slate-800">{{ vehicle.brand }}</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">{{ t.model }}</span>
+                            <span class="font-bold text-slate-800">{{ vehicle.model }}</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Year</span>
+                            <span class="font-bold text-slate-800">{{ vehicle.year }}</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-50 border border-slate-100">
+                            <span class="text-[10px] uppercase font-bold text-slate-400 block mb-0.5">Color</span>
+                            <span class="font-bold text-slate-800">{{ vehicle.color }}</span>
+                        </div>
+                    </div>
+
+                    {% if vehicle.description %}
+                    <div class="pt-3 border-t border-slate-100">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Vehicle Description</span>
+                        <p class="text-xs text-slate-600 leading-relaxed">{{ vehicle.description }}</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Fleet Company Info -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs text-xs space-y-3">
+                <span class="font-bold text-[11px] uppercase tracking-wider text-slate-400 block">{{ t.associated_agency }}</span>
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-50 text-red-600 flex items-center justify-center text-lg font-black">
+                        <i class="fa-solid fa-building"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm">{{ active_agreement.company_name|default:active_agreement.created_by.company_name|default:'Topd Fleet Partner' }}</h4>
+                        <p class="text-[11px] text-slate-500">{{ active_agreement.created_by.email }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Active Assignment Contract Details -->
+        <div class="lg:col-span-7 space-y-6">
+
+            <!-- Active Contract Banner Card -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-6">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-3">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-file-contract"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-600">Active Contract</span>
+                            <h3 class="text-base font-extrabold text-slate-900">{{ active_agreement.contract_number }}</h3>
+                        </div>
+                    </div>
+                    <div>
+                        <span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            {{ active_agreement.get_status_display }}
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Contract Metrics 4-col -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Contract Type</span>
+                        <span class="font-bold text-slate-800">{{ active_agreement.get_contract_type_display }}</span>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Daily Rate</span>
+                        <span class="font-black text-slate-900 text-sm">{{ active_agreement.daily_rental_price }} {{ active_agreement.currency }}</span>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Deposit</span>
+                        <span class="font-black text-slate-900 text-sm">{{ active_agreement.deposit }} {{ active_agreement.currency }}</span>
+                    </div>
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100">
+                        <span class="text-[10px] uppercase font-bold text-slate-400 block mb-1">Client Name</span>
+                        <span class="font-bold text-slate-800 truncate block">{{ active_agreement.client_name }}</span>
+                    </div>
+                </div>
+
+                <!-- Trip Schedule Timeline -->
+                <div class="p-4 rounded-xl bg-gradient-to-r from-slate-50 to-red-50/20 border border-slate-200/80">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block mb-3">Rental Schedule Timeline</span>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                                <i class="fa-regular fa-calendar-check text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 block">Start Handover</span>
+                                <span class="font-bold text-slate-900">{{ active_agreement.start_date|date:"F d, Y - H:i" }}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <div class="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
+                                <i class="fa-regular fa-calendar-xmark text-xs"></i>
+                            </div>
+                            <div>
+                                <span class="text-[10px] text-slate-400 block">Scheduled Return</span>
+                                <span class="font-bold text-slate-900">{{ active_agreement.end_date|date:"F d, Y - H:i" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contract Terms & Handover Notes -->
+                {% if active_agreement.terms_conditions %}
+                <div class="space-y-1.5 text-xs">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block">Terms & Conditions</span>
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-100 text-slate-600 leading-relaxed max-h-40 overflow-y-auto">
+                        {{ active_agreement.terms_conditions|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if active_agreement.comments %}
+                <div class="space-y-1.5 text-xs">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block">Handover Notes & Comments</span>
+                    <div class="p-3.5 rounded-xl bg-amber-50/60 border border-amber-200/80 text-amber-900 leading-relaxed">
+                        {{ active_agreement.comments|linebreaks }}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Driver Responsibilities Card -->
+            <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-xs text-xs space-y-3">
+                <h4 class="font-bold text-slate-900 flex items-center">
+                    <i class="fa-solid fa-shield-halved text-red-600 mr-2"></i> Driver Responsibilities & Checklist
+                </h4>
+                <ul class="space-y-2 text-slate-600">
+                    <li class="flex items-center space-x-2">
+                        <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
+                        <span>Perform daily tire pressure and engine fluid level visual checks.</span>
+                    </li>
+                    <li class="flex items-center space-x-2">
+                        <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
+                        <span>Report any road traffic violations or parking tickets immediately.</span>
+                    </li>
+                    <li class="flex items-center space-x-2">
+                        <i class="fa-solid fa-check text-emerald-500 text-xs"></i>
+                        <span>Keep the vehicle registration card and handover copy inside the glove box.</span>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+
+    {% else %}
+    <!-- EMPTY STATE: NO ACTIVE VEHICLE -->
+    <div class="bg-white rounded-2xl border border-slate-200/80 shadow-xs p-12 text-center max-w-2xl mx-auto space-y-5 my-8">
+        <div class="w-20 h-20 rounded-full bg-slate-100 text-slate-400 flex items-center justify-center text-3xl mx-auto">
+            <i class="fa-solid fa-car-tunnel"></i>
+        </div>
+        <div>
+            <h2 class="text-xl font-black text-slate-900">No Vehicle Currently Assigned</h2>
+            <p class="text-xs text-slate-500 max-w-md mx-auto mt-2 leading-relaxed">
+                You do not have an active trip assignment or vehicle allocated to your profile at this moment. Once an agency links an agreement to you, full vehicle specifications and handover schedules will appear here.
+            </p>
+        </div>
+        <div class="pt-2 flex items-center justify-center space-x-3">
+            <a href="{% url 'dashboard:driver' %}" class="px-4 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition">
+                <i class="fa-solid fa-id-badge mr-1.5"></i> {{ t.menu_driver_portal }}
+            </a>
+            <a href="{% url 'dashboard:driver_agreements' %}" class="px-4 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl transition">
+                <i class="fa-regular fa-file-lines mr-1.5"></i> {{ t.menu_trip_contracts }}
+            </a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- PAST VEHICLE ASSIGNMENTS IF ANY -->
+    {% if past_agreements %}
+    <div class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-xs space-y-4">
+        <div class="flex items-center justify-between">
+            <h3 class="text-sm font-bold text-slate-900">Previously Assigned Vehicles</h3>
+            <span class="text-xs text-slate-400">{{ past_agreements|length }} past assignments</span>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
+            {% for item in past_agreements %}
+            <div class="p-4 rounded-xl border border-slate-100 bg-slate-50/60 flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-lg bg-slate-200 text-slate-600 flex items-center justify-center text-base flex-shrink-0">
+                    <i class="fa-solid fa-car"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h5 class="font-bold text-slate-800 truncate">{{ item.vehicle.title }}</h5>
+                    <p class="text-slate-400 text-[11px] font-mono">{{ item.vehicle.registration_number }}</p>
+                    <span class="text-[10px] text-slate-500 block mt-0.5">{{ item.start_date|date:"M d, Y" }} - {{ item.end_date|date:"M d, Y" }}</span>
+                </div>
+                <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-200 text-slate-700">
+                    {{ item.status }}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

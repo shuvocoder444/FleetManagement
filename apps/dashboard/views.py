@@ -178,22 +178,26 @@ def admin_dashboard(request):
     return render(request, 'dashboard/admin.html', context)
 
 
-def driver_dashboard(request):
-    """3. Driver Dedicated Portal Dashboard"""
+def get_current_driver(request):
+    """Helper to retrieve current driver profile and display user for driver views."""
     request.session['active_dashboard_role'] = 'driver'
     request.session.modified = True
     display_user = request.user if request.user.is_authenticated else CustomUser.objects.filter(role=CustomUser.Role.DRIVER).first()
 
-    # Fetch driver model
     driver = None
     if display_user and hasattr(display_user, 'driver_profile'):
         driver = display_user.driver_profile
-    if not driver:
-        # Match driver by email
-        if display_user and display_user.email:
-            driver = Driver.objects.filter(email=display_user.email).first()
+    if not driver and display_user and display_user.email:
+        driver = Driver.objects.filter(email=display_user.email).first()
     if not driver:
         driver = Driver.objects.first()
+
+    return display_user, driver
+
+
+def driver_dashboard(request):
+    """3. Driver Dedicated Portal Dashboard - Profile & Performance"""
+    display_user, driver = get_current_driver(request)
 
     # Driver statistics
     agreements = Agreement.objects.filter(driver=driver) if driver else Agreement.objects.none()
@@ -220,3 +224,75 @@ def driver_dashboard(request):
         'ratings': ratings,
     }
     return render(request, 'dashboard/driver.html', context)
+
+
+def driver_vehicle_view(request):
+    """Current Assigned Vehicle dedicated page for driver"""
+    display_user, driver = get_current_driver(request)
+
+    agreements = Agreement.objects.filter(driver=driver) if driver else Agreement.objects.none()
+    active_agreement = agreements.filter(status=Agreement.Status.ACTIVE).select_related('vehicle').first()
+    vehicle = active_agreement.vehicle if active_agreement else None
+
+    # Past assigned vehicles
+    past_agreements = agreements.exclude(status=Agreement.Status.ACTIVE).select_related('vehicle')[:5]
+
+    context = {
+        'display_user': display_user,
+        'driver': driver,
+        'current_dashboard': 'driver',
+        'active_agreement': active_agreement,
+        'vehicle': vehicle,
+        'past_agreements': past_agreements,
+    }
+    return render(request, 'dashboard/driver_vehicle.html', context)
+
+
+def driver_agreements_view(request):
+    """Trip Contracts & Agreements dedicated page for driver"""
+    display_user, driver = get_current_driver(request)
+
+    agreements = Agreement.objects.filter(driver=driver).select_related('vehicle').order_by('-created_at') if driver else Agreement.objects.none()
+
+    status_filter = request.GET.get('status', 'all')
+    if status_filter == 'active':
+        filtered_agreements = agreements.filter(status=Agreement.Status.ACTIVE)
+    elif status_filter == 'completed':
+        filtered_agreements = agreements.filter(status=Agreement.Status.COMPLETED)
+    elif status_filter == 'problem':
+        filtered_agreements = agreements.filter(status=Agreement.Status.PROBLEM)
+    else:
+        filtered_agreements = agreements
+
+    context = {
+        'display_user': display_user,
+        'driver': driver,
+        'current_dashboard': 'driver',
+        'agreements': filtered_agreements,
+        'total_count': agreements.count(),
+        'active_count': agreements.filter(status=Agreement.Status.ACTIVE).count(),
+        'completed_count': agreements.filter(status=Agreement.Status.COMPLETED).count(),
+        'problem_count': agreements.filter(status=Agreement.Status.PROBLEM).count(),
+        'current_filter': status_filter,
+    }
+    return render(request, 'dashboard/driver_agreements.html', context)
+
+
+def driver_history_view(request):
+    """Driver Incident History & Ratings dedicated page"""
+    display_user, driver = get_current_driver(request)
+
+    history_entries = driver.history_entries.all().order_by('-incident_date') if driver else []
+    ratings = driver.ratings.all().order_by('-created_at') if driver else []
+
+    context = {
+        'display_user': display_user,
+        'driver': driver,
+        'current_dashboard': 'driver',
+        'history_entries': history_entries,
+        'ratings': ratings,
+        'total_issues': len(history_entries),
+        'total_reviews': len(ratings),
+        'average_rating': driver.average_rating if driver else 4.8,
+    }
+    return render(request, 'dashboard/driver_history.html', context)

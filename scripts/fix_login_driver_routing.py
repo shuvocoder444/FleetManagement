@@ -118,3 +118,4 @@ with open(path, 'w', encoding='utf-8') as f:
     f.write(c)
 
 print('Updated login_view in apps/accounts/views.py!')
+

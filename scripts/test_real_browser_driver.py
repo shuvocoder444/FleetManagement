@@ -26,3 +26,4 @@ print('Attempt to visit /dashboard/admin/ redirected to:', resp2.geturl())
 assert '/dashboard/driver/' in resp2.geturl()
 
 print('SUCCESS! Real external HTTP test verified.')
+
