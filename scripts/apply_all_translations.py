@@ -283,3 +283,4 @@ update_contact()
 update_terms()
 update_privacy()
 print("ALL TEMPLATES UPDATED SUCCESSFULLY!")
+

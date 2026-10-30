@@ -346,3 +346,4 @@ with open(translations_file, 'w', encoding='utf-8') as f:
     f.write(output)
 
 print(f"SUCCESS: translations.py updated. EN keys: {len(TRANSLATIONS['en'])}, RU keys: {len(TRANSLATIONS['ru'])}")
+
