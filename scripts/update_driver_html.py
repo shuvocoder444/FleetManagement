@@ -59,3 +59,4 @@ with open('templates/dashboard/driver.html', 'w', encoding='utf-8') as f:
     f.write(text_norm)
 
 print('Successfully updated driver.html')
+

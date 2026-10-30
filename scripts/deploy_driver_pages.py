@@ -30,3 +30,4 @@ stdin, stdout, stderr = ssh.exec_command(f'touch {remote_root}/tmp/restart.txt')
 print('Passenger restarted:', stdout.read().decode())
 ssh.close()
 print('SUCCESS! All driver dedicated pages deployed to rus.velohoster.com.')
+

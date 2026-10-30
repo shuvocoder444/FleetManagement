@@ -164,7 +164,7 @@
                     <a href="{% url 'billing:purchase' %}" 
                        class="flex items-center px-3 {% if '/billing/purchase/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
                         <i class="fa-solid fa-cart-plus w-5 {% if '/billing/purchase/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
-                        <span class="ml-2.5 flex-1">Buy Subscription</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_buy_subscription|default:t.buy_subscription|default:'Buy Subscription' }}</span>
                     </a>
                     <a href="{% url 'billing:plans' %}" 
                        class="flex items-center px-3 {% if '/billing/plans/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
@@ -265,7 +265,7 @@
                     <a href="{% url 'billing:purchase' %}" 
                        class="flex items-center px-3 {% if '/billing/purchase/' in request.path %}py-2.5 text-xs font-bold rounded-xl text-red-600 bg-red-50/80 border border-red-100/50 shadow-xs{% else %}py-2 text-xs font-medium rounded-xl text-slate-700 hover:text-red-600 hover:bg-slate-50 transition{% endif %}">
                         <i class="fa-solid fa-cart-plus w-5 {% if '/billing/purchase/' in request.path %}text-red-600 text-sm{% else %}text-slate-400{% endif %}"></i>
-                        <span class="ml-2.5 flex-1">Buy Subscription</span>
+                        <span class="ml-2.5 flex-1">{{ t.menu_buy_subscription|default:t.buy_subscription|default:'Buy Subscription' }}</span>
                     </a>
                 </nav>
             </div>

@@ -18,7 +18,7 @@
         </div>
         <div class="flex items-center space-x-2">
             <a href="{% url 'billing:purchase' %}" class="inline-flex items-center px-4 py-2.5 text-xs font-bold text-white bg-red-600 hover:bg-red-700 rounded-xl shadow-md shadow-red-200 transition">
-                <i class="fa-solid fa-credit-card mr-2"></i> Buy Subscription
+                <i class="fa-solid fa-credit-card mr-2"></i> {{ t.menu_buy_subscription|default:t.buy_subscription|default:'Buy Subscription' }}
             </a>
             <a href="{% url 'billing:plans' %}" class="inline-flex items-center px-4 py-2.5 text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-xs transition">
                 <i class="fa-solid fa-cubes-stacked mr-2 text-red-600"></i> {{ t.plans_title }}

@@ -41,3 +41,4 @@ if old_sec_norm in text_norm:
     print("Successfully replaced driver navigation in base_dashboard.html")
 else:
     print("Could not find old_sec_norm!")
+

@@ -1,8 +1,8 @@
 {% extends 'dashboard/base_dashboard.html' %}
 {% load site_tags %}
 
-{% block title %}Purchase Subscription{% endblock %}
-{% block breadcrumb %}Buy Subscription{% endblock %}
+{% block title %}{{ t.purchase_sub_title|default:'Purchase Subscription' }}{% endblock %}
+{% block breadcrumb %}{{ t.menu_buy_subscription|default:t.buy_subscription|default:'Buy Subscription' }}{% endblock %}
 
 {% block content %}
 <div class="max-w-5xl mx-auto space-y-8" x-data="{ 
@@ -22,20 +22,20 @@
         <div>
             <div class="flex items-center space-x-2">
                 <span class="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-600 rounded-full border border-red-100">
-                    💳 Subscription Billing
+                    💳 {{ t.sub_billing_badge|default:'Subscription Billing' }}
                 </span>
-                <span class="text-xs text-slate-400">Direct Payment & Activation</span>
+                <span class="text-xs text-slate-400">{{ t.direct_payment_activation|default:'Direct Payment & Activation' }}</span>
             </div>
             <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight mt-1">
-                Purchase Subscription
+                {{ t.purchase_sub_title|default:'Purchase Subscription' }}
             </h1>
             <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                Select your preferred subscription plan and submit manual payment details (Bank Transfer, Cash, or Mobile Wallet) for instant activation.
+                {{ t.purchase_sub_desc|default:'Select your preferred subscription plan and submit manual payment details (Bank Transfer, Cash, or Mobile Wallet) for instant activation.' }}
             </p>
         </div>
         <a href="{% url 'billing:subscriptions' %}" class="inline-flex items-center space-x-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl transition">
             <i class="fa-solid fa-list-check text-xs"></i>
-            <span>My Subscriptions</span>
+            <span>{{ t.my_subscriptions_btn|default:'My Subscriptions' }}</span>
         </a>
     </div>
 
@@ -43,7 +43,7 @@
     <div class="space-y-3">
         <div class="flex items-center space-x-2">
             <span class="w-6 h-6 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center">1</span>
-            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Choose Your Plan</h2>
+            <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">{{ t.step_1_choose_plan|default:'Choose Your Plan' }}</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -98,13 +98,13 @@
         <div class="lg:col-span-5 space-y-4">
             <div class="flex items-center space-x-2">
                 <span class="w-6 h-6 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center">2</span>
-                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Payment Instructions</h2>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">{{ t.step_2_instructions|default:'Payment Instructions' }}</h2>
             </div>
 
             <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-6 text-white shadow-xl shadow-slate-900/10 space-y-5">
                 <div class="flex items-center justify-between border-b border-slate-700/80 pb-4">
                     <div>
-                        <p class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">Payable Amount</p>
+                        <p class="text-[11px] uppercase tracking-wider text-slate-400 font-bold">{{ t.payable_amount|default:'Payable Amount' }}</p>
                         <p class="text-3xl font-black text-white mt-0.5">
                             $<span x-text="selectedPlanPrice">0.00</span>
                             <span class="text-xs font-medium text-slate-400">/ <span x-text="selectedPlanInterval">month</span></span>
@@ -118,23 +118,23 @@
                 <!-- Option A: Bank Transfer -->
                 <div class="space-y-2">
                     <p class="text-xs font-bold uppercase tracking-wider text-red-400 flex items-center">
-                        <i class="fa-solid fa-building-columns mr-1.5"></i> Bank Transfer Details
+                        <i class="fa-solid fa-building-columns mr-1.5"></i> {{ t.bank_transfer_details|default:'Bank Transfer Details' }}
                     </p>
                     <div class="bg-slate-800/80 rounded-2xl p-3.5 border border-slate-700 text-xs space-y-1.5 font-mono">
                         <div class="flex justify-between">
-                            <span class="text-slate-400 font-sans">Bank:</span>
+                            <span class="text-slate-400 font-sans">{{ t.bank_name_label|default:'Bank:' }}</span>
                             <span class="font-bold text-white">DKIB (Demir Bank)</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-400 font-sans">Account Name:</span>
+                            <span class="text-slate-400 font-sans">{{ t.account_name_label|default:'Account Name:' }}</span>
                             <span class="font-bold text-white">Topd Fleet Mgmt LLC</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-400 font-sans">Account No:</span>
+                            <span class="text-slate-400 font-sans">{{ t.account_no_label|default:'Account No:' }}</span>
                             <span class="font-bold text-emerald-400">1180 0001 2345 6789</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-400 font-sans">SWIFT:</span>
+                            <span class="text-slate-400 font-sans">{{ t.swift_label|default:'SWIFT:' }}</span>
                             <span class="font-bold text-white">DEMIKG22</span>
                         </div>
                     </div>
@@ -143,7 +143,7 @@
                 <!-- Option B: Mobile Wallet / Cash -->
                 <div class="space-y-2">
                     <p class="text-xs font-bold uppercase tracking-wider text-red-400 flex items-center">
-                        <i class="fa-solid fa-mobile-screen-button mr-1.5"></i> Mobile Wallet / Cash
+                        <i class="fa-solid fa-mobile-screen-button mr-1.5"></i> {{ t.mobile_wallet_cash|default:'Mobile Wallet / Cash' }}
                     </p>
                     <div class="bg-slate-800/80 rounded-2xl p-3.5 border border-slate-700 text-xs space-y-1.5 font-mono">
                         <div class="flex justify-between">
@@ -151,7 +151,7 @@
                             <span class="font-bold text-amber-300">+996 999 083 366</span>
                         </div>
                         <div class="flex justify-between">
-                            <span class="text-slate-400 font-sans">Payment Ref:</span>
+                            <span class="text-slate-400 font-sans">{{ t.payment_ref_label|default:'Payment Ref:' }}</span>
                             <span class="font-bold text-white">{{ request.user.email }}</span>
                         </div>
                     </div>
@@ -159,7 +159,7 @@
 
                 <div class="p-3 bg-red-950/40 rounded-xl border border-red-800/40 text-[11px] text-red-200">
                     <i class="fa-solid fa-circle-info mr-1"></i>
-                    After completing payment via your banking app or cash, please fill out the confirmation form on the right.
+                    {{ t.after_payment_notice|default:'After completing payment via your banking app or cash, please fill out the confirmation form on the right.' }}
                 </div>
             </div>
         </div>
@@ -168,7 +168,7 @@
         <div class="lg:col-span-7 space-y-4">
             <div class="flex items-center space-x-2">
                 <span class="w-6 h-6 rounded-full bg-red-600 text-white text-xs font-bold flex items-center justify-center">3</span>
-                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Submit Payment Details</h2>
+                <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider">{{ t.step_3_submit_details|default:'Submit Payment Details' }}</h2>
             </div>
 
             <div class="bg-white rounded-3xl border border-slate-200/80 shadow-md p-6 sm:p-8">
@@ -182,7 +182,7 @@
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                            Chosen Plan
+                            {{ t.chosen_plan_label|default:'Chosen Plan' }}
                         </label>
                         <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-sm">
                             <div class="flex items-center space-x-2">
@@ -200,37 +200,37 @@
                     <!-- Payment Method -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                            Payment Method Used <span class="text-red-500">*</span>
+                            {{ t.payment_method_used|default:'Payment Method Used' }} <span class="text-red-500">*</span>
                         </label>
                         <select name="payment_method" x-model="paymentMethod" required
                                 class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition bg-white text-slate-800 font-medium">
-                            <option value="Bank Transfer">Bank Transfer (DKIB / Wire)</option>
-                            <option value="Cash">Cash Deposit / Office Handover</option>
+                            <option value="Bank Transfer">{{ t.method_bank_transfer|default:'Bank Transfer (DKIB / Wire)' }}</option>
+                            <option value="Cash">{{ t.method_cash|default:'Cash Deposit / Office Handover' }}</option>
                         </select>
                     </div>
 
                     <!-- Transaction Reference / ID -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                            Transaction Reference / TrxID / Slip Number <span class="text-red-500">*</span>
+                            {{ t.trx_ref_label|default:'Transaction Reference / TrxID / Slip Number' }} <span class="text-red-500">*</span>
                         </label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 text-sm">
                                 <i class="fa-solid fa-receipt"></i>
                             </div>
                             <input type="text" name="transaction_info" required
-                                   placeholder="e.g. TXN-98421038 or DemirBank Ref #49302"
+                                   placeholder="{{ t.trx_ref_placeholder|default:'e.g. TXN-98421038 or DemirBank Ref #49302' }}"
                                    class="w-full pl-10 pr-4 py-2.5 text-sm rounded-xl border border-slate-200 focus:border-red-500 focus:ring-2 focus:ring-red-100 outline-none transition text-slate-800 font-medium">
                         </div>
                         <p class="text-[11px] text-slate-400 mt-1">
-                            Enter the unique transaction code, bank reference ID, or payer name from your payment receipt.
+                            {{ t.trx_ref_help|default:'Enter the unique transaction code, bank reference ID, or payer name from your payment receipt.' }}
                         </p>
                     </div>
 
                     <!-- Subscriber Email (Read only) -->
                     <div>
                         <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                            Purchasing Account
+                            {{ t.purchasing_account_label|default:'Purchasing Account' }}
                         </label>
                         <input type="text" readonly value="{{ request.user.email }} ({{ request.user.get_full_name|default:request.user.role|title }})"
                                class="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50 text-slate-600 font-medium">
@@ -240,11 +240,11 @@
                     <button type="submit"
                             class="w-full py-3.5 px-4 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-200 hover:shadow-red-300 transition flex items-center justify-center space-x-2">
                         <i class="fa-solid fa-check-to-slot text-sm"></i>
-                        <span>Confirm & Submit Manual Payment</span>
+                        <span>{{ t.confirm_payment_btn|default:'Confirm & Submit Manual Payment' }}</span>
                     </button>
                     
                     <p class="text-center text-[11px] text-slate-400">
-                        🔒 Your payment will be verified by the admin team within 15–30 minutes.
+                        🔒 {{ t.verification_notice|default:'Your payment will be verified by the admin team within 15–30 minutes.' }}
                     </p>
                 </form>
             </div>
