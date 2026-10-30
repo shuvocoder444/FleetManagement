@@ -2,10 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.csrf import ensure_csrf_cookie
 from django.db.models import Q
 from .models import CustomUser
 
 
+@ensure_csrf_cookie
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard:index')
@@ -41,6 +43,7 @@ def logout_view(request):
     return redirect('landing_page')
 
 
+@ensure_csrf_cookie
 def register_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard:index')
