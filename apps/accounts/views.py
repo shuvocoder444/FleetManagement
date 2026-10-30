@@ -9,6 +9,22 @@ from .models import CustomUser, ActivityLog
 from .utils import log_activity
 
 
+def clear_messages(request):
+    """Clears any stale or accumulated unread messages from session/cookie storage."""
+    try:
+        from django.contrib.messages import get_messages
+        storage = get_messages(request)
+        if hasattr(storage, '_queued_messages'):
+            storage._queued_messages.clear()
+        for s in getattr(storage, 'storages', []):
+            if hasattr(s, '_queued_messages'):
+                s._queued_messages.clear()
+            if hasattr(s, '_loaded_data'):
+                s._loaded_data = []
+    except Exception:
+        pass
+
+
 @csrf_exempt
 def login_view(request):
     if request.user.is_authenticated:
@@ -25,6 +41,9 @@ def login_view(request):
         else:
             user = authenticate(request, username=email, password=password)
             if user is not None:
+                # Clear previous unread messages if any
+                clear_messages(request)
+
                 auth_login(request, user)
                 if getattr(user, 'role', '') in [CustomUser.Role.COMPANY, CustomUser.Role.ADMIN, CustomUser.Role.INDIVIDUAL]:
                     request.session['active_dashboard_role'] = 'admin'
@@ -63,6 +82,9 @@ def logout_view(request):
             f"Logged out of system",
             company=request.user.get_company_account()
         )
+    # Wipe any accumulated messages from previous dashboard actions
+    clear_messages(request)
+
     auth_logout(request)
     messages.info(request, 'You have been logged out successfully.')
     return redirect('landing_page')
