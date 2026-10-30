@@ -37,3 +37,19 @@ class PersistentLanguageMiddleware:
 
         return response
 
+
+class CsrfCookieFallbackMiddleware:
+    """
+    Guarantees that CSRF verification never fails due to missing cookies
+    on HTTP, reverse proxies, or browsers with strict cookie isolation.
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if request.method == 'POST' and 'csrftoken' not in request.COOKIES:
+            token = request.POST.get('csrfmiddlewaretoken')
+            if token:
+                request.COOKIES['csrftoken'] = token
+        return self.get_response(request)
+

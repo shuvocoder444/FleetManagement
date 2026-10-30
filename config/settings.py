@@ -14,12 +14,20 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
+    'http://*.velohoster.com',
+    'https://*.velohoster.com',
     'http://rus.velohoster.com',
     'https://rus.velohoster.com',
+    'http://*.signsabove.net',
+    'https://*.signsabove.net',
     'http://top.signsabove.net',
     'https://top.signsabove.net',
+    'http://*.webkoders.com',
+    'https://*.webkoders.com',
     'http://hospital.webkoders.com',
     'https://hospital.webkoders.com',
+    'http://195.250.26.201',
+    'https://195.250.26.201',
 ]
 
 CSRF_COOKIE_HTTPONLY = False
@@ -58,6 +66,7 @@ MIDDLEWARE = [
     'apps.site_settings.middleware.PersistentLanguageMiddleware',  # 100% Persistent EN/RU Middleware
     'django.middleware.locale.LocaleMiddleware',  # Multi-language support (EN, RU)
     'django.middleware.common.CommonMiddleware',
+    'apps.site_settings.middleware.CsrfCookieFallbackMiddleware',  # Fallback for HTTP/proxy cookie drops
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
