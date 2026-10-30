@@ -23,11 +23,13 @@ def dashboard_router(request):
             request.session.modified = True
             return redirect('dashboard:admin')
         elif user.is_superuser or getattr(user, 'role', '') == CustomUser.Role.SUPERADMIN:
-            active_role = request.session.get('active_dashboard_role')
-            if active_role == 'admin':
+            role_param = request.GET.get('role', '').strip().lower()
+            if role_param == 'admin':
                 return redirect('dashboard:admin')
-            elif active_role == 'driver':
+            elif role_param == 'driver':
                 return redirect('dashboard:driver')
+            request.session['active_dashboard_role'] = 'superadmin'
+            request.session.modified = True
             return redirect('dashboard:superadmin')
 
     # 2. Unauthenticated / guest preview

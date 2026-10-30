@@ -67,14 +67,14 @@ with open('apps/site_settings/translations.py', 'r', encoding='utf-8') as f:
 en_target = "'subscriptions_title': 'Subscriptions & Memberships',"
 assert en_target in content, "en_target not found!"
 
-en_insert = "\n" + "\n".join([f"              {repr(k)}: {repr(v)}," for k, v in new_keys_en.items()])
+en_insert = "\n" + "\n".join([f"              {k!r}: {v!r}," for k, v in new_keys_en.items()])
 content = content.replace(en_target, en_target + en_insert, 1)
 
 # Insert into RU section
 ru_target = "'subscriptions_title': 'Подписки и тарифы',"
 assert ru_target in content, "ru_target not found!"
 
-ru_insert = "\n" + "\n".join([f"              {repr(k)}: {repr(v)}," for k, v in new_keys_ru.items()])
+ru_insert = "\n" + "\n".join([f"              {k!r}: {v!r}," for k, v in new_keys_ru.items()])
 content = content.replace(ru_target, ru_target + ru_insert, 1)
 
 with open('apps/site_settings/translations.py', 'w', encoding='utf-8') as f:

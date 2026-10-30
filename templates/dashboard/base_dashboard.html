@@ -82,7 +82,7 @@
         
         <!-- Sidebar Brand Header -->
         <div class="h-16 flex items-center justify-between px-6 border-b border-slate-100">
-            <a href="{% url 'landing_page' %}" class="flex items-center space-x-2.5">
+            <a href="{% if current_dashboard == 'superadmin' %}{% url 'dashboard:superadmin' %}{% elif current_dashboard == 'driver' %}{% url 'dashboard:driver' %}{% else %}{% url 'dashboard:admin' %}{% endif %}" class="flex items-center space-x-2.5">
                 <div class="w-9 h-9 rounded-xl bg-red-600 flex items-center justify-center text-white shadow-md shadow-red-200">
                     <i class="fa-solid fa-car-side text-base"></i>
                 </div>
@@ -92,7 +92,8 @@
                     </span>
                     <span class="text-[9px] uppercase tracking-widest font-bold text-slate-400">
                         {% if current_dashboard == 'superadmin' %}{{ t.superadmin_badge }}
-                        {% elif current_dashboard == 'admin' %}{{ t.fleet_badge }}
+                        {% elif current_dashboard == 'admin' %}
+                            {% if display_user.get_company_account.company_name %}{{ display_user.get_company_account.company_name }}{% elif display_user.company_name %}{{ display_user.company_name }}{% elif display_user.role == 'individual' %}Personal{% else %}Company{% endif %}
                         {% else %}{{ t.driver_badge }}{% endif %}
                     </span>
                 </div>
@@ -317,7 +318,8 @@
                     <p class="text-xs font-bold text-gray-900 truncate">{{ display_user.email|default:'user@topd.kg' }}</p>
                     <p class="text-[10px] text-slate-500 capitalize">
                         {% if current_dashboard == 'superadmin' %}{{ t.superadmin_badge }}
-                        {% elif current_dashboard == 'admin' %}{{ t.fleet_badge }}
+                        {% elif current_dashboard == 'admin' %}
+                            {% if display_user.get_company_account.company_name %}{{ display_user.get_company_account.company_name }}{% elif display_user.company_name %}{{ display_user.company_name }}{% elif display_user.role == 'individual' %}Personal{% else %}Company{% endif %}
                         {% else %}{{ t.driver_badge }}{% endif %}
                     </p>
                 </div>
@@ -360,7 +362,15 @@
                 <div class="flex items-center space-x-2">
                     <span class="px-3 py-1.5 rounded-xl bg-red-50 text-red-600 border border-red-100 font-bold text-xs flex items-center space-x-1.5">
                         <i class="fa-solid fa-building text-[11px]"></i>
-                        <span>{{ t.tab_fleetadmin|default:'2. Fleet Admin' }}</span>
+                        <span>
+                            {% if display_user.company_name %}
+                                {{ display_user.company_name }}
+                            {% elif display_user.role == 'individual' %}
+                                Personal
+                            {% else %}
+                                Company
+                            {% endif %}
+                        </span>
                     </span>
                 </div>
                 {% elif current_dashboard == 'driver' %}
@@ -383,6 +393,13 @@
             <!-- Right Controls: Currency, Language, Notifications, Profile -->
             <div class="flex items-center space-x-2 sm:space-x-3">
                 
+                <!-- Visit Public Website in new tab -->
+                <a href="{% url 'landing_page' %}" target="_blank" title="Visit Website in new tab"
+                   class="hidden md:flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-red-600 bg-slate-100 hover:bg-slate-200 transition">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    <span>Website</span>
+                </a>
+
                 <!-- Currency Selector -->
                 <div class="relative" x-data="{ openCurr: false }">
                     <button @click="openCurr = !openCurr" @click.away="openCurr = false" 

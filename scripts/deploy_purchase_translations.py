@@ -36,3 +36,4 @@ for cmd in commands:
 
 ssh.close()
 print('SUCCESS! Deployed purchase translations & restarted lswsgi.')
+

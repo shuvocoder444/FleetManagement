@@ -38,3 +38,4 @@ assert 'Buy Subscription' in html_en, "EN menu 'Buy Subscription' not found!"
 print(" [OK] All English translation keys verified on live server!")
 
 print("\nALL LIVE PURCHASE TRANSLATION TESTS PASSED 100%!")
+

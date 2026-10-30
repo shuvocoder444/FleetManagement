@@ -9,7 +9,9 @@
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
             <div class="flex items-center space-x-2">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700">{{ t.fleet_badge }}</span>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-emerald-100 text-emerald-700">
+                {% if display_user.get_company_account.company_name %}{{ display_user.get_company_account.company_name }}{% elif display_user.company_name %}{{ display_user.company_name }}{% elif display_user.role == 'individual' %}Personal{% else %}Company{% endif %}
+            </span>
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
                     {{ t.welcome_back }}, <span class="text-red-600">{{ company_name|default:'Team JBDIT' }}</span>
                 </h1>

@@ -27,16 +27,17 @@ def get_active_dashboard_role(request):
             if role_param in ['superadmin', 'admin', 'driver']:
                 request.session['active_dashboard_role'] = role_param
                 return role_param
-            if '/dashboard/driver/' in path:
-                request.session['active_dashboard_role'] = 'driver'
+            if path.startswith('/dashboard/driver/'):
                 return 'driver'
-            elif '/dashboard/admin/' in path or '/dashboard/company/' in path:
-                request.session['active_dashboard_role'] = 'admin'
+            elif path.startswith('/dashboard/admin/') or path.startswith('/dashboard/company/'):
                 return 'admin'
-            elif '/dashboard/superadmin/' in path:
+            elif path.startswith('/dashboard/superadmin/'):
                 request.session['active_dashboard_role'] = 'superadmin'
                 return 'superadmin'
-            return request.session.get('active_dashboard_role', 'superadmin')
+            # When superadmin navigates across operational menus (agreements, vehicles, drivers, billing, settings, users),
+            # superadmin MUST strictly remain in the superadmin master dashboard!
+            request.session['active_dashboard_role'] = 'superadmin'
+            return 'superadmin'
 
     # 2. Unauthenticated / guest preview
     if role_param in ['superadmin', 'admin', 'company', 'driver']:
